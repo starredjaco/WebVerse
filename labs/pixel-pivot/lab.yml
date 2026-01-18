@@ -1,0 +1,10 @@
+id: pixel-pivot
+name: Pixel Pivot
+difficulty: hard
+description: >
+  Chain: SQLi auth foothold -> SQLi dump weak QA hash -> reuse creds to internal chat ->
+  obtain Gitea creds -> leak internal API key from old commit -> command injection on internal API -> /root flag.
+compose_file: docker-compose.yml
+entrypoint:
+  base_url: http://ubihard.local/
+flag_sha256: 6642c895bc56fd9fba03d82b1ef8e264bf1ba97d281fa359626bfc071086a242

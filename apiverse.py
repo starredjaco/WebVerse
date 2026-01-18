@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import os
 import subprocess
 import sqlite3
 import hashlib
@@ -23,6 +24,33 @@ DIFFICULTIES = ("easy", "medium", "hard", "master")
 
 STATE_DIR = Path.home() / ".apiverse"
 DB_PATH = STATE_DIR / "apiverse.db"
+
+# ------------------ TERMINAL COLORS ------------------------
+
+ANSI_RESET = "\033[0m"
+ANSI_GREEN = "\033[32m"
+ANSI_YELLOW = "\033[33m"
+ANSI_RED = "\033[31m"
+ANSI_PURPLE = "\033[35m"
+
+DIFF_COLOR = {
+    "easy": ANSI_GREEN,
+    "medium": ANSI_YELLOW,
+    "hard": ANSI_RED,
+    "master": ANSI_PURPLE,
+}
+
+def supports_color() -> bool:
+    # Basic, portable check. Disable colors when piped or when NO_COLOR is set.
+    if os.getenv("NO_COLOR"):
+        return False
+    return sys.stdout.isatty()
+
+def colorize_name(name: str, difficulty: str) -> str:
+    if not supports_color():
+        return name
+    c = DIFF_COLOR.get(difficulty, "")
+    return f"{c}{name}{ANSI_RESET}" if c else name
 
 
 @dataclass(frozen=True)
@@ -288,7 +316,8 @@ def cmd_list(labs: Dict[str, Lab], args: argparse.Namespace) -> int:
     def print_lab(l: Lab) -> None:
         desc = f" - {l.description}" if l.description else ""
         mark = "✓" if l.id in solved else " "
-        print(f"  {mark} {l.id}: {l.name}{desc}")
+        colored_name = colorize_name(l.name, l.difficulty)
+        print(f"  {mark} {l.id}: {colored_name}{desc}")
 
     if wanted:
         print(f"{wanted.upper()} labs:")
