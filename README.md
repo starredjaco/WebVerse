@@ -9,10 +9,14 @@ WebVerse is a local **web & API security lab runner**: a desktop app that discov
 ## Screenshot / Demo
 
 
-<img width="1915" height="897" alt="Screenshot 2026-01-27 005040" src="https://github.com/user-attachments/assets/c977fe06-3d95-4b66-bc79-6f5af223ebc8" />
+
+<img width="1902" height="892" alt="home" src="https://github.com/user-attachments/assets/3a02f514-5bfd-4f6f-837b-3b60b693426e" />
 
 
-<img width="1908" height="888" alt="Screenshot 2026-01-26 152925" src="https://github.com/user-attachments/assets/ff5b099b-70e1-4ac8-a41b-bdeadaaa9ddf" />
+<img width="1901" height="887" alt="lab" src="https://github.com/user-attachments/assets/2b490468-4919-43ef-afc4-bc69d6069d65" />
+
+
+<img width="1897" height="902" alt="browse" src="https://github.com/user-attachments/assets/d3241724-2451-4f60-b5f6-240d0137ef77" />
 
 
 <img width="1916" height="887" alt="Screenshot 2026-01-26 153009" src="https://github.com/user-attachments/assets/86dce2a3-44f5-4aae-98b9-0e41d00b723f" />
