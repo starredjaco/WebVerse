@@ -84,7 +84,7 @@ python3 webverse.py
 
 <img width="1901" height="887" alt="lab" src="https://github.com/user-attachments/assets/2b490468-4919-43ef-afc4-bc69d6069d65" />
 
-<img width="1897" height="902" alt="browse" src="https://github.com/user-attachments/assets/d3241724-2451-4f6f-240d0137ef77" />
+<img width="1897" height="902" alt="browse" src="https://github.com/user-attachments/assets/3f839d68-58ab-414c-aa75-6715047d4dc4" />
 
 <img width="1916" height="892" alt="progress" src="https://github.com/user-attachments/assets/2c14bba5-d237-489c-84a4-6d84ef2f715e" />
 
