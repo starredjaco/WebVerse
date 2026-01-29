@@ -1,48 +1,26 @@
 # WebVerse
 
-WebVerse is a local **web & API security lab runner**: a desktop app that discovers labs in `./labs/`, starts them with **Docker Compose**, opens them in your browser, and tracks your progress — all on your own machine.
+WebVerse is a local **web & API security lab runner** — a desktop app that discovers labs, starts them with **Docker Compose**, opens them in your browser, and tracks progress on your machine.
 
-> **Educational use only.** Labs are intentionally vulnerable. Do **not** expose them to the internet.
+> **Educational use only.** Labs are intentionally vulnerable. **Do not expose them to the internet.**
 
 ---
 
 ## Screenshot / Demo
 
-
-
 <img width="1902" height="892" alt="home" src="https://github.com/user-attachments/assets/3a02f514-5bfd-4f6f-837b-3b60b693426e" />
-
 
 <img width="1901" height="887" alt="lab" src="https://github.com/user-attachments/assets/2b490468-4919-43ef-afc4-bc69d6069d65" />
 
-
 <img width="1897" height="902" alt="browse" src="https://github.com/user-attachments/assets/d3241724-2451-4f60-b5f6-240d0137ef77" />
 
-
-<img width="1916" height="892" alt="progress new" src="https://github.com/user-attachments/assets/2c14bba5-d237-489c-84a4-6d84ef2f715e" />
-
-
-
-
----
-
-## Why WebVerse?
-
-Most practice environments are either:
-- too heavy to set up,
-- too scattered across repos,
-- or too “manual” to run repeatedly.
-
-WebVerse is built to make local practice **repeatable**:
-- labs are self-contained
-- starting/resetting takes one click
-- you can iterate quickly, break things, reset, and try again
+<img width="1916" height="892" alt="progress" src="https://github.com/user-attachments/assets/2c14bba5-d237-489c-84a4-6d84ef2f715e" />
 
 ---
 
 ## Features
 
-- 🧪 Browse included labs (name, difficulty, description, tags)
+- 🧪 Browse included labs (difficulty, tags, description)
 - ▶️ One-click **Start / Stop / Reset**
 - 🌐 **Open in Browser** from the UI
 - 🧾 View lab status and logs
@@ -53,13 +31,135 @@ WebVerse is built to make local practice **repeatable**:
 
 ## Requirements
 
-- **Linux or macOS**
-- **Python 3.10+**
-- **Docker** + **Docker Compose**
-  - Linux: Docker Engine + Compose plugin
-  - macOS: Docker Desktop
+### Supported OS
+- **Linux** or **macOS**
 
-Install Python deps:
+### Dependencies
+- **Python 3.10+**
+- **Docker** + **Docker Compose v2** (must support `docker compose`)
+
+Verify everything is installed:
 
 ```bash
+python3 --version
+docker --version
+docker compose version
+```
+
+> If `docker compose version` fails, install Docker Desktop (macOS) or Docker Engine + Compose plugin (Linux).
+
+---
+
+## Install (Recommended): pipx
+
+`pipx` installs WebVerse into an isolated environment and exposes a `webverse` command.
+
+### 1) Install pipx (one time)
+
+**Debian/Kali/Ubuntu:**
+```bash
+sudo apt update
+sudo apt install -y pipx
+pipx ensurepath
+```
+
+Restart your terminal (or run `source ~/.bashrc` / `source ~/.zshrc`).
+
+### 2) Install WebVerse from GitHub
+```bash
+pipx install git+https://github.com/LeighlinRamsay/WebVerse.git
+```
+
+### 3) Run WebVerse
+```bash
+webverse
+```
+
+### Update / uninstall
+```bash
+pipx upgrade webverse
+pipx uninstall webverse
+```
+
+---
+
+## Install (Alternative): Run from source (developer mode)
+
+Use this if you’re editing the code or building labs.
+
+### 1) Clone
+```bash
+git clone https://github.com/LeighlinRamsay/WebVerse.git
+cd WebVerse
+```
+
+### 2) Create a venv + install dependencies
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
+```
+
+### 3) Run
+```bash
+python3 webverse.py
+```
+
+---
+
+## Using WebVerse
+
+1. Open WebVerse
+2. Go to **Labs** and pick a lab
+3. Click **Start** (Docker Compose spins up the lab)
+4. Click **Open in Browser**
+5. When you capture the flag, submit it in the lab page to mark it solved
+6. Use **Reset** to restore the lab and try again
+
+### Where are labs stored?
+By default, labs live in:
+- `./labs/` (in a source checkout)
+
+---
+
+## Troubleshooting
+
+### Docker permission denied (Linux)
+If Docker works only with `sudo`, add your user to the docker group:
+
+```bash
+sudo usermod -aG docker "$USER"
+newgrp docker
+docker ps
+```
+
+### Port 80 / privileged ports (Linux/macOS)
+Some labs bind to low ports. If a lab fails to start with permission errors:
+- Update the lab’s `docker-compose.yml` to use a higher port (e.g. `8080:80`), or
+- Run WebVerse with elevated permissions (not recommended as default)
+
+### Lab won’t start / stuck starting
+- Confirm Docker is running: `docker ps`
+- Check the lab logs in the WebVerse UI
+- Try **Stop → Reset → Start**
+
+---
+
+## Why WebVerse?
+
+Most practice environments are either:
+- heavy to set up,
+- scattered across repos,
+- or too manual to run repeatedly.
+
+WebVerse makes local practice **repeatable**:
+- labs are self-contained
+- starting/resetting takes one click
+- you can iterate quickly, break things, reset, and try again
+
+---
+
+## Disclaimer
+
+WebVerse and included labs are for **education and authorized testing only**.
+You are responsible for how you use this software.
