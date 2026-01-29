@@ -3,6 +3,7 @@ name: Tricky Tunnels
 difficulty: easy
 description: "Unauthenticated debug endpoint leaks sensitive config (classic info disclosure)."
 compose_file: docker-compose.yml
+image: cover.png
 entrypoint:
   base_url: "http://localhost:8088"
 tags: ["info-disclosure", "debug-endpoint"]

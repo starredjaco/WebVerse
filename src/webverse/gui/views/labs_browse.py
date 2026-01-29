@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from PyQt5.QtCore import Qt, pyqtSignal, QModelIndex, QSize, QRect, QPoint, QPointF, QAbstractListModel, QEvent, QObject
-from PyQt5.QtGui import QColor, QFontMetrics, QPainter, QPen, QBrush, QPalette, QColor
+from PyQt5.QtGui import QColor, QFontMetrics, QPainter, QPen, QBrush, QPalette, QColor, QFont
 
 from PyQt5.QtWidgets import (
 	QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame,
@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import (
 
 from webverse.core.runtime import get_running_lab
 from webverse.core.xp import base_xp_for_difficulty
-from webverse.gui.util_avatar import lab_circle_icon
+from webverse.gui.util_avatar import lab_badge_icon, lab_circle_icon
 
 class OnyxComboBox(QComboBox):
 	def paintEvent(self, event):
@@ -70,6 +70,7 @@ class _LabCard:
 	difficulty: str
 	status: str
 	xp: int
+	image_path: Optional[str] = None
 
 
 class _LabsGridModel(QAbstractListModel):
@@ -92,7 +93,10 @@ class _LabsGridModel(QAbstractListModel):
 		if role == Qt.DisplayRole:
 			return card.name
 		if role == Qt.DecorationRole:
-			return lab_circle_icon(card.name, card.difficulty, 38)
+			size = 96
+			if card.image_path:
+				return lab_badge_icon(card.name, card.difficulty, card.image_path, size)
+			return lab_circle_icon(card.name, card.difficulty, size)
 		if role == self.ROLE_LAB_ID:
 			return card.lab_id
 		if role == self.ROLE_CARD:
@@ -118,7 +122,8 @@ class _LabCardDelegate(QStyledItemDelegate):
 		painter.save()
 		painter.setRenderHint(QPainter.Antialiasing, True)
 
-		r = option.rect.adjusted(6, 6, -6, -6)
+		# Larger inner padding to match bigger tiles
+		r = option.rect.adjusted(10, 10, -10, -10)
 
 		hover = bool(option.state & QStyle.State_MouseOver)
 		pressed = bool(option.state & QStyle.State_Sunken)
@@ -134,45 +139,66 @@ class _LabCardDelegate(QStyledItemDelegate):
 
 		painter.setBrush(QBrush(bg))
 		painter.setPen(QPen(bd, 1))
-		painter.drawRoundedRect(r, 18, 18)
+		painter.drawRoundedRect(r, 22, 22)
 
 		# icon
 		icon = index.data(Qt.DecorationRole)
-		icon_size = 40
-		ix = r.left() + 14
-		iy = r.top() + 14
+		icon_size = 64
+		ix = r.left() + 18
+		iy = r.top() + 18
 		if icon:
 			pm = icon.pixmap(icon_size, icon_size)
 			painter.drawPixmap(ix, iy, pm)
 
-		# text metrics
-		fm = QFontMetrics(option.font)
-		title_x = ix + icon_size + 12
-		title_w = r.right() - title_x - 14
+		# Typography (bigger title + readable meta)
+		title_font = QFont(option.font)
+		sub_font = QFont(option.font)
+		meta_font = QFont(option.font)
+		try:
+			base_px = title_font.pixelSize()
+			if base_px <= 0:
+				base_px = 15
+			title_font.setPixelSize(base_px + 6)  # BIGGER name
+			title_font.setBold(True)
+			sub_font.setPixelSize(base_px + 2)
+			meta_font.setPixelSize(base_px + 2)
+		except Exception:
+			title_font.setPointSize(max(14, title_font.pointSize() + 4))
+			title_font.setBold(True)
+			sub_font.setPointSize(max(12, sub_font.pointSize() + 2))
+			meta_font.setPointSize(max(12, meta_font.pointSize() + 2))
+
+		title_x = ix + icon_size + 16
+		title_w = r.right() - title_x - 18
 
 		title = card.name or "—"
 		subtitle = card.slug or ""
 
 		# title
 		painter.setPen(QColor(245, 247, 255, 235))
-		t_rect = QRect(title_x, iy - 1, title_w, 22)
-		painter.drawText(t_rect, Qt.AlignLeft | Qt.AlignVCenter, fm.elidedText(title, Qt.ElideRight, title_w))
+		painter.setFont(title_font)
+		fm_title = QFontMetrics(title_font)
+		t_rect = QRect(title_x, iy - 2, title_w, 34)
+		painter.drawText(t_rect, Qt.AlignLeft | Qt.AlignVCenter, fm_title.elidedText(title, Qt.ElideRight, title_w))
 
 		# subtitle
 		painter.setPen(QColor(235, 241, 255, 150))
-		s_rect = QRect(title_x, iy + 20, title_w, 18)
-		painter.drawText(s_rect, Qt.AlignLeft | Qt.AlignVCenter, fm.elidedText(subtitle, Qt.ElideRight, title_w))
+		painter.setFont(sub_font)
+		fm_sub = QFontMetrics(sub_font)
+		s_rect = QRect(title_x, iy + 30, title_w, 24)
+		painter.drawText(s_rect, Qt.AlignLeft | Qt.AlignVCenter, fm_sub.elidedText(subtitle, Qt.ElideRight, title_w))
 
 		# bottom meta row (Difficulty / Status / XP)
-		meta_y = r.bottom() - 26
+		painter.setFont(meta_font)
+		meta_y = r.bottom() - 34
 		meta = f"{(card.difficulty or 'Unknown').title()}   •   {card.status}   •   {card.xp} XP"
 		painter.setPen(QColor(235, 241, 255, 165))
-		painter.drawText(QRect(r.left() + 14, meta_y, r.width() - 28, 18), Qt.AlignLeft | Qt.AlignVCenter, meta)
+		painter.drawText(QRect(r.left() + 18, meta_y, r.width() - 36, 24), Qt.AlignLeft | Qt.AlignVCenter, meta)
 
 		painter.restore()
 
 	def sizeHint(self, option: QStyleOptionViewItem, index: QModelIndex):
-		return QSize(330, 116)
+		return QSize(400, 190)
 
 
 def _force_dark_combo_popup(cb: QComboBox):
@@ -290,11 +316,15 @@ class LabsBrowseView(QWidget):
 		self.grid.setViewMode(QListView.IconMode)
 		self.grid.setResizeMode(QListView.Adjust)
 		self.grid.setWrapping(True)
-		self.grid.setSpacing(10)
+		self.grid.setSpacing(16)
 		self.grid.setUniformItemSizes(True)
 		self.grid.setMouseTracking(True)
 		self.grid.setSelectionMode(QListView.NoSelection)
 		self.grid.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+		# Ensure the layout engine has enough room per item (matches delegate sizeHint)
+		self.grid.setGridSize(QSize(420, 210))
+		self.grid.setIconSize(QSize(96, 96))
 
 		self._model = _LabsGridModel([])
 		self.grid.setModel(self._model)
@@ -403,7 +433,15 @@ class LabsBrowseView(QWidget):
 			difficulty = str(getattr(lab, "difficulty", "") or "Unknown")
 			status = status_of(lab_id)
 			xp = base_xp_for_difficulty(difficulty)
-			cards.append(_LabCard(lab_id=lab_id, name=name, slug=slug, difficulty=difficulty, status=status, xp=xp))
+			img = None
+			try:
+				imgp = getattr(lab, "image_path", None)
+				if callable(imgp):
+					p = imgp()
+					img = str(p) if p else None
+			except Exception:
+				img = None
+			cards.append(_LabCard(lab_id=lab_id, name=name, slug=slug, difficulty=difficulty, status=status, xp=xp, image_path=img))
 
 		self._model.set_cards(cards)
 

@@ -3,6 +3,7 @@ name: Tenant Tilt
 difficulty: easy
 description: "Multi-tenant billing portal with a broken object-level authorization check in invoice retrieval."
 compose_file: docker-compose.yml
+image: cover.png
 entrypoint:
   base_url: "http://localhost:8090"
 tags:

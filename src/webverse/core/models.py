@@ -12,6 +12,9 @@ class Lab:
     difficulty: str
     path: Path
 
+    # Optional relative path to a lab image (e.g., "cover.png") from lab.yml: image: cover.png
+    image: str = ""
+
     # docker-compose.yml file name (relative to lab path)
     compose_file: str = "docker-compose.yml"
 
@@ -26,4 +29,24 @@ class Lab:
             v = self.entrypoint.get("base_url")
             if isinstance(v, str) and v.strip():
                 return v.strip()
+        return None
+
+    def image_path(self) -> Optional[Path]:
+        """
+        Resolve the lab image relative to the lab directory.
+        Works in repo runs and pipx installs because lab.path is absolute.
+        """
+        img = (self.image or "").strip()
+        if not img:
+            return None
+
+        try:
+            p = Path(img)
+            if not p.is_absolute():
+                p = (self.path / p).resolve()
+            if p.exists():
+                return p
+        except Exception:
+            return None
+
         return None
