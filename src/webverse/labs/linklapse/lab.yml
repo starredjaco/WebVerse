@@ -5,6 +5,10 @@ description: >
   LinkLapse ops suite. Exploit an OAuth account-linking flaw to bind your LinkID identity to a support seat (ATO).
   Use internal chat to deliver a reflected-XSS link to ops. Admin loads your external JS which CORS-reads /api/v3/logs
   (path leaked in client bundle) and reveals an LDAP bind where the flag was used as a password.
+story: |
+  LinkLapse is a link-shortening and campaign-tracking provider used by marketing teams to distribute time-sensitive promos and measure conversions.
+  
+  A high-value client reported that restricted campaign dashboards were accessible from unexpected sessions, and support can’t reproduce it reliably. The company wants an end-to-end security verification of the portal and any internal admin flows that might be reachable. You’re investigating as an attacker to determine whether the platform can be abused to access customer data or internal operations.
 compose_file: docker-compose.yml
 image: cover.png
 entrypoint:

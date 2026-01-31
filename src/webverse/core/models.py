@@ -9,6 +9,7 @@ class Lab:
     id: str
     name: str
     description: str
+    story: str
     difficulty: str
     path: Path
 

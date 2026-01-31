@@ -2,6 +2,10 @@ id: tricky-tunnels
 name: Tricky Tunnels
 difficulty: easy
 description: "Unauthenticated debug endpoint leaks sensitive config (classic info disclosure)."
+story: |
+  TrickyTunnels provides a tunneling service that developers use to expose local apps for demos and integration testing.
+  
+  A customer discovered configuration artifacts being shared publicly and the company is worried that diagnostic tooling might be exposed. You’ve been hired to evaluate the platform’s web surface and any supporting services that power provisioning and status reporting. The goal is to show what an attacker could enumerate or control, and to produce evidence the engineers can use to harden the system.
 compose_file: docker-compose.yml
 image: cover.png
 entrypoint:

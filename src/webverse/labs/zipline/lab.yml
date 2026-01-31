@@ -2,6 +2,10 @@ id: zipline
 name: Zipline
 difficulty: medium
 description: "Law firm case exports. Downloading exports by public ID leaks an internal subdomain and credentials, leading to a second API with hidden config."
+story: |
+  Zipline is a document exchange portal used by a small law firm to deliver case files to clients and external counsel.
+  
+  A client alleges they accessed another party’s documents without intending to, which triggered an internal compliance panic. The firm needs a definitive answer on whether the portal can leak data across cases or users. You’ve been brought in to test the portal’s access boundaries, validate the claim, and determine how far an attacker could go if the weakness is real.
 compose_file: docker-compose.yml
 image: cover.png
 entrypoint:

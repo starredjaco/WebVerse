@@ -4,6 +4,12 @@ difficulty: hard
 description: >
   Chain: Unauthenticated order-tracking BOLA leaks customer creds -> discover hidden /login on store ->
   login posts to auth-user API -> invoice downloader URL pivot to auth-admin backup leak -> prod-handler command injection -> flag.
+story: |
+  LeakLore is an online marketplace for limited-run collectibles where customers track orders, download invoices, and message sellers.
+
+  After a spike in support tickets about 'wrong invoices' and 'mystery refunds', the team suspects their account and order tooling is exposing data across user boundaries. At the same time, an internal ops dashboard meant for staff-only triage has started showing up in public browser history screenshots.
+
+  You are brought in to simulate a real attacker: begin as a normal internet user, follow the same UI flows a customer would, and determine whether you can observe or influence anything that should be private. Document what a breach would look like in practice and what business impact it would have if exploited at scale.
 compose_file: docker-compose.yml
 image: cover.png
 entrypoint:

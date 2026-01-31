@@ -57,18 +57,32 @@ def connect():
     return conn
 
 def mark_started(lab_id: str):
+    """
+    Record that the user successfully STARTED this lab.
+
+    NOTE: `started_at` is treated as the most recent successful start time
+    (used for "Active" state + uptime). We do NOT increment attempts here.
+    Attempts are counted when the user later STOPS the lab without solving.
+    """
+    ts = datetime.now(timezone.utc).isoformat()
+
     with connect() as conn:
         cur = conn.cursor()
-        cur.execute("SELECT started_at FROM progress WHERE lab_id=?", (lab_id,))
-        row = cur.fetchone()
-        if not row:
-            cur.execute(
-                "INSERT INTO progress (lab_id, started_at, attempts) VALUES (?,?,0)",
-                (lab_id, datetime.now(timezone.utc).isoformat())
-            )
+        # Ensure row exists, then update latest start timestamp.
+        cur.execute(
+            "INSERT OR IGNORE INTO progress (lab_id, started_at, attempts) VALUES (?,?,0)",
+            (lab_id, ts)
+        )
+        cur.execute("UPDATE progress SET started_at=? WHERE lab_id=?", (ts, lab_id))
     _invalidate(lab_id)
 
 def mark_attempt(lab_id: str):
+    """
+    Increment attempts when the user STOPPED a running lab without solving it.
+    This matches: "how many times has the user started this lab then stopped it
+    without submitting the flag."
+    """
+
     with connect() as conn:
         cur = conn.cursor()
         cur.execute("SELECT attempts FROM progress WHERE lab_id=?", (lab_id,))

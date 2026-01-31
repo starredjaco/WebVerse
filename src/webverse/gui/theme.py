@@ -38,6 +38,9 @@ def qss_onyx_amber(scale: float = DEFAULT_UI_SCALE) -> str:
 	p_16 = _s(16, scale)
 	p_18 = _s(18, scale)
 
+	kpi_num = _i(18 * scale)
+	kpi_lbl = max(11, _i(12 * scale))
+
 	return f"""
 	QWidget {{
 		background: #07090C;
@@ -220,12 +223,124 @@ def qss_onyx_amber(scale: float = DEFAULT_UI_SCALE) -> str:
 		border: 1px solid rgba(255,255,255,0.08);
 		border-radius: {r_xl}px;
 	}}
-	QLineEdit#FlagInput {{
-		background: rgba(16,20,28,0.55);
-		border: 1px solid rgba(255,255,255,0.10);
+
+	/* Fill the right-side empty space on Overview → Submit Flag */
+	QFrame#FlagSide {{
+		background: rgba(16,20,28,0.28);
+		border: 1px solid rgba(255,255,255,0.08);
 		border-radius: {r_lg}px;
-		padding: {p_10}px {p_12}px;
-		min-height: { _s(38, scale) }px;
+	}}
+	QLabel#FlagSideTitle {{
+		font-weight: 950;
+		color: rgba(245,247,255,0.92);
+	}}
+	QLabel#FlagSideMeta {{
+		color: rgba(235,241,255,0.62);
+		font-weight: 900;
+	}}
+	QLabel#FlagSideHint {{
+		color: rgba(235,241,255,0.70);
+		font-weight: 800;
+		line-height: 1.25;
+	}}
+
+	/* ---- Submit Flag (top-right stacked pills) ---- */
+	QLabel#FlagStatusPill,
+	QLabel#FlagDifficultyPill {{
+		padding: 6px 12px;
+		border-radius: 999px;
+		font-weight: 950;
+		letter-spacing: 0.8px;
+		background: rgba(255,255,255,0.05);
+		border: 1px solid rgba(255,255,255,0.10);
+		color: rgba(235,241,255,0.78);
+		qproperty-alignment: AlignCenter;
+	}}
+
+	/* Status variants */
+	QLabel#FlagStatusPill[variant="unsolved"] {{
+		background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+			stop:0 rgba(11, 22, 36, 235),
+			stop:1 rgba(8, 16, 28, 235)
+		);
+		color: #BFD7F2;
+		border: 1px solid #2A4663;
+		border-radius: 0px;              /* keep sharp HTB-ish look */
+		padding: 6px 14px;
+		letter-spacing: 1px;
+		font-weight: 700;
+	}}
+
+	/* optional: a subtle top sheen so it doesn’t look flat */
+	QLabel#FlagStatusPill[variant="unsolved"] {{
+		border-top-color: #3C5F86;
+	}}
+
+	QLabel#FlagStatusPill[variant="active"] {{
+		background: rgba(59, 130, 246, 0.18);
+		border: 1px solid rgba(59, 130, 246, 0.55);
+		color: rgb(147, 197, 253);
+	}}
+	QLabel#FlagStatusPill[variant="solved"] {{
+		background: rgba(34,197,94,0.14);
+		border: 1px solid rgba(34,197,94,0.30);
+		color: rgba(34,197,94,0.95);
+	}}
+
+	/* Difficulty variants */
+	QLabel#FlagDifficultyPill[variant="easy"] {{
+		background: rgba(34,197,94,0.14);
+		border: 1px solid rgba(34,197,94,0.30);
+		color: rgba(34,197,94,0.95);
+	}}
+	QLabel#FlagDifficultyPill[variant="medium"] {{
+		background: rgba(245,197,66,0.14);
+		border: 1px solid rgba(245,197,66,0.30);
+		color: rgba(245,197,66,0.98);
+	}}
+	QLabel#FlagDifficultyPill[variant="hard"] {{
+		background: rgba(239,68,68,0.14);
+		border: 1px solid rgba(239,68,68,0.30);
+		color: rgba(239,68,68,0.98);
+	}}
+	QLabel#FlagDifficultyPill[variant="master"] {{
+		background: rgba(168,85,247,0.14);
+		border: 1px solid rgba(168,85,247,0.30);
+		color: rgba(168,85,247,0.98);
+	}}
+	QLabel#FlagDifficultyPill[variant="neutral"] {{
+		background: rgba(255,255,255,0.04);
+		border: 1px solid rgba(255,255,255,0.10);
+		color: rgba(235,241,255,0.72);
+	}}
+
+	QLineEdit#FlagInput {{
+		/* HTB-ish inset field: darker, cleaner, and feels "important" */
+		background: rgba(7, 9, 12, 0.55);
+		border: 1px solid rgba(255,255,255,0.12);
+		border-radius: {r_lg}px;
+		padding: {p_12}px {p_14}px;
+		min-height: { _s(44, scale) }px;
+		font-weight: 900;
+		letter-spacing: 0.25px;
+		font-family: "JetBrains Mono", "Consolas", monospace;
+		color: rgba(245,247,255,0.92);
+		selection-background-color: rgba(245,197,66,0.30);
+	}}
+	QLineEdit#FlagInput:hover {{
+		background: rgba(7, 9, 12, 0.62);
+		border: 1px solid rgba(255,255,255,0.18);
+	}}
+	QLineEdit#FlagInput:focus {{
+		background: rgba(7, 9, 12, 0.72);
+		border: 1px solid rgba(245,197,66,0.62);
+	}}
+	QLineEdit#FlagInput:disabled {{
+		/* "Already solved" / locked look */
+		background: rgba(255,255,255,0.03);
+		border: 1px solid rgba(255,255,255,0.08);
+		color: rgba(235,241,255,0.50);
+
 	}}
 
 	QFrame#StatCard {{
@@ -378,11 +493,11 @@ def qss_onyx_amber(scale: float = DEFAULT_UI_SCALE) -> str:
 	}}
 
 	/* Lab Detail tab content boxes should NEVER get the amber focus border */
-    QLineEdit[noAmberFocus="true"]:focus,
-    QTextEdit[noAmberFocus="true"]:focus {{
-        border: 1px solid rgba(255,255,255,0.14);
-        background: rgba(16,20,28,0.68);
-    }}
+	QLineEdit[noAmberFocus="true"]:focus,
+	QTextEdit[noAmberFocus="true"]:focus {{
+		border: 1px solid rgba(255,255,255,0.14);
+		background: rgba(16,20,28,0.68);
+	}}
 
 	/* ---- Scrollbars (Onyx Amber) ---- */
 	QAbstractScrollArea::corner {{
@@ -591,17 +706,17 @@ def qss_onyx_amber(scale: float = DEFAULT_UI_SCALE) -> str:
 
 	/* ---- Pills ---- */
 	QFrame#Pill {{
-	    border-radius: 999px;
-	    padding: 0px;
-	    background: #000000;                          /* TRUE BLACK */
-	    border: 1px solid rgba(255,255,255,0.16);     /* makes it readable */
+		border-radius: 999px;
+		padding: 0px;
+		background: #000000;                          /* TRUE BLACK */
+		border: 1px solid rgba(255,255,255,0.16);     /* makes it readable */
 	}}
 
 	QLabel#PillText {{
-	    background: transparent;                      /* don't lighten the fill */
-	    padding: 6px 12px;
-	    font-weight: 900;
-	    color: rgba(245,247,255,0.92);
+		background: transparent;                      /* don't lighten the fill */
+		padding: 6px 12px;
+		font-weight: 900;
+		color: rgba(245,247,255,0.92);
 	}}
 
 	/* Optional: a subtle "pill edge" highlight without making it grey */
@@ -610,12 +725,12 @@ def qss_onyx_amber(scale: float = DEFAULT_UI_SCALE) -> str:
 
 	/* Variants: keep fill BLACK, only change border + text */
 	QFrame#Pill[variant="warn"] {{
-	    background: #000000;
-	    border: 1px solid rgba(245,197,66,0.55);
+		background: #000000;
+		border: 1px solid rgba(245,197,66,0.55);
 	}}
 	QFrame#Pill[variant="success"] {{
-	    background: #000000;
-	    border: 1px solid rgba(34,197,94,0.55);
+		background: #000000;
+		border: 1px solid rgba(34,197,94,0.55);
 	}}
 
 	QFrame#Pill[variant="warn"] QLabel#PillText {{ color: rgba(245,197,66,0.98); }}
@@ -755,6 +870,56 @@ def qss_onyx_amber(scale: float = DEFAULT_UI_SCALE) -> str:
 		border-radius: {r_xl}px;
 	}}
 
+	/* ---- Overview Tab: Simple Briefing + Flag ---- */
+	QScrollArea#OverviewScroll {{
+		background: transparent;
+		border: none;
+	}}
+	QWidget#OverviewRoot {{
+		background: transparent;
+	}}
+
+	QFrame#StoryCard {{
+		background: rgba(10,12,16,0.62);
+		border: 1px solid rgba(255,255,255,0.08);
+		border-radius: {r_xl}px;
+	}}
+	QLabel#StoryTitle {{
+		font-size: {h2}px;
+		font-weight: 950;
+		color: rgba(245,247,255,0.96);
+	}}
+	QLabel#StoryBody {{
+		color: rgba(235,241,255,0.82);
+		font-weight: 800;
+		line-height: 1.25;
+	}}
+
+	QFrame#FlagPanel {{
+		background: rgba(10,12,16,0.62);
+		border: 1px solid rgba(255,255,255,0.08);
+		border-radius: {r_xl}px;
+	}}
+
+	QLabel#FlagTitle {{
+		font-size: {h2}px;
+		font-weight: 950;
+		color: rgba(245,247,255,0.96);
+	}}
+	QLabel#FlagHint {{
+		color: rgba(235,241,255,0.60);
+		font-weight: 850;
+	}}
+	QLabel#FlagSolvedPill {{
+		padding: 6px 12px;
+		border-radius: 999px;
+		font-weight: 950;
+		letter-spacing: 0.8px;
+		background: rgba(34,197,94,0.14);
+		border: 1px solid rgba(34,197,94,0.30);
+		color: rgba(34,197,94,0.95);
+	}}
+
 	/* ---- Info Tab (Gorgeous) ---- */
 	QScrollArea#InfoScroll {{
 		background: transparent;
@@ -877,6 +1042,49 @@ def qss_onyx_amber(scale: float = DEFAULT_UI_SCALE) -> str:
 		border: 1px solid rgba(255,255,255,0.12);
 	}}
 
+	/* ---- ConnBar action buttons: Stop (danger) + Reset (amber) ---- */
+	QPushButton#ConnStopBtn {{
+		background: rgba(239,68,68,0.10);
+		border: 1px solid rgba(239,68,68,0.26);
+		border-radius: {r_lg}px;
+		padding: {p_10}px {p_14}px;
+		font-weight: 950;
+		color: rgba(245,247,255,0.92);
+	}}
+	QPushButton#ConnStopBtn:hover {{
+		background: rgba(239,68,68,0.16);
+		border: 1px solid rgba(239,68,68,0.34);
+	}}
+	QPushButton#ConnStopBtn:pressed {{
+		background: rgba(239,68,68,0.20);
+	}}
+	QPushButton#ConnStopBtn:disabled {{
+		background: rgba(255,255,255,0.02);
+		border: 1px solid rgba(255,255,255,0.06);
+		color: rgba(235,241,255,0.25);
+	}}
+
+	QPushButton#ConnResetBtn {{
+		background: rgba(245,197,66,0.10);
+		border: 1px solid rgba(245,197,66,0.26);
+		border-radius: {r_lg}px;
+		padding: {p_10}px {p_14}px;
+		font-weight: 950;
+		color: rgba(245,247,255,0.92);
+	}}
+	QPushButton#ConnResetBtn:hover {{
+		background: rgba(245,197,66,0.16);
+		border: 1px solid rgba(245,197,66,0.34);
+	}}
+	QPushButton#ConnResetBtn:pressed {{
+		background: rgba(245,197,66,0.20);
+	}}
+	QPushButton#ConnResetBtn:disabled {{
+		background: rgba(255,255,255,0.02);
+		border: 1px solid rgba(255,255,255,0.06);
+		color: rgba(235,241,255,0.25);
+	}}
+
 	QPushButton#ConnStartBig {{
 		background: rgba(245,197,66,0.16);
 		border: 1px solid rgba(245,197,66,0.32);
@@ -981,6 +1189,18 @@ def qss_onyx_amber(scale: float = DEFAULT_UI_SCALE) -> str:
 		border: 1px solid rgba(255,255,255,0.08);
 		border-radius: 16px;
 	}}
+
+	QLabel#CrumbSep {{
+		color: rgba(235,241,255,0.45);
+		font-weight: 800;
+		padding: 0px 2px;
+	}}
+	QLabel#CrumbCurrent {{
+		color: rgba(245,247,255,0.92);
+		font-weight: 950;
+		letter-spacing: 0.2px;
+	}}
+
 	QToolButton#CrumbBtn {{
 		background: transparent;
 		border: none;
@@ -988,7 +1208,33 @@ def qss_onyx_amber(scale: float = DEFAULT_UI_SCALE) -> str:
 		font-weight: 950;
 		padding: 6px 6px;
 	}}
+
 	QToolButton#CrumbBtn:hover {{ color: rgba(255,209,102,0.96); }}
+
+	/* ---- Lab detail split & tabs (smoother, less "boxed") ---- */
+	QSplitter#DetailSplit::handle:horizontal {{
+		background: transparent;
+		width: 8px;
+	}}
+	QSplitter#DetailSplit::handle:horizontal:hover {{
+		background: rgba(255,255,255,0.04);
+		border-radius: 10px;
+	}}
+	QFrame#DetailLeft, QFrame#DetailRight {{
+		background: transparent;
+		border: none;
+	}}
+	QTabWidget#DetailTabs::pane {{
+		border: 1px solid rgba(255,255,255,0.08);
+		border-radius: {r_xl}px;
+		background: rgba(10,12,16,0.68);
+		top: -1px;
+	}}
+
+	QFrame#TabsCorner {{
+		background: transparent;
+		border: none;
+	}}
 
 	/* ---- Grid header (Browse Labs cards) ---- */
 	QFrame#GridHeader {{

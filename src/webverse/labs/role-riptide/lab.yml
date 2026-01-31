@@ -2,6 +2,10 @@ id: role-riptide
 name: Role Riptide
 difficulty: easy
 description: Accounting PM portal with a mass-assignment role escalation that unlocks classified client projects.
+story: |
+  RoleRiptide is a role-based workflow tool used by professional services teams to manage engagements, approvals, and client deliverables.
+  
+  An account manager claims they briefly saw a client record they shouldn’t have access to, then it disappeared. The team suspects a subtle authorization edge case rather than an obvious breach. Your task is to audit the app from the outside, confirm whether cross-role visibility is possible, and demonstrate the maximum impact if the issue is exploitable.
 compose_file: docker-compose.yml
 image: cover.png
 entrypoint:

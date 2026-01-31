@@ -2,6 +2,10 @@ id: tenant-tilt
 name: Tenant Tilt
 difficulty: easy
 description: "Multi-tenant billing portal with a broken object-level authorization check in invoice retrieval."
+story: |
+  TenantTilt is a multi-tenant billing and analytics dashboard used by dozens of small businesses under a single SaaS umbrella.
+  
+  The founders received a report that invoice data may be visible across tenant boundaries under certain conditions. They need a concrete reproduction path and a clear explanation of what can be extracted. You’re stepping in to validate isolation, identify any workflow weaknesses, and prove whether tenant-to-tenant data exposure is real.
 compose_file: docker-compose.yml
 image: cover.png
 entrypoint:

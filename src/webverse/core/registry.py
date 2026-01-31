@@ -32,6 +32,7 @@ def discover_labs(labs_dir: Path = LABS_DIR) -> List[Lab]:
       name: <display name>
       difficulty: easy|medium|hard|insane
       description: <text>
+      story: <narrative briefing text>
       image: cover.png  # optional (path relative to lab folder)
       compose_file: docker-compose.yml
       entrypoint:
@@ -59,6 +60,7 @@ def discover_labs(labs_dir: Path = LABS_DIR) -> List[Lab]:
             id=_safe_str(data.get("id"), lab_dir.name),
             name=_safe_str(data.get("name"), lab_dir.name),
             description=_safe_str(data.get("description"), ""),
+            story=_safe_str(data.get("story"), ""),
             difficulty=_safe_str(data.get("difficulty"), "unknown").lower(),
             image=_safe_str(data.get("image"), ""),
             compose_file=_safe_str(data.get("compose_file"), "docker-compose.yml"),

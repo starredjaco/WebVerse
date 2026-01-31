@@ -2,6 +2,10 @@ id: token-tomb
 name: Token Tomb
 difficulty: easy
 description: "PulsePay console uses JWTs but accepts alg=none, allowing role escalation to admin and exposure of foreign partner PII."
+story: |
+  TokenTomb is an operations console used by a payments startup to manage refunds, disputes, and automated settlement jobs.
+  
+  Following a routine credential rotation, the team noticed “impossible” activity in their audit logs—actions that don’t match the roles of the users who performed them. They suspect token handling and session logic may be at fault. Your objective is to investigate the console as an external attacker and determine whether privileged actions or protected resources can be reached through auth and session edge cases.
 compose_file: docker-compose.yml
 image: cover.png
 entrypoint:

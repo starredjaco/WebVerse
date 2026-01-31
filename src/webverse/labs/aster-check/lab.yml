@@ -2,6 +2,10 @@ id: aster-check
 name: Aster Check
 difficulty: master
 description: Signed-URL fetch gateway with legacy v1 signing oracle, internal ops console SQLi, restricted SSTI env leak, and a canary code host that leaks the signing key in git history.
+story: |
+  AsterCheck is a vendor-risk and compliance SaaS used by security teams to track third-party attestations and automate periodic re-checks.
+  
+  After a contentious incident review, the company suspects their customer-facing portal is exposing more than it should and that internal tooling may be reachable in ways it wasn’t designed for. You’ve been brought in as an external operator to validate the real-world impact, document what an attacker could obtain, and provide evidence the team can act on—without disrupting production workloads.
 compose_file: docker-compose.yml
 image: "cover.png"
 entrypoint:

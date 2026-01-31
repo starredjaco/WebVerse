@@ -4,6 +4,10 @@ difficulty: hard
 description: >
   Chain: SQLi auth foothold -> SQLi dump weak QA hash -> reuse creds to internal chat ->
   obtain Gitea creds -> leak internal API key from old commit -> command injection on internal API -> /root flag.
+story: |
+  PixelPivot is an indie game studio’s internal portal that coordinates builds, playtest invites, and asset delivery between contractors and QA.
+  
+  A contractor account was flagged for suspicious activity right after a major patch, and the studio is worried their build pipeline and internal chat tooling may be exposed. You’ve been asked to validate the studio’s “internal-only” assumptions and show what a motivated attacker could access starting from the public-facing app.
 compose_file: docker-compose.yml
 image: cover.png
 entrypoint:

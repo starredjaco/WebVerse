@@ -3,6 +3,9 @@ from __future__ import annotations
 
 import os
 import math
+import time
+from collections import deque
+from datetime import datetime
 from typing import Optional
 
 from PyQt5.QtWidgets import (
@@ -15,11 +18,11 @@ from PyQt5.QtCore import Qt, QObject, QThread, pyqtSignal, QUrl, QTimer, QEvent,
 from PyQt5.QtGui import QDesktopServices, QIcon, QPainter, QColor, QPen, QPixmap, QFontMetrics
 from PyQt5.QtWidgets import QApplication
 
-from webverse.gui.util_avatar import lab_circle_icon
+from webverse.gui.util_avatar import lab_circle_icon, lab_badge_icon
 from webverse.core import docker_ops
+from webverse.core import progress_db
 from webverse.core.runtime import set_running_lab, get_running_lab
 from webverse.gui.widgets.toast import ToastHost
-from webverse.gui.util_avatar import lab_badge_icon, lab_circle_icon
 
 
 class _DockerWorker(QObject):
@@ -124,6 +127,7 @@ def _kv_row(key: str, mono: bool = False) -> tuple[QFrame, QLabel, QHBoxLayout]:
 	h.addLayout(right, 0)
 
 	return row, v, right
+
 
 class _MiniSpinner(QWidget):
 	def __init__(self, parent=None, size=22):
@@ -376,24 +380,36 @@ class _ConnBar(QFrame):
 		btnrow.setSpacing(10)
 
 		self.btn_stop = QPushButton("Stop")
-		self.btn_stop.setObjectName("ConnActionAmber")
+		self.btn_stop.setObjectName("ConnStopBtn")
 		self.btn_stop.setCursor(Qt.PointingHandCursor)
+
+		try:
+			self.btn_stop.setIcon(QApplication.style().standardIcon(QStyle.SP_MediaStop))
+		except Exception:
+			pass
+
 		btnrow.addWidget(self.btn_stop)
 
 		self.btn_reset = QPushButton("Reset")
-		self.btn_reset.setObjectName("ConnActionAmber")
+		self.btn_reset.setObjectName("ConnResetBtn")
 		self.btn_reset.setCursor(Qt.PointingHandCursor)
+
+		try:
+			self.btn_reset.setIcon(QApplication.style().standardIcon(QStyle.SP_BrowserReload))
+		except Exception:
+			pass
+
 		btnrow.addWidget(self.btn_reset)
 
-		def _add_glow(w):
+		def _add_glow(w, color: QColor):
 			eff = QGraphicsDropShadowEffect(w)
 			eff.setBlurRadius(28)
 			eff.setOffset(0, 0)
-			eff.setColor(QColor(245, 197, 66, 120))  # amber glow
+			eff.setColor(color)
 			w.setGraphicsEffect(eff)
 
-		_add_glow(self.btn_stop)
-		_add_glow(self.btn_reset)
+		_add_glow(self.btn_stop, QColor(239, 68, 68, 95))    # danger glow
+		_add_glow(self.btn_reset, QColor(245, 197, 66, 120)) # amber glow
 
 		right.addLayout(btnrow)
 		root.addLayout(right, 0)
@@ -582,19 +598,23 @@ class LabDetailView(QWidget):
 
 	def __init__(self, state):
 		super().__init__()
+
+		self._activity_lines = deque(maxlen=300)
+
+		# --- docker worker thread state (must exist before any button callbacks fire) ---
+		# Some UI paths (e.g., Logs → Refresh) can trigger _run_docker early; if these
+		# aren't initialized, you'll crash with AttributeError on self._thread.
+		self._thread = None
+		self._worker = None
+
 		self.state = state
 		self._lab = None
 
-		# ---- Notes persistence ----
-		self._notes_dirty = False
-		self._notes_last_saved = ""
-		self._notes_save_timer = QTimer(self)
-		self._notes_save_timer.setSingleShot(True)
-		self._notes_save_timer.timeout.connect(self.flush_notes)
+		self._uptime_timer = QTimer(self)
+		self._uptime_timer.setInterval(900)
+		self._uptime_timer.timeout.connect(self._tick_uptime)
 
-		self._thread = None
-		self._worker = None
-		self._op_state = "stopped"  # stopped | starting | running
+		self._op_state = "stopped"
 
 		outer = QVBoxLayout(self)
 		outer.setContentsMargins(0, 0, 0, 0)
@@ -682,25 +702,10 @@ class LabDetailView(QWidget):
 		self.conn = _ConnBar()
 		s.addWidget(self.conn)
 
-		# Tabs + right-side notes
-		splitter = QSplitter(Qt.Horizontal)
-		splitter.setObjectName("DetailSplit")
-		splitter.setHandleWidth(10)
-		splitter.setChildrenCollapsible(False)
-		s.addWidget(splitter, 1)
-
-		left = QFrame()
-		left.setObjectName("DetailLeft")
-		left.setAttribute(Qt.WA_StyledBackground, True)
-		splitter.addWidget(left)
-
-		l = QVBoxLayout(left)
-		l.setContentsMargins(0, 0, 0, 0)
-		l.setSpacing(10)
-
+		# Tabs (full width, no right sidebar)
 		self.tabs = QTabWidget()
 		self.tabs.setObjectName("DetailTabs")
-		l.addWidget(self.tabs, 1)
+		s.addWidget(self.tabs, 1)
 
 		# Let the corner widget have room (don't let tabs expand to consume all width)
 		try:
@@ -711,19 +716,139 @@ class LabDetailView(QWidget):
 		except Exception:
 			pass
 
-		# Overview tab: activity log
+		# Overview tab: Story first, then Flag submit panel (simple + fancy)
 		self.overview = QWidget()
 		ov = QVBoxLayout(self.overview)
 		ov.setContentsMargins(0, 0, 0, 0)
-		ov.setSpacing(10)
+		ov.setSpacing(0)
 
-		self.activity = QTextEdit()
-		self.activity.setObjectName("ActivityLog")
-		self.activity.setReadOnly(True)
-		self.activity.setPlaceholderText("Activity will appear here…")
-		self.activity.setProperty("noAmberFocus", True)
-		self.activity.setFocusPolicy(Qt.NoFocus)
-		ov.addWidget(self.activity, 1)
+		self.overview_scroll = QScrollArea()
+		self.overview_scroll.setObjectName("OverviewScroll")
+		self.overview_scroll.setWidgetResizable(True)
+		self.overview_scroll.setFrameShape(QFrame.NoFrame)
+		ov.addWidget(self.overview_scroll, 1)
+
+		ov_root = QWidget()
+		ov_root.setObjectName("OverviewRoot")
+		self.overview_scroll.setWidget(ov_root)
+
+		root = QVBoxLayout(ov_root)
+		root.setContentsMargins(18, 18, 18, 18)
+		root.setSpacing(12)
+
+		# --- Story card (first) ---
+		self.story_card = QFrame()
+		self.story_card.setObjectName("StoryCard")
+		self.story_card.setAttribute(Qt.WA_StyledBackground, True)
+		sc = QVBoxLayout(self.story_card)
+		sc.setContentsMargins(16, 14, 16, 14)
+		sc.setSpacing(10)
+
+		self.story_title = QLabel("Story")
+		self.story_title.setObjectName("StoryTitle")
+		sc.addWidget(self.story_title)
+
+		self.story_body = QLabel("NONE")
+		self.story_body.setObjectName("StoryBody")
+		self.story_body.setWordWrap(True)
+		self.story_body.setTextInteractionFlags(Qt.TextSelectableByMouse)
+		sc.addWidget(self.story_body)
+
+		root.addWidget(self.story_card, 0)
+
+		# --- Flag submission panel (below story) ---
+		self.flag_panel = QFrame()
+		self.flag_panel.setObjectName("FlagPanel")
+		self.flag_panel.setAttribute(Qt.WA_StyledBackground, True)
+		fp = QVBoxLayout(self.flag_panel)
+		
+		# tighter top padding so "Submit Flag" sits higher (less dead space)
+		fp.setContentsMargins(16, 8, 16, 14)
+		fp.setSpacing(8)
+
+		toprow = QHBoxLayout()
+		toprow.setSpacing(10)
+		fp.addLayout(toprow)
+
+		self.flag_title = QLabel("Submit Flag")
+		self.flag_title.setObjectName("FlagTitle")
+
+		# Make the header bigger without relying on theme/QSS
+		try:
+			_ft = self.flag_title.font()
+			_ft.setBold(True)
+			_ft.setPointSize(max(_ft.pointSize() + 6, _ft.pointSize()))
+			self.flag_title.setFont(_ft)
+		except Exception:
+			pass
+
+		toprow.addWidget(self.flag_title, 1)
+
+		# ---- Top-right: stacked pills (STATUS over DIFFICULTY, touching) ----
+		self.flag_status_pill = QLabel("UNSOLVED")
+		self.flag_status_pill.setObjectName("FlagStatusPill")
+		self.flag_status_pill.setProperty("variant", "unsolved")
+
+		self.flag_difficulty_pill = QLabel("—")
+		self.flag_difficulty_pill.setObjectName("FlagDifficultyPill")
+		self.flag_difficulty_pill.setProperty("variant", "neutral")
+
+		pill_wrap = QFrame()
+		pill_wrap.setObjectName("FlagPillsWrap")
+		pill_wrap.setAttribute(Qt.WA_StyledBackground, True)
+
+		pv = QVBoxLayout(pill_wrap)
+		pv.setContentsMargins(0, 0, 0, 0)
+		pv.setSpacing(0)  # IMPORTANT: pills touch
+		pv.addWidget(self.flag_status_pill, 0, Qt.AlignRight | Qt.AlignTop)
+		pv.addWidget(self.flag_difficulty_pill, 0, Qt.AlignRight | Qt.AlignTop)
+
+		toprow.addWidget(pill_wrap, 0, Qt.AlignRight | Qt.AlignTop)
+
+		# Attempts only (status is now shown via the pill)
+		self.flag_meta = QLabel("Attempts: —")
+		self.flag_meta.setObjectName("Muted")
+		self.flag_meta.setWordWrap(True)
+		fp.addWidget(self.flag_meta)
+
+		# ---- Flag body: controls only ----
+		body = QHBoxLayout()
+		body.setSpacing(14)
+		fp.addLayout(body)
+
+		controls = QFrame()
+		controls.setObjectName("FlagControls")
+		controls.setAttribute(Qt.WA_StyledBackground, True)
+		cl = QHBoxLayout(controls)
+		cl.setContentsMargins(0, 0, 0, 0)
+		cl.setSpacing(12)
+
+		self.flag_input = QLineEdit()
+		self.flag_input.setObjectName("FlagInput")
+		self.flag_input.setPlaceholderText("WEBVERSE{...}")
+		self.flag_input.setClearButtonEnabled(False)
+		self.flag_input.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+		self.flag_input.setFixedWidth(560)
+		cl.addWidget(self.flag_input, 0, Qt.AlignLeft)
+
+		self.flag_submit = QPushButton("Submit")
+		self.flag_submit.setObjectName("PrimaryButton")
+		self.flag_submit.setCursor(Qt.PointingHandCursor)
+		self.flag_submit.setFixedHeight(44)
+		self.flag_submit.setFixedWidth(170)
+		cl.addWidget(self.flag_submit, 0, Qt.AlignLeft)
+
+		body.addWidget(controls, 0, Qt.AlignTop)
+		body.addStretch(1)
+
+		self.flag_feedback = QLabel("")
+		self.flag_feedback.setObjectName("FlagFeedback")
+		self.flag_feedback.setWordWrap(True)
+		fp.addWidget(self.flag_feedback)
+
+		root.addWidget(self.flag_panel, 0)
+
+		root.addStretch(1)
 
 		self.tabs.addTab(self.overview, "Overview")
 
@@ -856,20 +981,6 @@ class LabDetailView(QWidget):
 
 		self.tabs.addTab(self.info, "Info")
 
-		# Notes tab (mirrors right panel)
-		self.notes_tab = QWidget()
-		nt = QVBoxLayout(self.notes_tab)
-		nt.setContentsMargins(0, 0, 0, 0)
-		nt.setSpacing(10)
-
-		self.notes_editor = QTextEdit()
-		self.notes_editor.setObjectName("NotesEditor")
-		self.notes_editor.setPlaceholderText("Write notes for this lab…")
-		self.notes_editor.setProperty("noAmberFocus", True)
-		nt.addWidget(self.notes_editor, 1)
-
-		self.tabs.addTab(self.notes_tab, "Notes")
-
 		# Logs tab
 		self.logs_tab = QWidget()
 		lt = QVBoxLayout(self.logs_tab)
@@ -908,76 +1019,6 @@ class LabDetailView(QWidget):
 		_corner.setVisible(False)  # only visible on Logs tab
 		self._tabs_corner = _corner
 
-		# Right: notes sidebar + key/values
-		right = QFrame()
-		right.setObjectName("DetailRight")
-		right.setAttribute(Qt.WA_StyledBackground, True)
-		splitter.addWidget(right)
-		splitter.setStretchFactor(0, 4)
-		splitter.setStretchFactor(1, 2)
-
-		r = QVBoxLayout(right)
-		r.setContentsMargins(0, 0, 0, 0)
-		r.setSpacing(10)
-
-		# --- Flag submission UI (replaces the old Status/Attempts text block) ---
-		flag_panel = QFrame()
-		flag_panel.setObjectName("FlagPanel")
-		flag_panel.setAttribute(Qt.WA_StyledBackground, True)
-		fp = QVBoxLayout(flag_panel)
-		fp.setContentsMargins(12, 12, 12, 12)
-		fp.setSpacing(10)
-
-		flag_title = QLabel("Submit Flag")
-		flag_title.setObjectName("H2")
-		fp.addWidget(flag_title)
-
-		row = QHBoxLayout()
-		row.setSpacing(10)
-
-		self.flag_input = QLineEdit()
-		self.flag_input.setObjectName("FlagInput")
-		self.flag_input.setPlaceholderText("WEBVERSE{...}")
-		self.flag_input.setClearButtonEnabled(True)
-		row.addWidget(self.flag_input, 1)
-
-		self.flag_submit = QPushButton("Submit")
-		self.flag_submit.setObjectName("PrimaryButton")
-		self.flag_submit.setCursor(Qt.PointingHandCursor)
-		self.flag_submit.setFixedHeight(38)
-		row.addWidget(self.flag_submit, 0)
-
-		fp.addLayout(row)
-
-		self.flag_meta = QLabel("Status: —  •  Attempts: —")
-		self.flag_meta.setObjectName("Muted")
-		fp.addWidget(self.flag_meta)
-
-		self.flag_feedback = QLabel("")
-		self.flag_feedback.setObjectName("FlagFeedback")
-		self.flag_feedback.setWordWrap(True)
-		fp.addWidget(self.flag_feedback)
-
-		r.addWidget(flag_panel, 0)
-
-		notes_panel = QFrame()
-		notes_panel.setObjectName("NotesPanel")
-		notes_panel.setAttribute(Qt.WA_StyledBackground, True)
-		np = QVBoxLayout(notes_panel)
-		np.setContentsMargins(12, 12, 12, 12)
-		np.setSpacing(10)
-
-		notes_title = QLabel("Notes")
-		notes_title.setObjectName("H2")
-		np.addWidget(notes_title)
-
-		self.notes_sidebar = QTextEdit()
-		self.notes_sidebar.setObjectName("NotesEditor")
-		self.notes_sidebar.setPlaceholderText("Write notes here…")
-		np.addWidget(self.notes_sidebar, 1)
-
-		r.addWidget(notes_panel, 1)
-
 		# Wire actions
 		self.btn_refresh_logs.clicked.connect(self._on_refresh_logs)
 		self.flag_submit.clicked.connect(self._on_submit_flag)
@@ -997,15 +1038,153 @@ class LabDetailView(QWidget):
 		self.conn.copy_btn.clicked.connect(self._endpoint_copy)
 		self.conn._on_entrypoint_text_clicked = self._endpoint_copy
 
-		# Keep the two notes editors mirrored (tab + sidebar)
-		self._notes_guard = False
-		self.notes_sidebar.textChanged.connect(self._notes_from_sidebar)
-		self.notes_editor.textChanged.connect(self._notes_from_tab)
-
 		# Show corner action only when Logs tab is selected
 		self.tabs.currentChanged.connect(self._on_tab_changed)
 
 		self._set_actions_enabled(False)
+
+	def _is_running(self, lab_id: str | None) -> bool:
+		try:
+			return bool(lab_id) and (get_running_lab() == lab_id)
+		except Exception:
+			return False
+
+	def _compute_flag_status(self, solved_at, lab_id: str | None) -> str:
+		"""
+		We want the pill to reflect *current* state:
+		- SOLVED if solved_at exists
+		- ACTIVE if the lab is currently running
+		- otherwise UNSOLVED
+		"""
+		if solved_at:
+			return "Solved"
+		if self._is_running(lab_id):
+			return "Active"
+		return "Unsolved"
+
+	def _sync_flag_pills_width(self):
+		"""
+		Force STATUS and DIFFICULTY pills to be the exact same width,
+		large enough for whatever text is currently inside either pill.
+		"""
+		if not hasattr(self, "flag_status_pill") or not hasattr(self, "flag_difficulty_pill"):
+			return
+
+		self.flag_status_pill.adjustSize()
+		self.flag_difficulty_pill.adjustSize()
+
+		w = max(
+			self.flag_status_pill.sizeHint().width(),
+			self.flag_difficulty_pill.sizeHint().width(),
+		)
+
+		# Make them a bit wider so they extend left more (matches your screenshot request)
+		# This is intentionally modest; tweak if you want even wider.
+		w += 18
+
+		self.flag_status_pill.setFixedWidth(w)
+		self.flag_difficulty_pill.setFixedWidth(w)
+
+	def _set_flag_status(self, status: str, attempts: int):
+		"""
+		Updates the STATUS pill and Attempts line.
+		status: "Solved" | "Active" | "Unsolved"
+		"""
+		if not hasattr(self, "flag_status_pill"):
+			return
+
+		s = (status or "").strip().lower()
+		if s == "solved":
+			self.flag_status_pill.setText("SOLVED")
+			self.flag_status_pill.setProperty("variant", "solved")
+		elif s == "active":
+			self.flag_status_pill.setText("ACTIVE")
+			self.flag_status_pill.setProperty("variant", "active")
+		else:
+			self.flag_status_pill.setText("UNSOLVED")
+			self.flag_status_pill.setProperty("variant", "unsolved")
+
+		try:
+			self.flag_meta.setText(f"Attempts: {int(attempts)}")
+		except Exception:
+			self.flag_meta.setText("Attempts: —")
+
+		self.flag_status_pill.style().unpolish(self.flag_status_pill)
+		self.flag_status_pill.style().polish(self.flag_status_pill)
+		self.flag_status_pill.update()
+
+		self._sync_flag_pills_width()
+
+	def _set_flag_difficulty(self, difficulty: str):
+		if not hasattr(self, "flag_difficulty_pill"):
+			return
+
+		d = (difficulty or "").strip().lower()
+		txt = (difficulty or "Unknown").strip().upper()
+
+		variant = "neutral"
+		if d in ("easy",):
+			variant = "easy"
+		elif d in ("medium",):
+			variant = "medium"
+		elif d in ("hard",):
+			variant = "hard"
+		elif d in ("master",):
+			variant = "master"
+
+		self.flag_difficulty_pill.setText(txt)
+		self.flag_difficulty_pill.setProperty("variant", variant)
+
+		self.flag_difficulty_pill.style().unpolish(self.flag_difficulty_pill)
+		self.flag_difficulty_pill.style().polish(self.flag_difficulty_pill)
+		self.flag_difficulty_pill.update()
+
+		self._sync_flag_pills_width()
+
+	def _update_flag_lock(self, solved: bool):
+		"""
+		Locks flag submission when solved.
+		"""
+
+		# Status pill is shown in the top-right of the flag panel.
+		if hasattr(self, "flag_status_pill"):
+			if solved:
+				self.flag_status_pill.setText("SOLVED")
+				self.flag_status_pill.setProperty("variant", "solved")
+			else:
+				# Keep whatever the last computed status was (unsolved/active).
+				# If nothing has set it yet, default to UNSOLVED.
+				cur = (self.flag_status_pill.text() or "").strip()
+				if not cur or cur == "—" or cur.upper() == "SOLVED":
+					self.flag_status_pill.setText("UNSOLVED")
+					self.flag_status_pill.setProperty("variant", "unsolved")
+
+			self.flag_status_pill.style().unpolish(self.flag_status_pill)
+			self.flag_status_pill.style().polish(self.flag_status_pill)
+			self.flag_status_pill.update()
+
+		# Clear any old styling variants
+		self.flag_panel.setProperty("variant", "")
+		self.flag_panel.style().unpolish(self.flag_panel)
+		self.flag_panel.style().polish(self.flag_panel)
+		self.flag_panel.update()
+
+		self.flag_input.setProperty("variant", "")
+		self.flag_input.style().unpolish(self.flag_input)
+		self.flag_input.style().polish(self.flag_input)
+		self.flag_input.update()
+
+		self.flag_input.setEnabled(not solved)
+		self.flag_submit.setEnabled(not solved)
+		if solved:
+			self.flag_input.setPlaceholderText("")
+			self.flag_input.setText("Lab has been solved")
+		else:
+			if self.flag_input.text().strip() == "Lab has been solved":
+				self.flag_input.setText("")
+			self.flag_input.setPlaceholderText("WEBVERSE{...}")
+
+		self._sync_flag_pills_width()
 
 	# ---------- Info Tab helpers ----------
 	def _info_set(self, key: str, value: str):
@@ -1114,28 +1293,16 @@ class LabDetailView(QWidget):
 		self.btn_forward.setEnabled(bool(forward))
 
 	def set_lab(self, lab):
-		# Persist any notes from the previously opened lab before switching.
-		self.flush_notes()
-
 		self._lab = lab
 		self.flag_input.clear()
 		self.flag_feedback.setText("")
 
+		# Story (lab.yml: story)
+		story = (getattr(lab, "story", "") or "").strip()
+		self.story_body.setText(story if story else "NONE")
+
 		# breadcrumbs
 		self.crumb_current.setText(getattr(lab, 'name', '—') or '—')
-
-		# Load persisted notes for this lab (if any).
-		try:
-			notes = self.state.get_notes(self._lab.id) if hasattr(self.state, "get_notes") else ""
-		except Exception:
-			notes = ""
-
-		self._notes_guard = True
-		self.notes_sidebar.setPlainText(notes or "")
-		self.notes_editor.setPlainText(notes or "")
-		self._notes_guard = False
-		self._notes_last_saved = notes or ""
-		self._notes_dirty = False
 
 		self.lab_name.setText(lab.name)
 
@@ -1164,9 +1331,7 @@ class LabDetailView(QWidget):
 		resolved_url = self.conn.set_url(url)
 
 		# reset UI
-		self.activity.clear()
 		self.logs.clear()
-		self._append_activity(f"Loaded lab: {lab.id}")
 
 		# Info tab (gorgeous structured)
 		self._info_set("name", lab.name or "—")
@@ -1197,20 +1362,31 @@ class LabDetailView(QWidget):
 		started_at = prog.get("started_at")
 		solved_at = prog.get("solved_at")
 
-		status = "Solved" if solved_at else ("Active" if started_at else "Unsolved")
-		self.flag_meta.setText(f"Status: {status}  •  Attempts: {attempts}")
+		status = self._compute_flag_status(solved_at, lab.id)
+		self._set_flag_status(status, attempts)
+		self._set_flag_difficulty(getattr(lab, "difficulty", "") or "Unknown")
+		self._update_flag_lock(bool(solved_at))
+		self._sync_flag_pills_width()
 
 		# running badge from runtime
-		running = (get_running_lab() == lab.id)
+		running = self._is_running(lab.id)
 		self._set_op_state("running" if running else "stopped")
 
 		self._set_actions_enabled(True)
 
 	# -------- threaded docker ops --------
 	def _run_docker(self, title: str, fn, *args, on_done=None, **kwargs):
-		if self._thread is not None:
+		# Be defensive: older installs / partial refactors may not have _thread yet.
+		thr = getattr(self, "_thread", None)
+		if thr is not None:
 			self._append_activity("Busy: wait for current operation to finish.")
 			return
+
+		# Ensure attributes exist even if __init__ didn't set them for some reason.
+		if not hasattr(self, "_thread"):
+			self._thread = None
+		if not hasattr(self, "_worker"):
+			self._worker = None
 
 		self._append_activity(title)
 
@@ -1233,49 +1409,6 @@ class LabDetailView(QWidget):
 		self._worker.finished.connect(_finished)
 		self._thread.start()
 
-	# -------- notes mirroring --------
-	def _notes_from_sidebar(self):
-		if self._notes_guard:
-			return
-		self._notes_guard = True
-		self.notes_editor.setPlainText(self.notes_sidebar.toPlainText())
-		self._notes_guard = False
-		self._save_notes()
-
-	def _notes_from_tab(self):
-		if self._notes_guard:
-			return
-		self._notes_guard = True
-		self.notes_sidebar.setPlainText(self.notes_editor.toPlainText())
-		self._notes_guard = False
-		self._save_notes()
-
-	def _save_notes(self):
-		# Debounced auto-save to the progress DB.
-		if not self._lab:
-			return
-		current = self.notes_sidebar.toPlainText()
-		if current == self._notes_last_saved:
-			self._notes_dirty = False
-			return
-		self._notes_dirty = True
-		# restart debounce timer (avoid writing on every keystroke)
-		self._notes_save_timer.start(650)
-
-	def flush_notes(self) -> None:
-		"""Force-save current notes (called on lab switch + app exit)."""
-		if not self._lab:
-			return
-		current = self.notes_sidebar.toPlainText()
-		if current == self._notes_last_saved and not self._notes_dirty:
-			return
-		try:
-			if hasattr(self.state, "set_notes"):
-				self.state.set_notes(self._lab.id, current)
-		finally:
-			self._notes_last_saved = current
-			self._notes_dirty = False
-
 	# -------- state visuals --------
 	def _set_op_state(self, state: str):
 		self._op_state = state
@@ -1292,7 +1425,69 @@ class LabDetailView(QWidget):
 		self.btn_refresh_logs.setEnabled(bool(enabled))
 
 	def _append_activity(self, line: str):
-		self.activity.append(line)
+		ts = time.strftime("%H:%M:%S")
+		msg = f"[{ts}] {line}"
+		# Always keep an in-memory activity feed (prevents crashes if UI widget is missing)
+		try:
+			self._activity_lines.append(msg)
+		except Exception:
+			pass
+
+		# Optional UI sink (only if it exists)
+		w = getattr(self, "activity", None)
+		if w is not None and hasattr(w, "append"):
+			try:
+				w.append(msg)
+				return
+			except Exception:
+				pass
+
+	def _fmt_uptime(self, seconds: int) -> str:
+		if seconds <= 0:
+			return "—"
+		d = seconds // 86400
+		h = (seconds % 86400) // 3600
+		m = (seconds % 3600) // 60
+		s = seconds % 60
+		if d > 0:
+			return f"{d}d {h:02d}h {m:02d}m"
+		if h > 0:
+			return f"{h}h {m:02d}m {s:02d}s"
+		if m > 0:
+			return f"{m}m {s:02d}s"
+		return f"{s}s"
+
+	def _tick_uptime(self):
+		# Uses progress.started_at if available; otherwise shows —
+		if not self._lab or not hasattr(self, "_k_uptime_v"):
+			return
+		try:
+			prog = self.state.progress_map().get(self._lab.id, {}) if hasattr(self.state, "progress_map") else {}
+			started_at = prog.get("started_at")
+			if not started_at:
+				self._k_uptime_v.setText("—")
+				return
+
+			# Accept either unix seconds or iso-ish string
+			start_ts = None
+			if isinstance(started_at, (int, float)):
+				start_ts = int(started_at)
+			elif isinstance(started_at, str) and started_at.strip():
+				# try common ISO formats
+				try:
+					dt = datetime.fromisoformat(started_at.replace("Z", "+00:00"))
+					start_ts = int(dt.timestamp())
+				except Exception:
+					start_ts = None
+
+			if not start_ts:
+				self._k_uptime_v.setText("—")
+				return
+
+			now = int(time.time())
+			self._k_uptime_v.setText(self._fmt_uptime(max(0, now - start_ts)))
+		except Exception:
+			self._k_uptime_v.setText("—")
 
 	# -------- actions --------
 	def _on_start(self):
@@ -1317,9 +1512,19 @@ class LabDetailView(QWidget):
 
 		def done(ok: bool, msg: str):
 			if ok:
+				# ✅ Only mark "started" if the compose up actually succeeded.
+				# started_at becomes the most recent successful start time.
+				progress_db.mark_started(lab.id)
+
 				self.state.set_running_lab_id(lab.id)
 				self._append_activity("✅ Lab started.")
 				self._set_op_state("running")
+
+				# status pill should reflect running state
+				try:
+					self._set_flag_status("Active", int((self.state.progress_map().get(lab.id, {}) or {}).get("attempts") or 0))
+				except Exception:
+					self._set_flag_status("Active", 0)
 			else:
 				self._append_activity("❌ Failed to start lab.")
 				if msg:
@@ -1339,11 +1544,30 @@ class LabDetailView(QWidget):
 			if ok:
 				self.state.set_running_lab_id(None)
 				self._append_activity("✅ Lab stopped.")
+
+				# ✅ Attempts mean: started → stopped without solving.
+				# Only increment if the lab is NOT solved.
+				try:
+					prog = self.state.progress_map().get(lab.id, {}) if hasattr(self.state, "progress_map") else {}
+					solved_at = prog.get("solved_at")
+					if not solved_at:
+						progress_db.mark_attempt(lab.id)
+				except Exception:
+					# attempts are non-critical; never break stop UX
+					pass
 			else:
 				self._append_activity("❌ Failed to stop lab.")
 				if msg:
 					self._append_activity(msg)
 			self._set_op_state("stopped")
+
+			# status pill should reflect not-running (unless solved)
+			try:
+				prog = self.state.progress_map().get(lab.id, {}) if hasattr(self.state, "progress_map") else {}
+				self._set_flag_status(self._compute_flag_status(prog.get("solved_at"), lab.id), int(prog.get("attempts") or 0))
+				self._update_flag_lock(bool(prog.get("solved_at")))
+			except Exception:
+				pass
 
 		self._run_docker("Stopping lab…", docker_ops.compose_down, str(lab.path), lab.compose_file, on_done=done)
 
@@ -1367,6 +1591,13 @@ class LabDetailView(QWidget):
 				except Exception:
 					pass
 				self._set_op_state("running")
+
+				# status pill should reflect running state
+				try:
+					prog = self.state.progress_map().get(lab.id, {}) if hasattr(self.state, "progress_map") else {}
+					self._set_flag_status("Active", int(prog.get("attempts") or 0))
+				except Exception:
+					self._set_flag_status("Active", 0)
 			else:
 				self._append_activity("❌ Failed to reset lab.")
 				if msg:
@@ -1381,6 +1612,14 @@ class LabDetailView(QWidget):
 				except Exception:
 					pass
 				self._set_op_state("stopped")
+
+				# reflect not-running
+				try:
+					prog = self.state.progress_map().get(lab.id, {}) if hasattr(self.state, "progress_map") else {}
+					self._set_flag_status(self._compute_flag_status(prog.get("solved_at"), lab.id), int(prog.get("attempts") or 0))
+					self._update_flag_lock(bool(prog.get("solved_at")))
+				except Exception:
+					pass
 
 		self._run_docker("Resetting lab…", docker_ops.compose_reset, str(lab.path), lab.compose_file, on_done=done)
 
@@ -1399,6 +1638,15 @@ class LabDetailView(QWidget):
 	def _on_submit_flag(self):
 		if not self._lab:
 			return
+
+		# If already solved, block resubmits (also visually locked via _update_flag_lock)
+		try:
+			prog = self.state.progress_map().get(self._lab.id, {}) if hasattr(self.state, "progress_map") else {}
+			if prog.get("solved_at"):
+				self._toast("Locked", "This lab is already solved.", variant="error", ms=1600)
+				return
+		except Exception:
+			pass
 
 		flag = (self.flag_input.text() or "").strip()
 		if not flag:
@@ -1445,6 +1693,9 @@ class LabDetailView(QWidget):
 			self._append_activity("🏁 Flag accepted.")
 			self.flag_input.clear()
 
+			# lock UI immediately; refresh below will keep it consistent
+			self._update_flag_lock(True)
+
 			self._toast("Success", "Flag accepted.", variant="success", ms=1600)
 		else:
 			self.flag_feedback.setText("❌ Incorrect flag." + (f" ({msg})" if msg else ""))
@@ -1458,8 +1709,9 @@ class LabDetailView(QWidget):
 			attempts = int(prog.get("attempts") or 0)
 			started_at = prog.get("started_at")
 			solved_at = prog.get("solved_at")
-			status = "Solved" if solved_at else ("Active" if started_at else "Unsolved")
-			self.flag_meta.setText(f"Status: {status}  •  Attempts: {attempts}")
+			self._set_flag_status(self._compute_flag_status(solved_at, lab.id), attempts)
+			self._update_flag_lock(bool(solved_at))
+			self._sync_flag_pills_width()
 		except Exception:
 			pass
 
