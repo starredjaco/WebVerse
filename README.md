@@ -78,15 +78,15 @@ python3 webverse.py
 
 ---
 
-## Screenshot / Demo
+## Screenshot / Demo]
 
-<img width="1902" height="892" alt="home" src="https://github.com/user-attachments/assets/3a02f514-5bfd-4f6f-837b-3b60b693426e" />
+<img width="1916" height="885" alt="HOME UPDATED" src="https://github.com/user-attachments/assets/9191393e-de4c-4d87-8945-04d4d05ec87d" />
 
-<img width="1901" height="887" alt="lab" src="https://github.com/user-attachments/assets/2b490468-4919-43ef-afc4-bc69d6069d65" />
+<img width="1917" height="897" alt="PIXEL PIVOT UPDATED" src="https://github.com/user-attachments/assets/61b4552a-10a6-4dca-8d4b-34d618848b3a" />
 
-<img width="1897" height="902" alt="browse" src="https://github.com/user-attachments/assets/3f839d68-58ab-414c-aa75-6715047d4dc4" />
+<img width="1916" height="890" alt="BROWSE LABS UPDATED" src="https://github.com/user-attachments/assets/cb82b786-01e4-4eee-95b0-1a7f928507c8" />
 
-<img width="1916" height="892" alt="progress" src="https://github.com/user-attachments/assets/2c14bba5-d237-489c-84a4-6d84ef2f715e" />
+<img width="1910" height="896" alt="PROGRESS UPDATED" src="https://github.com/user-attachments/assets/f030ac78-1135-49d3-969d-6dc6ddf624b4" />
 
 ---
 
