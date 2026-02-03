@@ -4,7 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import List, Optional
 
-from PyQt5.QtCore import Qt, pyqtSignal, QModelIndex, QSize, QRect, QPoint, QPointF, QAbstractListModel, QEvent, QObject
+from PyQt5.QtCore import Qt, pyqtSignal, QModelIndex, QSize, QRect, QPoint, QPointF, QAbstractListModel, QEvent, QObject, QThread
 from PyQt5.QtGui import QColor, QFontMetrics, QPainter, QPen, QBrush, QPalette, QColor, QFont
 
 from PyQt5.QtWidgets import (
@@ -12,12 +12,15 @@ from PyQt5.QtWidgets import (
 	QLineEdit, QComboBox, QListView,
 	QStyledItemDelegate, QStyleOptionViewItem,
 	QSizePolicy, QProxyStyle, QStyle, QApplication, QFrame as QtQFrame,
-	QStylePainter, QStyleOptionComboBox
+	QStylePainter, QStyleOptionComboBox, QPushButton
 )
 
 from webverse.core.runtime import get_running_lab
 from webverse.core.xp import base_xp_for_difficulty
 from webverse.gui.util_avatar import lab_badge_icon, lab_circle_icon
+
+from webverse.gui.dialogs import InstallLabsDialog, InstallableLab
+from webverse.gui.workers.remote_labs_worker import RemoteLabsWorker
 
 class OnyxComboBox(QComboBox):
 	def paintEvent(self, event):
@@ -308,6 +311,12 @@ class LabsBrowseView(QWidget):
 
 		filters.addWidget(self.sort)
 
+		# --- Remote labs ---
+		self.check_new_btn = QPushButton("Check new labs")
+		self.check_new_btn.setObjectName("GhostButton")
+		self.check_new_btn.clicked.connect(self._check_remote_labs)
+		filters.addWidget(self.check_new_btn)
+
 		content.addLayout(filters)
 
 		# --- CARD GRID ---
@@ -449,3 +458,88 @@ class LabsBrowseView(QWidget):
 		lab_id = index.data(_LabsGridModel.ROLE_LAB_ID)
 		if lab_id:
 			self.request_open_lab.emit(str(lab_id))
+
+	# ---- Remote labs (downloadable from OSS API) ----
+	def _toast(self, level: str, msg: str, ms: int = 2200):
+		w = self.window()
+		fn = getattr(w, f"toast_{level}", None)
+		if callable(fn):
+			fn(msg, ms=ms)
+			return
+		# fallback: do nothing
+
+	def _set_remote_busy(self, busy: bool):
+		try:
+			self.check_new_btn.setDisabled(busy)
+			self.check_new_btn.setText("Checking…" if busy else "Check new labs")
+		except Exception:
+			pass
+
+	def _check_remote_labs(self):
+		# start worker thread
+		self._set_remote_busy(True)
+		self._toast("info", "Checking for new labs…", ms=1400)
+
+		self._labs_thread = QThread()
+		self._labs_worker = RemoteLabsWorker()
+		self._labs_worker.moveToThread(self._labs_thread)
+		self._labs_thread.started.connect(self._labs_worker.check)
+		self._labs_worker.checked.connect(self._on_remote_checked)
+		self._labs_worker.error.connect(self._on_remote_error)
+		self._labs_worker.checked.connect(lambda _: self._labs_thread.quit())
+		self._labs_worker.error.connect(lambda _: self._labs_thread.quit())
+		self._labs_thread.finished.connect(self._labs_thread.deleteLater)
+		self._labs_thread.start()
+
+	def _on_remote_checked(self, labs):
+		self._set_remote_busy(False)
+		missing = list(labs or [])
+		if not missing:
+			self._toast("success", "You're up to date — no new labs.", ms=1800)
+			return
+
+		items = [InstallableLab(id=x.id, name=x.name or x.id, difficulty=x.difficulty or "unknown", version=x.version or "1", size_bytes=x.size_bytes or 0) for x in missing]
+		dlg = InstallLabsDialog(items, parent=self)
+		if dlg.exec_() != dlg.Accepted:
+			self._toast("info", "No labs installed.", ms=1600)
+			return
+
+		selected = set(dlg.selected_ids())
+		to_install = [x for x in missing if x.id in selected]
+		if not to_install:
+			self._toast("info", "No labs selected.", ms=1600)
+			return
+
+		self._install_remote_labs(to_install)
+
+	def _install_remote_labs(self, labs):
+		self._set_remote_busy(True)
+		self._toast("info", f"Installing {len(labs)} lab(s)…", ms=1600)
+
+		self._install_thread = QThread()
+		self._install_worker = RemoteLabsWorker()
+		self._install_worker.moveToThread(self._install_thread)
+		self._install_thread.started.connect(lambda: self._install_worker.install(labs))
+		self._install_worker.installed.connect(self._on_remote_installed)
+		self._install_worker.error.connect(self._on_remote_error)
+		self._install_worker.installed.connect(lambda _: self._install_thread.quit())
+		self._install_worker.error.connect(lambda _: self._install_thread.quit())
+		self._install_thread.finished.connect(self._install_thread.deleteLater)
+		self._install_thread.start()
+
+	def _on_remote_installed(self, ids):
+		self._set_remote_busy(False)
+		got = list(ids or [])
+		if got:
+			try:
+				self.state.refresh_labs()
+			except Exception:
+				pass
+			self._toast("success", f"Installed {len(got)} new lab(s).", ms=2200)
+		else:
+			self._toast("info", "Nothing installed.", ms=1800)
+
+	def _on_remote_error(self, err: str):
+		self._set_remote_busy(False)
+		msg = (err or "").strip() or "Something went wrong."
+		self._toast("error", msg, ms=2800)

@@ -1302,4 +1302,73 @@ def qss_onyx_amber(scale: float = DEFAULT_UI_SCALE) -> str:
 	QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {{
 		background: transparent;
 	}}
+
+	/* =========================
+	   Toasts (fix invisible bg)
+	   ========================= */
+	#ToastCard {{
+		background: rgba(14, 14, 16, 0.95);
+		border: 1px solid rgba(255, 255, 255, 0.10);
+		border-radius: 14px;
+	}}
+	#ToastTitle {{
+		color: rgba(255, 255, 255, 0.94);
+		font-size: {small}px;
+		font-weight: 800;
+	}}
+	#ToastBody {{
+		color: rgba(255, 255, 255, 0.78);
+		font-size: {small}px;
+	}}
+	#ToastDot {{
+		font-size: {small}px;
+	}}
+
+	#ToastCard[variant="success"] {{
+		border: 1px solid rgba(73, 224, 123, 0.26);
+	}}
+	#ToastCard[variant="success"] #ToastDot {{
+		color: rgba(73, 224, 123, 0.95);
+	}}
+
+	#ToastCard[variant="error"] {{
+		border: 1px solid rgba(255, 99, 99, 0.30);
+	}}
+	#ToastCard[variant="error"] #ToastDot {{
+		color: rgba(255, 99, 99, 0.95);
+	}}
+
+	#ToastCard[variant="warn"] {{
+		border: 1px solid rgba(245, 197, 66, 0.34);
+	}}
+	#ToastCard[variant="warn"] #ToastDot {{
+		color: rgba(245, 197, 66, 0.95);
+	}}
+
+	#ToastCard[variant="info"] {{
+		border: 1px solid rgba(91, 164, 255, 0.34);
+	}}
+	#ToastCard[variant="info"] #ToastDot {{
+		color: rgba(91, 164, 255, 0.95);
+	}}
+
+	/* Dialog panels */
+	QFrame#Panel {{
+		background: rgba(255,255,255,0.04);
+		border: 1px solid rgba(255,255,255,0.10);
+		border-radius: 18px;
+	}}
+	QListWidget#InstallLabsList {{
+		background: transparent;
+		border: none;
+		padding: 4px;
+	}}
+	QListWidget#InstallLabsList::item {{
+		padding: 10px 8px;
+		border-radius: 12px;
+		color: rgba(255,255,255,0.88);
+	}}
+	QListWidget#InstallLabsList::item:hover {{
+		background: rgba(245,197,66,0.10);
+	}}
 	"""

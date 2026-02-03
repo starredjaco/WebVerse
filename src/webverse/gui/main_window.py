@@ -4,8 +4,8 @@ from __future__ import annotations
 from pathlib import Path
 
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QStackedWidget, QFrame, QShortcut, QSizePolicy, QLayout, QApplication, QLineEdit, QTextEdit, QPlainTextEdit, QComboBox, QAbstractSpinBox
-from PyQt5.QtCore import QTimer, Qt, QSize, QEvent
-from PyQt5.QtGui import QKeySequence, QIcon
+from PyQt5.QtCore import QTimer, Qt, QSize, QEvent, QUrl
+from PyQt5.QtGui import QKeySequence, QIcon, QDesktopServices
 
 from webverse.gui.theme import qss_onyx_amber
 from webverse.gui.widgets.topbar import TopBar
@@ -13,6 +13,8 @@ from webverse.gui.widgets.command_palette import CommandPalette
 
 from webverse.gui.sidebar import Sidebar
 from webverse.gui.widgets.toast import ToastHost
+
+from webverse.core.updater import UpdateManager
 
 from webverse.gui.views.home import HomeView
 from webverse.gui.views.labs_browse import LabsBrowseView
@@ -103,16 +105,26 @@ class MainWindow(QMainWindow):
 
         self.sidebar = Sidebar(self.stack)
 
-        # Global toast host overlay
+        # Apply stylesheet first so the first toast sizes correctly
+        self.setStyleSheet(qss_onyx_amber())
+
+        # Global toast host overlay (after QSS)
         self.toast_host = ToastHost(self)
         self.toast_host.raise_()
+
+        self._pending_update = None
+        self.updater = UpdateManager(owner="LeighlinRamsay", repo="WebVerse", parent=self)
+        self.updater.update_available.connect(self._on_update_available)
+        self.updater.update_check_failed.connect(lambda err: self.toast_warn(f"Update check failed: {err}"))
+        self.updater.start()
 
 
         body_layout.addWidget(self.sidebar)
         body_layout.addWidget(self.stack, 1)
         root.addWidget(body, 1)
 
-        self.setStyleSheet(qss_onyx_amber())
+        # Make sure overlay matches window size after first show/layout
+        QTimer.singleShot(0, lambda: self.toast_host.resize(self.size()))
 
         self.palette = CommandPalette(state, self)
         self.palette.lab_selected.connect(self._select_and_open_lab)
@@ -147,6 +159,23 @@ class MainWindow(QMainWindow):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.state.refresh_docker)
         self.timer.start(12000)
+
+    def _on_update_available(self, info):
+        self._pending_update = info
+        self.show_toast(
+            "Update available",
+            f"WebVerse v{info.latest_version} is available. Click to open releases.",
+            variant="info",
+            ms=3200,
+        )
+
+    def open_update_page(self):
+        if not self._pending_update:
+            return
+        try:
+            QDesktopServices.openUrl(QUrl(self._pending_update.url))
+        except Exception:
+            pass
 
     def _post_show_unlock_and_audit(self):
         """
@@ -222,7 +251,7 @@ class MainWindow(QMainWindow):
                 print(f"[{kind}] {name} -> min={mn.width()}x{mn.height()} max={mx.width()}x{mx.height()}")
         print("--- END AUDIT ---\n")
 
-    def show_toast(self, message, level="info", timeout=3000):
+    """def show_toast(self, message, level="info", timeout=3000):
         self.toast_host.show_toast(message, level, timeout)
 
     def toast_success(self, msg):
@@ -232,7 +261,39 @@ class MainWindow(QMainWindow):
         self.show_toast(msg, "error")
 
     def toast_warn(self, msg):
-        self.show_toast(msg, "warn")
+        self.show_toast(msg, "warn")"""
+
+    def show_toast(self, title: str, body: str = "", variant: str = "info", ms: int = 2000):
+        """
+        Canonical toast API for the whole app:
+          show_toast("Title", "Body", variant="error", ms=2500)
+
+        Backward compat:
+          show_toast("message", "error", 3000)
+        """
+        # Backward compat path: show_toast(message, level, timeout)
+        if variant in ("info", "success", "warn", "error") and isinstance(ms, int) and body and body in ("info", "success", "warn", "error"):
+            # Someone called show_toast(message, level, timeout)
+            # Here: title=message, body=level, variant=timeout (wrong) — normalize:
+            level = body
+            timeout = variant if isinstance(variant, int) else ms
+            self.toast_host.show_toast("Info" if level == "info" else level.title(), title, variant=level, ms=int(timeout))
+            return
+
+        self.toast_host.show_toast(title, body, variant=variant, ms=ms)
+
+    def toast_success(self, msg: str, ms: int = 1800):
+        self.show_toast("Success", msg, variant="success", ms=ms)
+
+    def toast_error(self, msg: str, ms: int = 2400):
+        self.show_toast("Error", msg, variant="error", ms=ms)
+
+    def toast_warn(self, msg: str, ms: int = 2200):
+        self.show_toast("Warning", msg, variant="warn", ms=ms)
+
+    def toast_info(self, msg: str, ms: int = 2000):
+        self.show_toast("Info", msg, variant="info", ms=ms)
+
 
     def _open_palette(self):
         self.palette.open_centered()

@@ -12,7 +12,7 @@ from webverse import __version__
 
 
 API_URL = os.getenv("WEBVERSE_TELEMETRY_URL", "https://api-opensource.webverselabs.com/v1/telemetry")
-TIMEOUT = float(os.getenv("WEBVERSE_TELEMETRY_TIMEOUT", "3") or 3)
+TIMEOUT = float(os.getenv("WEBVERSE_TELEMETRY_TIMEOUT", "6") or 6)
 DEBUG = (os.getenv("WEBVERSE_TELEMETRY_DEBUG", "").strip().lower() in {"1", "true", "yes", "on"})
 
 
