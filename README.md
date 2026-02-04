@@ -8,7 +8,7 @@ WebVerse is a local **web & API security lab runner** — a desktop app that dis
 
 ### Install WebVerse from GitHub
 ```bash
-pipx install git+https://github.com/LeighlinRamsay/WebVerse.git
+curl https://raw.githubusercontent.com/LeighlinRamsay/WebVerse/refs/heads/main/install.sh | bash
 ```
 
 ---
