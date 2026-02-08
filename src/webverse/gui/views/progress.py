@@ -20,9 +20,30 @@ from PyQt5.QtWidgets import (
 
 from webverse.core.runtime import get_running_lab
 from webverse.core.xp import base_xp_for_difficulty
+from webverse.core import progress_db
 from webverse.core.progress_db import get_progress_map
 from webverse.gui.util_avatar import lab_badge_icon, lab_circle_icon
-from webverse.core.ranks import rank_for_xp, total_xp as _total_xp, solved_count as _solved_count, completion_percent as _completion_percent, solve_streak_days as _solve_streak_days
+from webverse.core.ranks import solved_count as _solved_count, completion_percent as _completion_percent
+
+# Keep in sync with api-opensource/auth.py rank tiers
+_RANK_TIERS = [
+	(0, "Recruit"),
+	(500, "Operator"),
+	(1500, "Specialist"),
+	(3500, "Veteran"),
+	(7000, "Elite"),
+	(12000, "Legend"),
+]
+
+
+def _rank_floor(xp: int) -> int:
+	floor = 0
+	for th, _name in _RANK_TIERS:
+		if xp >= int(th):
+			floor = int(th)
+		else:
+			break
+	return int(floor)
 
 class ProgressView(QWidget):
 	# MainWindow will connect this to navigate into the lab detail page
@@ -49,7 +70,7 @@ class ProgressView(QWidget):
 		title.setObjectName("H1")
 		layout.addWidget(title)
 
-		subtitle = QLabel("Ranks, XP, and your mission log. Stored locally in progress.db.")
+		subtitle = QLabel("Ranks, XP, and your mission log. Synced to your WebVerse account (cloud).")
 		subtitle.setObjectName("Muted")
 		layout.addWidget(subtitle)
 
@@ -203,13 +224,19 @@ class ProgressView(QWidget):
 		labs = self.state.labs()
 		progress = self.state.progress_map() if hasattr(self.state, "progress_map") else get_progress_map()
 
+		stats = progress_db.get_device_stats()
+
 		total = len(labs)
 		solved_count = _solved_count(labs, progress)
-		total_xp = _total_xp(labs, progress)
-		streak = _solve_streak_days(progress)
+		total_xp = int(getattr(stats, 'xp', 0) or 0)
+		streak = int(getattr(stats, 'streak_days', 0) or 0)
 		completion = _completion_percent(total, solved_count)
 
-		rank_name, rank_floor, next_name, next_floor = rank_for_xp(total_xp)
+		rank_name = str(getattr(stats, 'rank', 'Recruit') or 'Recruit')
+		next_name = getattr(stats, 'next_rank', None)
+		next_floor = getattr(stats, 'next_rank_xp', None)
+		rank_floor = _rank_floor(total_xp)
+ 
 
 		self.rank_name.setText(rank_name)
 		self.rank_sub.setText(f"{total_xp} XP")

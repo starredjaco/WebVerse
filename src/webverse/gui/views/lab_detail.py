@@ -1385,9 +1385,23 @@ class LabDetailView(QWidget):
 		self._update_flag_lock(bool(solved_at))
 		self._sync_flag_pills_width()
 
-		# running badge from runtime
-		running = self._is_running(lab.id)
-		self._set_op_state("running" if running else "stopped")
+		# Operation state should be current and persistent across navigation.
+		# Prefer AppState transient op if present (starting/stopping/resetting),
+		# otherwise fall back to runtime running/stopped.
+		try:
+			if hasattr(self.state, "runtime_op_for") and callable(getattr(self.state, "runtime_op_for")):
+				op = self.state.runtime_op_for(lab.id)
+				if op in ("starting", "stopping", "resetting", "running", "stopped"):
+					self._set_op_state(op, lab.id, broadcast=False)
+				else:
+					running = self._is_running(lab.id)
+					self._set_op_state("running" if running else "stopped", lab.id, broadcast=False)
+			else:
+				running = self._is_running(lab.id)
+				self._set_op_state("running" if running else "stopped", lab.id, broadcast=False)
+		except Exception:
+			running = self._is_running(lab.id)
+			self._set_op_state("running" if running else "stopped", lab.id, broadcast=False)
 
 		self._set_actions_enabled(True)
 
@@ -1427,9 +1441,36 @@ class LabDetailView(QWidget):
 		self._thread.start()
 
 	# -------- state visuals --------
-	def _set_op_state(self, state: str):
+	def _current_lab_id(self) -> str:
+		try:
+			return str(self._lab.id) if self._lab else ""
+		except Exception:
+			return ""
+
+	def _set_op_state(self, state: str, lab_id: Optional[str] = None, *, broadcast: bool = True):
+		"""
+		Local UI state + (optional) AppState broadcast.
+
+		CRITICAL:
+		- When merely navigating between labs, we must NOT broadcast, or we will clobber
+		  the real in-flight transient op (starting/resetting/stopping) for another lab.
+		"""
 		self._op_state = state
-		self.conn.set_state(state)
+
+		cur_id = self._current_lab_id()
+		target_id = str(lab_id) if lab_id else cur_id
+
+		# Only update the ConnBar visuals if this op applies to the currently selected lab.
+		if cur_id and target_id and str(cur_id) == str(target_id):
+			self.conn.set_state(state)
+
+		# Only broadcast when we are initiating/finishing an operation.
+		if broadcast:
+			try:
+				if hasattr(self.state, "set_runtime_op") and callable(getattr(self.state, "set_runtime_op")):
+					self.state.set_runtime_op(state, target_id or None)
+			except Exception:
+				pass
 
 	def _on_tab_changed(self, idx: int):
 		try:
@@ -1605,6 +1646,28 @@ class LabDetailView(QWidget):
 			return
 		lab = self._lab
 
+		# Block launching a second lab while another lab is still starting/resetting/stopping.
+		busy_id = None
+		busy_op = None
+		try:
+			if hasattr(self.state, "runtime_op_lab_id"):
+				busy_id = self.state.runtime_op_lab_id()
+			if busy_id and hasattr(self.state, "runtime_op_for"):
+				busy_op = self.state.runtime_op_for(busy_id)
+		except Exception:
+			busy_id = None
+			busy_op = None
+
+		if busy_id and str(busy_id) != str(lab.id) and str(busy_op) in ("starting", "resetting", "stopping"):
+			pretty = {"starting": "starting up", "resetting": "resetting", "stopping": "stopping"}.get(str(busy_op), str(busy_op))
+			self._toast("Please wait", f"Another lab is {pretty}. Finish that first before starting a new lab.", variant="warn", ms=2200)
+			return
+
+		if busy_id and str(busy_id) == str(lab.id) and str(busy_op) in ("starting", "resetting", "stopping"):
+			pretty = {"starting": "starting up", "resetting": "resetting", "stopping": "stopping"}.get(str(busy_op), str(busy_op))
+			self._toast("In progress", f"This lab is already {pretty}.", variant="info", ms=1800)
+			return
+
 		# ✅ Prevent multiple labs running at once
 		running_id = get_running_lab()
 		if running_id and running_id != lab.id:
@@ -1640,7 +1703,15 @@ class LabDetailView(QWidget):
 			# Never block launch due to precheck errors
 			pass
 
-		self._set_op_state("starting")
+		# 🔒 GLOBAL LOCK:
+		# Treat "starting" as an active lab so *any* UI path that only checks
+		# get_running_lab() will still be blocked from starting another lab.
+		try:
+			set_running_lab(lab.id)
+		except Exception:
+			pass
+
+		self._set_op_state("starting", lab.id, broadcast=True)
 
 		def done(ok: bool, msg: str):
 			if ok:
@@ -1650,7 +1721,7 @@ class LabDetailView(QWidget):
 
 				self.state.set_running_lab_id(lab.id)
 				self._append_activity("✅ Lab started.")
-				self._set_op_state("running")
+				self._set_op_state("running", lab.id, broadcast=True)
 
 				# status pill should reflect running state
 				try:
@@ -1661,7 +1732,17 @@ class LabDetailView(QWidget):
 				self._append_activity("❌ Failed to start lab.")
 				if msg:
 					self._append_activity(msg)
-				self._set_op_state("stopped")
+				# If start failed, clear the global lock (only if we own it).
+				try:
+					if get_running_lab() == lab.id:
+						set_running_lab(None)
+				except Exception:
+					pass
+				try:
+					self.state.set_running_lab_id(None)
+				except Exception:
+					pass
+				self._set_op_state("stopped", lab.id, broadcast=True)
 
 		self._run_docker("Starting lab…", docker_ops.compose_up, str(lab.path), lab.compose_file, on_done=done)
 
@@ -1670,7 +1751,7 @@ class LabDetailView(QWidget):
 			return
 		lab = self._lab
 
-		self._set_op_state("stopping")
+		self._set_op_state("stopping", lab.id, broadcast=True)
 
 		def done(ok: bool, msg: str):
 			if ok:
@@ -1681,7 +1762,7 @@ class LabDetailView(QWidget):
 				self._append_activity("❌ Failed to stop lab.")
 				if msg:
 					self._append_activity(msg)
-			self._set_op_state("stopped")
+			self._set_op_state("stopped", lab.id, broadcast=True)
 
 			# status pill should reflect not-running (unless solved)
 			try:
@@ -1698,7 +1779,13 @@ class LabDetailView(QWidget):
 			return
 		lab = self._lab
 
-		self._set_op_state("resetting")
+		# Keep the global lock during reset (reset is still "active").
+		try:
+			set_running_lab(lab.id)
+		except Exception:
+			pass
+
+		self._set_op_state("resetting", lab.id, broadcast=True)
 
 		def done(ok: bool, msg: str):
 			if ok:
@@ -1712,7 +1799,7 @@ class LabDetailView(QWidget):
 					self.state.set_running_lab_id(lab.id)  # AppState
 				except Exception:
 					pass
-				self._set_op_state("running")
+				self._set_op_state("running", lab.id, broadcast=True)
 
 				# status pill should reflect running state
 				try:
@@ -1733,7 +1820,7 @@ class LabDetailView(QWidget):
 					self.state.set_running_lab_id(None)
 				except Exception:
 					pass
-				self._set_op_state("stopped")
+				self._set_op_state("stopped", lab.id, broadcast=True)
 
 				# reflect not-running
 				try:
@@ -1760,6 +1847,25 @@ class LabDetailView(QWidget):
 	def _on_submit_flag(self):
 		if not self._lab:
 			return
+
+		# helper: try to force any app-level progress refresh hooks (defensive)
+		def _poke_state_refresh():
+			try:
+				if hasattr(self.state, "invalidate_progress_cache") and callable(getattr(self.state, "invalidate_progress_cache")):
+					self.state.invalidate_progress_cache()
+			except Exception:
+				pass
+			try:
+				if hasattr(self.state, "refresh_progress") and callable(getattr(self.state, "refresh_progress")):
+					self.state.refresh_progress(force=True)
+			except Exception:
+				pass
+			try:
+				# some builds call it this
+				if hasattr(self.state, "refresh_stats") and callable(getattr(self.state, "refresh_stats")):
+					self.state.refresh_stats(force=True)
+			except Exception:
+				pass
 
 		# If already solved, block resubmits (also visually locked via _update_flag_lock)
 		try:
@@ -1815,6 +1921,19 @@ class LabDetailView(QWidget):
 			self._append_activity("🏁 Flag accepted.")
 			self.flag_input.clear()
 
+			# ✅ This is the missing piece:
+			# actually record the solve so the backend marks the lab solved and awards XP.
+			try:
+				progress_db.mark_solved(lab.id)
+			except Exception:
+				pass
+
+			# force local caches to drop so Home/Progress/Profile see updated XP/solves quickly
+			try:
+				progress_db.invalidate_cache(lab_id=lab.id)
+			except Exception:
+				pass
+
 			# lock UI immediately; refresh below will keep it consistent
 			self._update_flag_lock(True)
 
@@ -1823,16 +1942,28 @@ class LabDetailView(QWidget):
 			self.flag_feedback.setText("❌ Incorrect flag." + (f" ({msg})" if msg else ""))
 			self._append_activity("❌ Incorrect flag submitted.")
 
+			# (optional but useful) track attempts as telemetry
+			try:
+				progress_db.mark_attempt(lab.id)
+			except Exception:
+				pass
+
 			self._toast("Nope", "Incorrect flag.", variant="error", ms=1600)
+
+		# If we just solved it, don't immediately revert pills based on stale state.progress_map().
+		# Use a local solved_at fallback so UI stays SOLVED while API catches up.
 
 		try:
 			prog = self.state.progress_map().get(lab.id, {}) if hasattr(self.state, "progress_map") else {}
-			solved_at = prog.get("solved_at")
+			solved_at = prog.get("solved_at") or (int(time.time()) if ok else None)
 			self._set_flag_status(self._compute_flag_status(solved_at, lab.id))
 			self._update_flag_lock(bool(solved_at))
 			self._sync_flag_pills_width()
 		except Exception:
 			pass
+
+		# poke app state to refresh any cached progress/stats models
+		_poke_state_refresh()
 
 	# Entrypoint tile actions
 	def _endpoint_copy(self, *_args):

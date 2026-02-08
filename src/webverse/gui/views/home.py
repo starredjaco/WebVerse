@@ -14,9 +14,32 @@ from PyQt5.QtGui import QCursor, QPalette, QColor, QPainter, QPen, QLinearGradie
 from webverse.gui.widgets.pill import Pill
 from webverse.core.xp import base_xp_for_difficulty
 from webverse.core.progress_db import get_progress_map
-from webverse.core.ranks import rank_for_xp, total_xp as _total_xp, solved_count as _solved_count, completion_percent as _completion_percent
+
+from webverse.core.ranks import solved_count as _solved_count, completion_percent as _completion_percent
+from webverse.core import progress_db
+
 from webverse.gui.widgets.row_hover_delegate import RowHoverDelegate
 from webverse.gui.util_avatar import lab_badge_icon, lab_circle_icon
+
+# Keep in sync with api-opensource/auth.py rank tiers
+_RANK_TIERS = [
+	(0, "Recruit"),
+	(500, "Operator"),
+	(1500, "Specialist"),
+	(3500, "Veteran"),
+	(7000, "Elite"),
+	(12000, "Legend"),
+]
+
+
+def _rank_floor(xp: int) -> int:
+	floor = 0
+	for th, _name in _RANK_TIERS:
+		if xp >= int(th):
+			floor = int(th)
+		else:
+			break
+	return int(floor)
 
 
 class PillRowDelegate(QStyledItemDelegate):
@@ -552,6 +575,14 @@ class HomeView(QWidget):
 				self.state.progress_changed.connect(self._refresh_all)
 		except Exception:
 			pass
+
+		# IMPORTANT: auth/XP/rank changes must refresh Home too
+		try:
+			if hasattr(self.state, "player_stats_changed"):
+				self.state.player_stats_changed.connect(self._refresh_stats)
+		except Exception:
+			pass
+
 		try:
 			self.state.running_changed.connect(lambda _lab: self._refresh_all())
 		except Exception:
@@ -598,16 +629,21 @@ class HomeView(QWidget):
 		solved = _solved_count(labs, progress)
 		completion = _completion_percent(total, solved)
 
-		total_xp = _total_xp(labs, progress)
-		rank_name, rank_floor, next_name, next_floor = rank_for_xp(total_xp)
+		# XP/rank are cloud-backed (synced via telemetry events).
+		stats = progress_db.get_device_stats()
+		total_xp = int(getattr(stats, "xp", 0) or 0)
+		rank_name = str(getattr(stats, "rank", "Recruit") or "Recruit")
+		next_name = getattr(stats, "next_rank", None)
+		next_floor = getattr(stats, "next_rank_xp", None)
+		rank_floor = _rank_floor(total_xp)
 
 		self.rank_name.setText(rank_name)
 		self.rank_sub.setText(f"{total_xp} XP")
 		self.rank_icon.setPixmap(_emblem(rank_name.split()[0][0], 54))
 
 		if next_name and next_floor is not None:
-			need = max(0, next_floor - total_xp)
-			span = max(1, next_floor - rank_floor)
+			need = max(0, int(next_floor) - total_xp)
+			span = max(1, int(next_floor) - rank_floor)
 			frac = max(0.0, min(1.0, (total_xp - rank_floor) / span))
 			self.xp_bar.set_fraction(frac)
 			self.rank_next.setText(f"Next rank: {next_name}  •  {need} XP to go")

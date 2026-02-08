@@ -34,6 +34,8 @@ def qss_onyx_amber(scale: float = DEFAULT_UI_SCALE) -> str:
 	p_8 = _s(8, scale)
 	p_10 = _s(10, scale)
 	p_12 = _s(12, scale)
+	cb_ind = max(14, _s(16, scale))
+	cb_r = max(5, _s(6, scale))
 	p_14 = _s(14, scale)
 	p_16 = _s(16, scale)
 	p_18 = _s(18, scale)
@@ -49,7 +51,131 @@ def qss_onyx_amber(scale: float = DEFAULT_UI_SCALE) -> str:
 		font-size: {base_font}px;
 	}}
 
+	/* =========================
+	   Auth Dialog (clean + premium)
+	   ========================= */
+	QDialog#AuthDialog {{
+		background: rgba(10,12,16,0.96);
+	}}
+
+	/* Kill the “every widget paints a black box” look INSIDE auth dialogs */
+	QDialog#AuthDialog QWidget {{
+		background: transparent;
+	}}
+
+	QLabel#AuthTitle {{
+		font-size: {h2}px;
+		font-weight: 950;
+		color: rgba(245,247,255,0.96);
+	}}
+	QLabel#AuthSub {{
+		color: rgba(235,241,255,0.62);
+		font-weight: 850;
+	}}
+
+	QLabel#AuthFieldLabel {{
+		color: rgba(235,241,255,0.60);
+		font-weight: 950;
+		font-size: {small}px;
+		letter-spacing: 0.3px;
+		padding-left: 2px;
+	}}
+
+	QFrame#AuthPanel {{
+		background: rgba(16,20,28,0.55);
+		border: 1px solid rgba(255,255,255,0.10);
+		border-radius: 18px;
+	}}
+	QLineEdit#AuthInput {{
+		background: rgba(7,9,12,0.55);
+		border: 1px solid rgba(255,255,255,0.12);
+		border-radius: 14px;
+		padding: {p_10}px {p_12}px;
+		font-weight: 900;
+		color: rgba(245,247,255,0.92);
+	}}
+	QLineEdit#AuthInput:focus {{
+		border: 1px solid rgba(245,197,66,0.62);
+		background: rgba(7,9,12,0.72);
+	}}
+	QCheckBox#AuthCheck {{
+		color: rgba(235,241,255,0.88);
+		font-weight: 850;
+		background: transparent;
+		spacing: {p_12}px;
+	}}
+	QCheckBox#AuthCheck::indicator {{
+		width: {cb_ind}px;
+		height: {cb_ind}px;
+		border-radius: {cb_r}px;
+		border: 1px solid rgba(255,255,255,0.18);
+		background: rgba(255,255,255,0.03);
+	}}
+	QCheckBox#AuthCheck::indicator:hover {{
+		border: 1px solid rgba(255,255,255,0.28);
+		background: rgba(255,255,255,0.05);
+	}}
+	QCheckBox#AuthCheck::indicator:checked {{
+		border: 1px solid rgba(245,197,66,0.78);
+		background: qlineargradient(x1:0,y1:0,x2:0,y2:1,
+			stop:0 rgba(245,197,66,0.52),
+			stop:1 rgba(245,197,66,0.24)
+		);
+		image: url(:/qt-project.org/styles/commonstyle/images/standardbutton-apply-32.png);
+	}}
+	QCheckBox#AuthCheck::indicator:checked:hover {{
+		border: 1px solid rgba(245,197,66,0.92);
+		background: qlineargradient(x1:0,y1:0,x2:0,y2:1,
+			stop:0 rgba(245,197,66,0.60),
+			stop:1 rgba(245,197,66,0.28)
+		);
+	}}
+	QCheckBox#AuthCheck::indicator:disabled {{
+		border: 1px solid rgba(255,255,255,0.10);
+		background: rgba(255,255,255,0.02);
+	}}
+	QCheckBox#AuthCheck::indicator:checked:disabled {{
+		border: 1px solid rgba(245,197,66,0.24);
+		background: rgba(245,197,66,0.10);
+		image: url(:/qt-project.org/styles/commonstyle/images/standardbutton-apply-32.png);
+	}}
+
+	/* =========================
+	   Profile badge (sidebar)
+	   ========================= */
+	QWidget#ProfileBadge {{
+		background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+			stop:0 rgba(245,197,66,0.20),
+			stop:0.45 rgba(16,20,28,0.65),
+			stop:1 rgba(16,20,28,0.55)
+		);
+		border: 1px solid rgba(245,197,66,0.30);
+		border-radius: 14px;
+	}}
+	QFrame#ProfileBadge:hover {{
+		border: 1px solid rgba(245,197,66,0.42);
+	}}
+	QLabel#ProfileTitle {{
+		font-weight: 950;
+		color: rgba(245,247,255,0.96);
+	}}
+	QLabel#ProfileMeta {{
+		font-weight: 950;
+		color: rgba(245,197,66,0.96);
+	}}
+	QLabel#ProfileHint {{
+		color: rgba(235,241,255,0.62);
+		font-weight: 850;
+	}}
+
 	QLabel {{
+		background: transparent;
+	}}
+
+	QCheckBox {{
+		background: transparent;
+	}}
+	QRadioButton {{
 		background: transparent;
 	}}
 
@@ -143,6 +269,24 @@ def qss_onyx_amber(scale: float = DEFAULT_UI_SCALE) -> str:
 		border: 1px solid rgba(28, 210, 120, 0.22);
 	}}
 
+	QLabel#RunState[variant="starting"] {{
+		color: rgba(210,255,235,0.98);
+		background: rgba(28, 210, 120, 0.18);
+		border: 1px solid rgba(28, 210, 120, 0.22);
+	}}
+
+	QLabel#RunState[variant="stopping"] {{
+		color: rgba(255, 226, 226, 0.98);
+		background: rgba(255, 92, 92, 0.14);
+		border: 1px solid rgba(255, 92, 92, 0.20);
+	}}
+
+	QLabel#RunState[variant="resetting"] {{
+		color: rgba(255, 244, 214, 0.98);
+		background: rgba(245, 197, 66, 0.14);
+		border: 1px solid rgba(245, 197, 66, 0.22);
+	}}
+
 	QLabel#RunState[variant="stopped"] {{
 		color: rgba(235,241,255,0.58);
 		background: rgba(255,255,255,0.04);
@@ -199,15 +343,32 @@ def qss_onyx_amber(scale: float = DEFAULT_UI_SCALE) -> str:
 		color: rgba(245,247,255,0.95);
 	}}
 
-	QFrame#DockerBadge {{
+	QFrame#AuthBadge {{
 		background: rgba(16,20,28,0.55);
 		border: 1px solid rgba(255,255,255,0.08);
 		border-radius: {r_md}px;
 	}}
-	QLabel#DockerBadgeText {{
-		font-weight: 850;
-		color: rgba(235,241,255,0.78);
+
+	QPushButton#AuthBadgeBtn {{
+		border-radius: {r_md}px;
 		padding: {p_8}px {p_10}px;
+		border: 1px solid rgba(255,255,255,0.10);
+		background: rgba(255,255,255,0.035);
+		font-weight: 900;
+		color: rgba(235,241,255,0.86);
+	}}
+	QPushButton#AuthBadgeBtn:hover {{
+		border: 1px solid rgba(255,255,255,0.16);
+		background: rgba(255,255,255,0.06);
+		color: rgba(245,247,255,0.92);
+	}}
+	QPushButton#AuthBadgeBtn:pressed {{
+		background: rgba(255,255,255,0.075);
+	}}
+	QPushButton#AuthBadgeBtn:disabled {{
+		border: 1px solid rgba(255,255,255,0.06);
+		background: rgba(255,255,255,0.02);
+		color: rgba(235,241,255,0.22);
 	}}
 
 	/* ---- Cards / Tiles ---- */
@@ -382,12 +543,12 @@ def qss_onyx_amber(scale: float = DEFAULT_UI_SCALE) -> str:
 		border-radius: {r_xl}px;
 	}}
 
-	QFrame#XPBar {{
+	QWidget#XPBar {{
 		background: rgba(255,255,255,0.08);
 		border: 1px solid rgba(255,255,255,0.10);
 		border-radius: 999px;
 	}}
-	QFrame#XPFill {{
+	QWidget#XPFill {{
 		background: rgba(245,197,66,0.70);
 		border-radius: 999px;
 	}}
@@ -1370,5 +1531,188 @@ def qss_onyx_amber(scale: float = DEFAULT_UI_SCALE) -> str:
 	}}
 	QListWidget#InstallLabsList::item:hover {{
 		background: rgba(245,197,66,0.10);
+	}}
+
+	/* ---- Profile (Mission Control) ---- */
+	QWidget#ProfileRoot {{
+		background: transparent;
+	}}
+	QScrollArea#ProfileScroll {{
+		background: transparent;
+		border: none;
+	}}
+	QWidget#ProfileContent {{
+		background: transparent;
+	}}
+	QFrame#ProfileHero {{
+		background: rgba(16,20,28,0.52);
+		border: 1px solid rgba(255,255,255,0.10);
+		border-radius: {r_xl}px;
+	}}
+	QLabel#ProfileAvatar {{
+		min-width: 56px;
+		max-width: 56px;
+		min-height: 56px;
+		max-height: 56px;
+		border-radius: 28px;
+		background: rgba(245,197,66,0.12);
+		border: 1px solid rgba(245,197,66,0.25);
+		color: rgba(245,247,255,0.95);
+		font-weight: 950;
+		font-size: 16px;
+	}}
+	QLabel#ProfileUsername {{
+		font-size: {h1}px;
+		font-weight: 950;
+		color: rgba(245,247,255,0.96);
+	}}
+	QLabel#ProfileRankLine {{
+		font-size: 14px;
+		font-weight: 800;
+		color: rgba(235,241,255,0.78);
+	}}
+	QLabel#ProfileNextLine {{
+		font-size: 13px;
+		font-weight: 750;
+		color: rgba(235,241,255,0.62);
+	}}
+	QFrame#ProfileXPBar {{
+		background: rgba(255,255,255,0.08);
+		border: 1px solid rgba(255,255,255,0.10);
+		border-radius: 999px;
+	}}
+	QFrame#ProfileXPFill {{
+		background: rgba(245,197,66,0.78);
+		border-radius: 999px;
+	}}
+	QLabel#ProfileXPText {{
+		font-size: 12px;
+		font-weight: 850;
+		color: rgba(235,241,255,0.70);
+	}}
+	QPushButton#ProfileLogoutBtn {{
+		background: rgba(10,12,16,0.55);
+		border: 1px solid rgba(245,197,66,0.22);
+		border-radius: 999px;
+		padding: 7px 14px;
+		font-weight: 950;
+		letter-spacing: 0.2px;
+		color: rgba(235,241,255,0.90);
+		min-height: 34px;
+	}}
+	QPushButton#ProfileLogoutBtn:hover {{
+		background: rgba(16,20,28,0.70);
+		border: 1px solid rgba(245,197,66,0.42);
+		color: rgba(245,247,255,0.96);
+	}}
+
+	QPushButton#ProfileLogoutBtn:pressed {{
+		background: rgba(8,10,13,0.80);
+		border: 1px solid rgba(245,197,66,0.34);
+		padding-top: 8px;
+		padding-bottom: 6px;
+	}}
+	QPushButton#ProfileLogoutBtn:disabled {{
+		background: rgba(255,255,255,0.02);
+		border: 1px solid rgba(255,255,255,0.06);
+		color: rgba(235,241,255,0.22);
+	}}
+
+	/* =========================
+	   Sidebar locked/disabled look
+	   ========================= */
+
+	QPushButton#NavButton:disabled {{
+		/* visibly locked: muted + slightly “fogged” */
+		color: rgba(235, 242, 255, 0.35);
+		background: rgba(255, 255, 255, 0.04);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+	}}
+
+	QPushButton#NavButton[locked="true"] {{
+		/* if you want an even stronger locked cue while disabled */
+		background: rgba(255, 255, 255, 0.035);
+		border: 1px dashed rgba(255, 255, 255, 0.10);
+	}}
+
+	QPushButton#NavButton[locked="true"]::after {{
+		/* Qt style sheets don’t support ::after content reliably across platforms.
+		   This is intentionally empty; leaving block here so you don’t assume it works. */
+	}}
+
+	/*QFrame#ProfileBadge[locked="true"] {{
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px dashed rgba(255, 255, 255, 0.10);
+	}}
+
+	QFrame#ProfileBadge[locked="true"] QLabel {{
+		color: rgba(235, 242, 255, 0.35);
+	}}*/
+
+	QFrame#ProfileKPI {{
+		background: rgba(16,20,28,0.42);
+		border: 1px solid rgba(255,255,255,0.08);
+		border-radius: {r_xl}px;
+	}}
+	QLabel#KPIValue {{
+		font-size: 22px;
+		font-weight: 950;
+		color: rgba(245,247,255,0.96);
+	}}
+	QLabel#KPILabel {{
+		font-size: 12px;
+		font-weight: 850;
+		letter-spacing: 0.6px;
+		text-transform: uppercase;
+		color: rgba(235,241,255,0.52);
+	}}
+	QFrame#ActivityPanel {{
+		background: rgba(16,20,28,0.40);
+		border: 1px solid rgba(255,255,255,0.08);
+		border-radius: {r_xl}px;
+	}}
+	QLabel#ActivityHeader {{
+		font-size: 14px;
+		font-weight: 950;
+		color: rgba(245,247,255,0.92);
+	}}
+	QFrame#ActivityRow {{
+		background: rgba(255,255,255,0.03);
+		border: 1px solid rgba(255,255,255,0.06);
+		border-radius: 16px;
+	}}
+	QFrame#ActivityRow:hover {{
+		background: rgba(255,255,255,0.05);
+		border: 1px solid rgba(255,255,255,0.10);
+	}}
+	QLabel#ActivityIcon {{
+		min-width: 36px;
+		max-width: 36px;
+		min-height: 36px;
+		max-height: 36px;
+		border-radius: 10px;
+		background: rgba(255,255,255,0.06);
+		border: 1px solid rgba(255,255,255,0.08);
+	}}
+	QLabel#ActivityText {{
+		font-size: 13px;
+		font-weight: 900;
+		color: rgba(245,247,255,0.90);
+	}}
+	QLabel#ActivityMeta {{
+		font-size: 12px;
+		font-weight: 750;
+		color: rgba(235,241,255,0.55);
+	}}
+	QLabel#ActivityXP {{
+		font-size: 13px;
+		font-weight: 950;
+		color: rgba(245,197,66,0.95);
+	}}
+	QLabel#MemberSince {{
+		font-size: 12px;
+		font-weight: 850;
+		color: rgba(235,241,255,0.50);
+		padding-left: 4px;
 	}}
 	"""
