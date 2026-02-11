@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container px-4 py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-5">
+      <div class="qs-card p-4">
+        <h2 class="qs-neon mb-1">Create Account</h2>
+        <p class="qs-muted small mb-4">Signup auto-logs you in and seats you at the table.</p>
+
+        {% if error %}
+          <div class="alert alert-danger qs-alert" role="alert">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="/signup" class="vstack gap-3">
+          <div>
+            <label class="form-label small qs-muted">Username</label>
+            <input class="form-control qs-input" name="username" type="text" placeholder="chipcount" required />
+          </div>
+
+          <div>
+            <label class="form-label small qs-muted">Email</label>
+            <input class="form-control qs-input" name="email" type="email" placeholder="you@domain.com" required />
+          </div>
+
+          <div>
+            <label class="form-label small qs-muted">Password</label>
+            <input class="form-control qs-input" name="password" type="password" placeholder="Pick something memorable" required />
+          </div>
+
+          <button class="btn qs-btn qs-btn-red btn-lg" type="submit">Create + Enter</button>
+
+          <div class="d-flex justify-content-between small">
+            <a class="qs-link" href="/login">Have an account?</a>
+            <a class="qs-link" href="/reset">Reset password</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

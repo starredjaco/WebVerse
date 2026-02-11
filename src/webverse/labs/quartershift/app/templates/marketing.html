@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="qs-hero">
+    <div class="container px-4 py-5">
+      <div class="row align-items-center g-4">
+        <div class="col-12 col-lg-7">
+          <div class="qs-hero-badge mb-3">
+            <span class="qs-dot qs-dot-red"></span>
+            <span class="qs-dot qs-dot-green"></span>
+            <span class="qs-dot qs-dot-gold"></span>
+            <span class="ms-2">LIVE TOURNAMENT SEASON · Q1-2026</span>
+          </div>
+
+          <h1 class="display-5 fw-bold qs-neon mb-3">
+            Quarter Shift
+            <span class="qs-subneon">Casino-grade action. Cache-grade mistakes.</span>
+          </h1>
+
+          <p class="lead qs-muted mb-4">
+            Welcome to the most neon-drenched corner of Quarter Shift Entertainment Group.
+            Enter the portal, take a seat at the tables, and chase the leaderboard.
+          </p>
+
+          <div class="d-flex flex-wrap gap-2">
+            <a class="btn qs-btn qs-btn-green btn-lg" href="http://portal.{{ domain }}/login">Enter Portal</a>
+            <a class="btn qs-btn qs-btn-red btn-lg" href="http://portal.{{ domain }}/signup">Create Account</a>
+            <a class="btn qs-btn qs-btn-gold btn-lg" href="http://{{ domain }}/about">About</a>
+          </div>
+
+          <div class="qs-feature-row mt-4">
+            <div class="qs-feature">
+              <div class="qs-feature-icon qs-ic-green">♠</div>
+              <div>
+                <div class="fw-semibold">Blackjack Arena</div>
+                <div class="small qs-muted">Dealer stands on 17. Aces adapt.</div>
+              </div>
+            </div>
+            <div class="qs-feature">
+              <div class="qs-feature-icon qs-ic-red">♥</div>
+              <div>
+                <div class="fw-semibold">Weekly Standings</div>
+                <div class="small qs-muted">Top players go neon.</div>
+              </div>
+            </div>
+            <div class="qs-feature">
+              <div class="qs-feature-icon qs-ic-gold">♦</div>
+              <div>
+                <div class="fw-semibold">Tournament Seasons</div>
+                <div class="small qs-muted">Midnight Split is LIVE.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-5">
+          <div class="qs-card p-4 qs-glow">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div class="fw-semibold">Tonight’s House Specials</div>
+              <span class="badge qs-badge qs-badge-red">HOT</span>
+            </div>
+
+            <div class="qs-special">
+              <div class="qs-special-title">Neon Double-Down</div>
+              <div class="small qs-muted">A flashy hand with invisible odds.</div>
+            </div>
+            <div class="qs-special">
+              <div class="qs-special-title">Green Felt Sprint</div>
+              <div class="small qs-muted">Speed-run the tables, chase the scores.</div>
+            </div>
+            <div class="qs-special">
+              <div class="qs-special-title">Quarter Burn</div>
+              <div class="small qs-muted">Scheduled. Dangerous. Familiar.</div>
+            </div>
+
+            <hr class="qs-hr" />
+
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div class="small qs-muted">Ready to play?</div>
+                <div class="fw-semibold">Portal → Games</div>
+              </div>
+              <a class="btn qs-btn qs-btn-green" href="http://portal.{{ domain }}/login">Login</a>
+            </div>
+          </div>
+
+          <div class="qs-marquee mt-3">
+            <div class="qs-marquee-inner">
+              <span>♠ LIVE TABLES</span>
+              <span>♦ WEEKLY STANDINGS</span>
+              <span>♥ NEON JACKPOTS</span>
+              <span>♣ TOURNAMENT SEASON</span>
+              <span>♠ LIVE TABLES</span>
+              <span>♦ WEEKLY STANDINGS</span>
+              <span>♥ NEON JACKPOTS</span>
+              <span>♣ TOURNAMENT SEASON</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

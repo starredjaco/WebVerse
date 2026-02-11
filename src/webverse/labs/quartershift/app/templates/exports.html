@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container px-4 py-5">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <div>
+      <h2 class="mb-1">Exports</h2>
+      <div class="small qs-muted">Generate weekly reports (PDF download response).</div>
+    </div>
+    <a class="btn qs-btn qs-btn-gold" href="/dashboard">Back</a>
+  </div>
+
+  <div class="qs-card p-4">
+    <div class="qs-callout">
+      <div class="fw-semibold">Weekly Report</div>
+      <div class="small qs-muted">Pulls a sourceUrl and embeds it into a report.</div>
+    </div>
+
+    <form method="GET" action="/exports/weekly" class="row g-2 align-items-end mt-2">
+      <div class="col-12 col-lg-10">
+        <label class="form-label small qs-muted">sourceUrl</label>
+        <input class="form-control qs-input" name="sourceUrl" placeholder="http://quartershift.local/about" />
+      </div>
+      <div class="col-12 col-lg-2 d-grid">
+        <button class="btn qs-btn qs-btn-red" type="submit">Download</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  quartershift:
+    build: ./app
+    container_name: quartershift
+    environment:
+      - LAB_DOMAIN=quartershift.local
+      - DB_PATH=/data/quartershift.db
+      - JWT_SECRET=QuarterShift_Dev_Secret_2026
+      - FLAG=WEBVERSE{house_edge_meets_cache_edge}
+    extra_hosts:
+      quartershift.local: "127.0.0.1"
+      portal.quartershift.local: "127.0.0.1"
+      games.quartershift.local: "127.0.0.1"
+      scores.quartershift.local: "127.0.0.1"
+      auth.quartershift.local: "127.0.0.1"
+      ops.quartershift.local: "127.0.0.1"
+      dashboard.quartershift.local: "127.0.0.1"
+    ports:
+      - "80:80"
+    volumes:
+      - quartershift_data:/data
+    restart: unless-stopped
+
+volumes:
+  quartershift_data:

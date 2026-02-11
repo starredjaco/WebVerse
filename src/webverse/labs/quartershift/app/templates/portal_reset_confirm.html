@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container px-4 py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-5">
+      <div class="qs-card p-4">
+        <h2 class="qs-neon mb-1">Reset Confirm</h2>
+        <p class="qs-muted small mb-4">Enter email + reset code + new password.</p>
+
+        {% if error %}
+          <div class="alert alert-danger qs-alert" role="alert">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="/reset/confirm" class="vstack gap-3">
+          <div>
+            <label class="form-label small qs-muted">Email</label>
+            <input class="form-control qs-input" name="email" type="email" required />
+          </div>
+          <div>
+            <label class="form-label small qs-muted">Reset Code</label>
+            <input class="form-control qs-input" name="code" type="text" placeholder="QS-0001-1234" required />
+          </div>
+          <div>
+            <label class="form-label small qs-muted">New Password</label>
+            <input class="form-control qs-input" name="new_password" type="password" required />
+          </div>
+
+          <button class="btn qs-btn qs-btn-green btn-lg" type="submit">Set New Password</button>
+          <div class="small">
+            <a class="qs-link" href="/login">Back to login</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

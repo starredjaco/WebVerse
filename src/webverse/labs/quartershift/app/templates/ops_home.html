@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container px-4 py-5">
+  <div class="qs-card p-4">
+    <h2 class="mb-1">Ops Backoffice</h2>
+    <div class="small qs-muted">Internal incident tools.</div>
+
+    <hr class="qs-hr" />
+
+    <div class="row g-3">
+      <div class="col-12 col-md-6">
+        <div class="qs-mini p-3">
+          <div class="fw-semibold">Incidents</div>
+          <div class="small qs-muted mb-2">View incident logs.</div>
+          <a class="btn qs-btn qs-btn-green btn-sm" href="/incidents">Open</a>
+        </div>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="qs-mini p-3">
+          <div class="fw-semibold">Payouts</div>
+          <div class="small qs-muted mb-2">View payouts.</div>
+          <a class="btn qs-btn qs-btn-red btn-sm" href="/payouts">Open</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container px-4 py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-5">
+      <div class="qs-card p-4">
+        <h2 class="qs-neon mb-1">Reset Request</h2>
+        <p class="qs-muted small mb-4">If the account exists, a reset code is issued.</p>
+
+        {% if msg %}
+          <div class="alert alert-success qs-alert" role="alert">{{ msg }}</div>
+        {% endif %}
+        {% if error %}
+          <div class="alert alert-danger qs-alert" role="alert">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="/reset" class="vstack gap-3">
+          <div>
+            <label class="form-label small qs-muted">Email</label>
+            <input class="form-control qs-input" name="email" type="email" placeholder="you@domain.com" required />
+          </div>
+          <button class="btn qs-btn qs-btn-gold btn-lg" type="submit">Issue Reset Code</button>
+          <div class="small">
+            <a class="qs-link" href="/reset/confirm">I have a reset code</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container px-4 py-5">
+  <div class="row g-4">
+    <div class="col-12 col-lg-8">
+      <div class="qs-card p-4">
+        <h2 class="mb-1">Moderator Console</h2>
+        <div class="small qs-muted">Tools and exports for tournament moderation.</div>
+
+        <hr class="qs-hr" />
+
+        <div class="qs-callout">
+          <div class="fw-semibold">Quick Actions</div>
+          <div class="small qs-muted">Preview internal pages, generate weekly exports.</div>
+        </div>
+
+        <div class="row g-3 mt-1">
+          <div class="col-12 col-md-6">
+            <div class="qs-mini p-3">
+              <div class="fw-semibold">Fetcher</div>
+              <div class="small qs-muted mb-2">Render a local URL preview.</div>
+              <a class="btn qs-btn qs-btn-green btn-sm" href="/tools/fetch">Open Fetch</a>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="qs-mini p-3">
+              <div class="fw-semibold">Exports</div>
+              <div class="small qs-muted mb-2">Weekly report generator.</div>
+              <a class="btn qs-btn qs-btn-gold btn-sm" href="/exports">Open Exports</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+      <div class="qs-card p-4">
+        <div class="fw-semibold mb-2">Moderator Status</div>
+        <div class="small qs-muted">Signed in as:</div>
+        <div class="fs-5 fw-bold">{{ user.username }}</div>
+        <div class="mt-2">
+          <span class="badge qs-badge qs-badge-red">MODERATOR</span>
+        </div>
+
+        <hr class="qs-hr" />
+
+        <div class="small qs-muted">
+          Use the fetch tool to preview internal surfaces. The casino is loud — but the bugs are louder.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

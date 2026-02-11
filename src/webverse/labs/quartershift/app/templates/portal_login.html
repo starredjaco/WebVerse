@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container px-4 py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-5">
+      <div class="qs-card p-4">
+        <h2 class="qs-neon mb-1">Portal Login</h2>
+        <p class="qs-muted small mb-4">Enter the casino network. Your cookie follows you across subdomains.</p>
+
+        {% if error %}
+          <div class="alert alert-danger qs-alert" role="alert">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="/login" class="vstack gap-3">
+          <div>
+            <label class="form-label small qs-muted">Email</label>
+            <input class="form-control qs-input" name="email" type="email" placeholder="you@domain.com" required />
+          </div>
+
+          <div>
+            <label class="form-label small qs-muted">Password</label>
+            <input class="form-control qs-input" name="password" type="password" placeholder="••••••••" required />
+          </div>
+
+          <button class="btn qs-btn qs-btn-green btn-lg" type="submit">Login</button>
+
+          <div class="d-flex justify-content-between small">
+            <a class="qs-link" href="/reset">Forgot password?</a>
+            <a class="qs-link" href="/signup">Create account</a>
+          </div>
+        </form>
+      </div>
+
+      <div class="text-center mt-3 small qs-muted">
+        Redirects to <b class="text-light">games.{{ domain }}</b> on success.
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

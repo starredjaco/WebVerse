@@ -44,4 +44,14 @@ webverse = [
     "gui/**/*.ico",
     "gui/sounds/**",
     "gui/**/*.wav",
+
+    # IMPORTANT: include web templates/static for labs + any embedded servers
+    "**/*.html",
+    "**/*.css",
+    "**/*.js",
+    "**/*.map",
+    "**/*.json",
+    "**/*.txt",
+    "**/*.md",
+    "**/*.j2",
 ]

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container px-4 py-5">
+  <div class="row g-4">
+    <div class="col-12 col-lg-8">
+      <div class="qs-card p-4">
+        <h1 class="qs-title">Our Story</h1>
+          <p class="qs-subtitle">
+            Quarter Shift wasn’t built as “just another casino.” It started as a small after-hours table room with a
+            simple idea: make classic card games feel sharp again — fast rounds, clean rules, and a leaderboard that
+            actually means something.
+          </p>
+
+          <div class="qs-story">
+            <div class="qs-story__block">
+              <div class="qs-kicker">The early nights</div>
+              <p class="qs-paragraph">
+                In the beginning, it was a few regulars, a quiet pit, and a scoreboard scribbled on a clipboard.
+                But the crowd grew — and so did the stakes. Weekly tournaments became the heartbeat of the place:
+                winners earned a name, not just chips.
+              </p>
+            </div>
+
+            <div class="qs-story__block">
+              <div class="qs-kicker">Built for competition</div>
+              <p class="qs-paragraph">
+                We engineered Quarter Shift around one principle: tournaments should feel live.
+                Every split decision, every double-down, every last-card swing — it all matters. That’s why our
+                standings update continuously and why the tournament board never sleeps.
+              </p>
+            </div>
+
+            <div class="qs-story__block">
+              <div class="qs-kicker">A modern house</div>
+              <p class="qs-paragraph">
+                As Quarter Shift expanded, we kept the same “clean table” philosophy behind the scenes:
+                minimal friction for players, strong internal controls for events, and a pipeline that can scale
+                from a quiet Monday to a packed weekend rush.
+              </p>
+            </div>
+
+            <div class="qs-card qs-card--inset qs-callout">
+              <div class="qs-kicker">What we believe</div>
+              <ul class="qs-list">
+                <li><b>Fair play</b> should be obvious at a glance.</li>
+                <li><b>Speed</b> matters — rounds should move.</li>
+                <li><b>Competition</b> should be earned, not guessed.</li>
+                <li><b>Style</b> should feel like neon in the rain.</li>
+              </ul>
+            </div>
+          </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+      <div class="qs-card p-4">
+        <div class="fw-semibold mb-2">Quick Links</div>
+        <div class="d-grid gap-2">
+          <a class="btn qs-btn qs-btn-green" href="http://portal.{{ domain }}/login">Portal Login</a>
+          <a class="btn qs-btn qs-btn-red" href="http://portal.{{ domain }}/signup">Create Account</a>
+          <a class="btn qs-btn qs-btn-gold" href="http://games.{{ domain }}/">Games</a>
+        </div>
+
+        <div class="qs-sidebrand">
+          <div class="qs-sidebrand__top">
+            <span class="qs-sidebrand__dot" aria-hidden="true"></span>
+            <div class="qs-sidebrand__title">Quarter Shift Entertainment Group</div>
+          </div>
+          <div class="qs-sidebrand__tagline">Neon tables. Weekly tournaments. One leaderboard.</div>
+          <div class="qs-sidebrand__meta">Established 2026 • Member-first tournaments</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

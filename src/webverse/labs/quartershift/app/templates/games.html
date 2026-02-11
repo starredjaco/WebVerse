@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container px-4 py-5">
+  <div class="row g-4 align-items-stretch">
+    <div class="col-12 col-lg-7">
+      <div class="qs-card p-4 qs-tablefelt h-100">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h2 class="mb-1">Blackjack</h2>
+            <div class="small qs-muted">Dealer stands on 17. Aces adapt.</div>
+          </div>
+          <div class="qs-chipstack">
+            <span class="badge qs-badge qs-badge-green">LIVE</span>
+            <span class="badge qs-badge qs-badge-red">HARD</span>
+          </div>
+        </div>
+
+        <hr class="qs-hr" />
+
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <div class="qs-hand-title">Dealer</div>
+            <div class="qs-cards" id="dealerCards"></div>
+            <div class="qs-hand-meta">
+              <span class="qs-pillmini">Total</span>
+              <span class="qs-handtotal" id="dealerTotal">?</span>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <div class="qs-hand-title">You</div>
+            <div class="qs-cards" id="playerCards"></div>
+            <div class="qs-hand-meta">
+              <span class="qs-pillmini qs-pillmini-green">Total</span>
+              <span class="qs-handtotal" id="playerTotal">?</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <button class="btn qs-btn qs-btn-gold" id="btnNew">New round</button>
+          <button class="btn qs-btn qs-btn-green" id="btnHit">Hit</button>
+          <button class="btn qs-btn qs-btn-red" id="btnStand">Stand</button>
+        </div>
+
+        <div class="qs-status mt-3" id="statusText">Hit or Stand.</div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-5">
+      <div class="qs-card p-4 h-100">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h2 class="mb-1">Leaderboard</h2>
+            <div class="small qs-muted">Top tournament scores (weekly).</div>
+          </div>
+          <button class="btn btn-sm qs-btn qs-btn-green" id="btnReloadLB">Reload</button>
+        </div>
+
+        <hr class="qs-hr" />
+
+        <div class="table-responsive">
+          <table class="table table-sm table-borderless align-middle mb-2 qs-table">
+            <thead>
+              <tr class="qs-tr-head">
+                <th>Rank</th>
+                <th>Player</th>
+                <th class="text-end">Score</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardBody">
+              <tr><td colspan="3" class="qs-muted small">Loading leaderboard…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <a class="btn qs-btn qs-btn-gold" href="/standings">Full standings</a>
+          <div class="small qs-muted">Source: <b class="text-light">scores.{{ domain }}</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
