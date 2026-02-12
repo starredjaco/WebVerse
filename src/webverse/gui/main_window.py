@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QSta
 from PyQt5.QtCore import QTimer, Qt, QSize, QEvent, QUrl, QSettings
 from PyQt5.QtGui import QKeySequence, QIcon, QDesktopServices
 
+from webverse.gui.resources import load_icon
 from webverse.gui.theme import qss_onyx_amber
 from webverse.gui.widgets.topbar import TopBar
 from webverse.gui.widgets.command_palette import CommandPalette
@@ -34,8 +35,10 @@ class MainWindow(QMainWindow):
 		self.setWindowTitle("WebVerse")
 		self._settings = QSettings("WebVerse", "WebVerse")
 
-		icon_path = Path(__file__).resolve().parent / "icons" / "webverse.ico"
-		self.setWindowIcon(QIcon(str(icon_path)))
+		try:
+			self.setWindowIcon(load_icon("webverse.ico"))
+		except Exception:
+			self.setWindowIcon(QIcon(str(Path(__file__).resolve().parent / "icons" / "webverse.ico")))
 
 		# Normal top-level window WITH explicit decoration hints (KWin needs these for active maximize button).
 		f = (

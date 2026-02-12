@@ -1,6 +1,8 @@
 # gui/widgets/topbar.py
 from __future__ import annotations
 
+from webverse.gui.resources import load_svg_icon
+
 from PyQt5.QtWidgets import (
 	QFrame, QHBoxLayout, QLabel, QLineEdit, QToolButton,
 	QGraphicsDropShadowEffect, QStyle,
@@ -38,7 +40,12 @@ class TopBar(QFrame):
 		self.btn_back = QToolButton()
 		self.btn_back.setObjectName("TopNavBtn")
 		self.btn_back.setCursor(Qt.PointingHandCursor)
-		self.btn_back.setIcon(self.style().standardIcon(QStyle.SP_ArrowLeft))
+
+		try:
+			self.btn_back.setIcon(load_svg_icon("left_arrow.svg", size=16))
+		except Exception:
+			self.btn_back.setIcon(self.style().standardIcon(QStyle.SP_ArrowLeft))
+
 		self.btn_back.setIconSize(QSize(16, 16))
 		self.btn_back.setAutoRaise(True)
 		self.btn_back.clicked.connect(self.back_requested.emit)
@@ -47,7 +54,12 @@ class TopBar(QFrame):
 		self.btn_fwd = QToolButton()
 		self.btn_fwd.setObjectName("TopNavBtn")
 		self.btn_fwd.setCursor(Qt.PointingHandCursor)
-		self.btn_fwd.setIcon(self.style().standardIcon(QStyle.SP_ArrowRight))
+
+		try:
+			self.btn_fwd.setIcon(load_svg_icon("right_arrow.svg", size=16))
+		except Exception:
+			self.btn_fwd.setIcon(self.style().standardIcon(QStyle.SP_ArrowRight))
+
 		self.btn_fwd.setIconSize(QSize(16, 16))
 		self.btn_fwd.setAutoRaise(True)
 		self.btn_fwd.clicked.connect(self.forward_requested.emit)
