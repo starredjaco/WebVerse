@@ -22,6 +22,7 @@ from PyQt5.QtGui import QDesktopServices, QIcon, QPainter, QColor, QPen, QPixmap
 from PyQt5.QtWidgets import QApplication, QLayout
 
 from webverse.gui.util_avatar import lab_circle_icon, lab_badge_icon
+from webverse.gui.resources import load_svg_icon
 from webverse.core.xp import base_xp_for_difficulty
 from webverse.core import docker_ops
 from webverse.core import progress_db
@@ -393,9 +394,18 @@ class _ConnBar(QFrame):
 		self.btn_stop.setCursor(Qt.PointingHandCursor)
 
 		try:
-			self.btn_stop.setIcon(QApplication.style().standardIcon(QStyle.SP_MediaStop))
+			ico = load_svg_icon("stop.svg", size=18)
+			if not ico.isNull():
+				self.btn_stop.setIcon(ico)
+			else:
+				self.btn_stop.setIcon(QApplication.style().standardIcon(QStyle.SP_MediaStop))
+			self.btn_stop.setIconSize(QSize(18, 18))
 		except Exception:
-			pass
+			try:
+				self.btn_stop.setIcon(QApplication.style().standardIcon(QStyle.SP_MediaStop))
+				self.btn_stop.setIconSize(QSize(18, 18))
+			except Exception:
+				pass
 
 		btnrow.addWidget(self.btn_stop)
 
@@ -404,9 +414,18 @@ class _ConnBar(QFrame):
 		self.btn_reset.setCursor(Qt.PointingHandCursor)
 
 		try:
-			self.btn_reset.setIcon(QApplication.style().standardIcon(QStyle.SP_BrowserReload))
+			ico = load_svg_icon("reset.svg", size=18)
+			if not ico.isNull():
+				self.btn_reset.setIcon(ico)
+			else:
+				self.btn_reset.setIcon(QApplication.style().standardIcon(QStyle.SP_BrowserReload))
+			self.btn_reset.setIconSize(QSize(18, 18))
 		except Exception:
-			pass
+			try:
+				self.btn_reset.setIcon(QApplication.style().standardIcon(QStyle.SP_BrowserReload))
+				self.btn_reset.setIconSize(QSize(18, 18))
+			except Exception:
+				pass
 
 		btnrow.addWidget(self.btn_reset)
 
