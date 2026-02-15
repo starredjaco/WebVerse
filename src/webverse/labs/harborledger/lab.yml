@@ -14,3 +14,4 @@ image: cover.png
 entrypoint:
   base_url: http://portal.harborledger.local
 flag_sha256: "706ff6c58c3f3836ed0e158e879c341f01ee8ae51cd00d17430b583c25867f46"
+public_lab_url: https://webverselabs.com/labs/harborledger

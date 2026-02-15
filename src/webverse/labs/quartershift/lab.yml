@@ -15,6 +15,7 @@ image: cover.png
 entrypoint:
   base_url: http://quartershift.local
 flag_sha256: "36a363b2d7a47a40fe9eb9bb67edfa8b728cda46b4f99fbf6621b6ebb8c51fba"
+public_lab_url: https://webverselabs.com/labs/quartershift
 tags:
   - graphql
   - cache

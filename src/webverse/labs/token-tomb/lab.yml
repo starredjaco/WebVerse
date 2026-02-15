@@ -11,3 +11,4 @@ image: cover.png
 entrypoint:
   base_url: http://localhost:8091
 flag_sha256: 8eed89b975b1b80a2397535d5f4ecff57c5956a4027ec08ded3b8f31c3239518
+public_lab_url: https://webverselabs.com/labs/token-tomb

@@ -15,3 +15,4 @@ image: cover.png
 entrypoint:
   base_url: http://leaklore.local/
 flag_sha256: "5a530c35747c17bef85bd4a35fd6d2191fde6e8aac50241e18aef49168412bd6"
+public_lab_url: https://webverselabs.com/labs/leak-lore

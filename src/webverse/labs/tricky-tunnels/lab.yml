@@ -13,3 +13,4 @@ entrypoint:
 tags: ["info-disclosure", "debug-endpoint"]
 
 flag_sha256: "b82a8b339d3ee9b225e3674626adc5c49bdc217f03605b1cbb3d3ca51db0c269"
+public_lab_url: https://webverselabs.com/labs/tricky-tunnels

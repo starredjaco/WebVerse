@@ -12,3 +12,4 @@ image: cover.png
 entrypoint:
   base_url: http://arcadenal.local/
 flag_sha256: 96c96e1a8b901dc04158eec01a2f895b7316de305a4c9384fe4456892f157375
+public_lab_url: https://webverselabs.com/labs/arcadenal

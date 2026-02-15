@@ -11,3 +11,4 @@ image: "cover.png"
 entrypoint:
   base_url: http://app.astercheck.local
 flag_sha256: "8c2882661223365af56e7297e06747b7d14443d1a1757653cdcf493257b9f09f"
+public_lab_url: https://webverselabs.com/labs/aster-check
