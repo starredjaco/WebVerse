@@ -1,15 +1,31 @@
 # WebVerse
 
-WebVerse is a local **web & API security lab runner** — a desktop app that discovers labs, starts them with **Docker Compose**, opens them in your browser, and tracks progress on your machine.
+WebVerse is a **local-first web hacking lab platform** for practicing **realistic web application security** and **API security** attack chains on your own machine.
+It’s a desktop app + lab runner that spins up **intentionally vulnerable web apps** using **Docker Compose**, opens them in your browser, and tracks your progress.
 
 > **Educational use only.** Labs are intentionally vulnerable. **Do not expose them to the internet.**
 
 ---
 
-### Install WebVerse from GitHub
+## Install (Official / Recommended)
+
+WebVerse installs via the installer script. It’s **idempotent** (safe to rerun) and is the only supported install path documented here.
+
+**Supported distros:** Ubuntu / Debian / Kali (Linux)  
+**What it does:** installs deps, ensures Docker + `docker compose` works, installs WebVerse via pipx, and applies the common first-run fixes.
+
 ```bash
-curl https://raw.githubusercontent.com/LeighlinRamsay/WebVerse/refs/heads/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/LeighlinRamsay/WebVerse/refs/heads/main/install.sh | bash
 ```
+
+After install:
+
+```bash
+webverse
+```
+
+### Updating WebVerse
+Re-run the installer script — it will reinstall/refresh the WebVerse pipx environment safely.
 
 ---
 
@@ -25,138 +41,44 @@ curl https://raw.githubusercontent.com/LeighlinRamsay/WebVerse/refs/heads/main/i
 
 ---
 
-## Install (Recommended): pipx
+## What you get (and why it’s different)
 
-`pipx` installs WebVerse into an isolated environment and exposes a `webverse` command.
+WebVerse is built around **real-world failure chains** you’ll actually encounter during web app pentests:
 
-### 0) Requirements
-- **Linux** or **macOS**
-- **Python 3.10+**
-- **Docker** + **Docker Compose v2** (must support `docker compose`)
+- **API Authorization Failures**
+  - **BOLA / IDOR** (object-level access control)
+  - **BOPLA** / **mass assignment** + **excessive data exposure** (property-level)
+  - **BFLA** (function-level admin endpoints)
+- **Auth & session issues** (JWT, reset flows, role checks, trusted-client assumptions)
+- **SSRF pivots** into internal surfaces (subdomains, admin panels, internal APIs)
+- **GraphQL recon** (introspection → schema mining → sensitive fields)
+- Multi-service apps with realistic separation (portal, API, internal ops, dashboards)
 
-Quick check:
-
-```bash
-python3 --version
-docker --version
-docker compose version
-```
-
-> If `docker compose version` fails, install Docker Desktop (macOS) or Docker Engine + Compose plugin (Linux).
-
-### 1) Install pipx (one time)
-
-**Debian/Kali/Ubuntu:**
-```bash
-sudo apt update
-sudo apt install -y pipx
-pipx ensurepath
-```
-
-Restart your terminal (or run `source ~/.bashrc` / `source ~/.zshrc`).
-
-### 2) Install WebVerse from GitHub
-```bash
-pipx install git+https://github.com/LeighlinRamsay/WebVerse.git
-```
-
-### 3) Run WebVerse
-```bash
-webverse
-```
-
-### Update / uninstall
-```bash
-pipx upgrade webverse
-pipx uninstall webverse
-```
+Everything runs locally via Docker Compose, so you can:
+- iterate quickly,
+- break things safely,
+- reset cleanly,
+- and practice the same technique across multiple stacks.
 
 ---
 
-## Install (Alternative): Run from source (developer mode)
+## How WebVerse works
 
-Use this if you’re editing the code or building labs.
+1. Launch WebVerse (`webverse`)
+2. Browse labs (difficulty + topics)
+3. Start a lab (Docker Compose spins up the full stack)
+4. Open it in your browser (entrypoint + subdomains)
+5. Chain the bugs, capture the flag, submit to mark it solved
+6. Reset and rerun the lab whenever you want
 
-### 1) Clone
-```bash
-git clone https://github.com/LeighlinRamsay/WebVerse.git
-cd WebVerse
-```
-
-### 2) Create a venv + install dependencies
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-### 3) Run
-```bash
-python3 webverse.py
-```
+Progress is tracked via our API and backend at api-opensource.webverselabs.com this way we can support WebVerse accounts and ensure your lab progress will always be saved!
 
 ---
 
-## Features
+## Links
 
-- 🧪 Browse included labs (difficulty, tags, description)
-- ▶️ One-click **Start / Stop / Reset**
-- 🌐 **Open in Browser** from the UI
-- 🧾 View lab status and logs
-- ✅ Track progress locally (`progress.db`)
-- 🏁 Flag submission + verification (via `flag_sha256` in each `lab.yml`)
-
----
-
-## Using WebVerse
-
-1. Open WebVerse
-2. Go to **Labs** and pick a lab
-3. Click **Start** (Docker Compose spins up the lab)
-4. Click **Open in Browser**
-5. When you capture the flag, submit it in the lab page to mark it solved
-6. Use **Reset** to restore the lab and try again
-
-### Where are labs stored?
-By default, labs live in:
-- `./labs/` (in a source checkout)
-
----
-
-## Troubleshooting
-
-### Docker permission denied (Linux)
-If Docker works only with `sudo`, add your user to the docker group:
-
-```bash
-sudo usermod -aG docker "$USER"
-newgrp docker
-docker ps
-```
-
-### Port 80 / privileged ports (Linux/macOS)
-Some labs bind to low ports. If a lab fails to start with permission errors:
-- Update the lab’s `docker-compose.yml` to use a higher port (e.g. `8080:80`), or
-- Run WebVerse with elevated permissions (not recommended as default)
-
-### Lab won’t start / stuck starting
-- Confirm Docker is running: `docker ps`
-- Check the lab logs in the WebVerse UI
-- Try **Stop → Reset → Start**
-
----
-
-## Why WebVerse?
-
-Most practice environments are either:
-- heavy to set up,
-- scattered across repos,
-- or too manual to run repeatedly.
-
-WebVerse makes local practice **repeatable**:
-- labs are self-contained
-- starting/resetting takes one click
-- you can iterate quickly, break things, reset, and try again
+- WebVerse Labs site: https://webverselabs.com
+- Blog / writeups: https://blog.webverselabs.com
 
 ---
 
