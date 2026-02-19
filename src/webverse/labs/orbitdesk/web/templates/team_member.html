@@ -1,0 +1,55 @@
+{% extends "_layout.html" %}
+{% block content %}
+
+<div class="section hero">
+  <div class="kicker">
+    <div class="tag"><span class="dot"></span> Team</div>
+    <a class="tag" href="/team">Back to team</a>
+  </div>
+
+  {% if member %}
+    <div class="team-profile">
+      <img class="team-photo-lg" src="{{ member.photo_url }}" alt="{{ member.name }}" loading="lazy">
+      <div>
+        <h1 class="h1" style="margin-bottom:10px">{{ member.name }}</h1>
+        <p class="p" style="font-size:16px">{{ member.title }}</p>
+        <div class="hr"></div>
+        <p class="p">{{ member.description }}</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="split">
+        <div class="panel">
+          <div class="h2">What they do</div>
+          <div class="hr"></div>
+          <p class="p">{{ member.what_they_do }}</p>
+        </div>
+        <div class="panel">
+          <div class="h2">How they found OrbitDesk</div>
+          <div class="hr"></div>
+          <p class="p">{{ member.how_they_found_us }}</p>
+        </div>
+      </div>
+
+      <div class="split" style="margin-top:16px">
+        <div class="panel">
+          <div class="h2">Why they love it here</div>
+          <div class="hr"></div>
+          <p class="p">{{ member.why_they_love_it }}</p>
+        </div>
+        <div class="panel">
+          <div class="h2">Personal</div>
+          <div class="hr"></div>
+          <p class="p">{{ member.personal }}</p>
+        </div>
+      </div>
+    </div>
+
+  {% else %}
+    <h1 class="h1">Team member not found</h1>
+    <p class="p">That profile doesn’t exist.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

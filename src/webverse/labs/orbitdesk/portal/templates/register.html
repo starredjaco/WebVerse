@@ -1,0 +1,23 @@
+{% extends "_layout.html" %}
+{% block content %}
+<div class="card"><div class="card-in" style="max-width:720px;margin:0 auto">
+  <h1 class="h1">Create account</h1>
+  <p class="p">Get a personal workspace instantly. You can add a team later.</p>
+
+  <div id="notice" class="notice" style="display:none"></div>
+
+  <label>Full name</label>
+  <input id="name" placeholder="Jordan Lee" autocomplete="name">
+  <label>Email</label>
+  <input id="email" type="email" placeholder="jordan@company.com" autocomplete="username">
+  <label>Password</label>
+  <input id="password" type="password" placeholder="At least 8 characters" autocomplete="new-password">
+  <div class="row" style="margin-top:12px">
+    <button class="btn" onclick="Portal.register()">Create account</button>
+    <a class="btn secondary" href="/login">Back to sign in</a>
+  </div>
+
+  <div class="hr"></div>
+  <p class="p"><small>By creating an account, you agree to the customer terms and acceptable use policy.</small></p>
+</div></div>
+{% endblock %}

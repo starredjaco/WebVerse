@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diagnostics • OrbitDesk Ops</title>
+  <link rel="stylesheet" href="/static/site.css">
+</head>
+<body>
+  <div class="topbar">
+    <div class="wrap topbar-inner">
+      <div class="brand">
+        <div class="brand-mark"></div>
+        <div class="brand-title">
+          <strong>OrbitDesk</strong>
+          <span>Ops Console</span>
+        </div>
+      </div>
+      <div class="nav">
+        <a href="/internal">Home</a>
+        <a href="/internal/diagnostics">Diagnostics</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="card"><div class="card-in">
+      <h1 class="h1" style="font-size:34px">DNS probe</h1>
+      <p class="p">Validate the DNS resolution path from the internal network (useful for webhook debugging).</p>
+      <div class="hr"></div>
+
+      <div id="notice" class="notice">Provide a hostname or IP to probe.</div>
+
+      <label>Host</label>
+      <input id="host" placeholder="api.orbitdesk.local">
+      <div class="row" style="margin-top:12px">
+        <button class="btn" onclick="probe()">Probe</button>
+        <a class="btn secondary" href="/internal">Back</a>
+      </div>
+
+      <div class="hr"></div>
+      <div id="out" class="notice" style="white-space:pre-wrap">—</div>
+    </div></div>
+  </div>
+
+<script>
+async function probe(){
+  const host = document.getElementById("host").value.trim();
+  const res = await fetch("/internal/probe", {
+    method:"POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({host})
+  });
+  const text = await res.text();
+  document.getElementById("out").textContent = text;
+  document.getElementById("notice").className = res.ok ? "notice ok" : "notice bad";
+  document.getElementById("notice").textContent = res.ok ? "Probe completed." : "Probe failed.";
+}
+</script>
+</body>
+</html>

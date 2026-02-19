@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title or "OrbitDesk Identity" }}</title>
+  <link rel="stylesheet" href="/static/site.css">
+</head>
+<body>
+  <div class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="http://{{ lab_domain }}/">
+        <div class="brand-mark"></div>
+        <div class="brand-title">
+          <strong>OrbitDesk</strong>
+          <span>Identity Service</span>
+        </div>
+      </a>
+      <div class="nav">
+        <a href="http://portal.{{ lab_domain }}/login">Portal</a>
+        <a href="/reset">Reset password</a>
+        <a href="http://{{ lab_domain }}/security">Trust Center</a>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    {% block content %}{% endblock %}
+    <div class="footer">
+      <div>Identity region: sandbox</div>
+      <div class="row">
+        <a href="/reset">Password help</a>
+        <a href="http://status.{{ lab_domain }}/">Status</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

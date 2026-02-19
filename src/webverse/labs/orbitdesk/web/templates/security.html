@@ -1,0 +1,18 @@
+{% extends "_layout.html" %}
+{% block content %}
+<div class="card"><div class="card-in">
+  <h1 class="h1">Trust Center</h1>
+  <p class="p">OrbitDesk is designed for teams sharing sensitive client documents. We prioritize strong access controls, scoped tokens, and operational oversight.</p>
+  <div class="hr"></div>
+  <div class="row">
+    <div class="notice" style="flex:1">
+      <div style="font-weight:700;color:var(--text)">Report a security issue</div>
+      <div>Send details to ella.reed@orbitdesk.local. We respond quickly.</div>
+    </div>
+    <div class="notice" style="flex:1">
+      <div style="font-weight:700;color:var(--text)">Availability</div>
+      <div>See current system health at <span class="code">status.{{ lab_domain }}</span>.</div>
+    </div>
+  </div>
+</div></div>
+{% endblock %}

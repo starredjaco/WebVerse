@@ -1,0 +1,90 @@
+{% extends "_layout.html" %}
+{% block content %}
+<section class="hero">
+  <div class="wrap">
+    <div class="kicker">
+      <div class="tag"><span class="dot"></span> Client workspaces</div>
+      <div class="tag">Project timelines</div>
+      <div class="tag">Secure document delivery</div>
+    </div>
+
+    <div class="hero-grid">
+      <div class="hero-left">
+        <h1 class="h1">A premium client portal for teams that move fast.</h1>
+        <p class="p">OrbitDesk helps boutique consultancies keep projects, files, and onboarding in one place — with the polish clients expect and the controls your team needs.</p>
+        <div class="row" style="margin-top:16px">
+          <a class="btn" href="http://portal.{{ lab_domain }}/register">Start a workspace</a>
+          <a class="btn secondary" href="/security">Trust Center</a>
+          <a class="btn ghost" href="/pricing">Plans</a>
+        </div>
+         <div class="feature-strip">
+          <div class="feature-col">
+            <div class="feature-title">Client-facing dashboards</div>
+            <div class="p">Share progress, timelines, and deliverables without endless status emails.</div>
+          </div>
+          <div class="feature-col">
+            <div class="feature-title">Document exchange</div>
+            <div class="p">Upload, request, and distribute files using scoped access and expiring share links.</div>
+          </div>
+          <div class="feature-col">
+            <div class="feature-title">Onboarding workflows</div>
+            <div class="p">Collect requirements, kick off projects, and keep everything organized from day one.</div>
+          </div>
+        </div>
+      </div>
+    <aside class="hero-right">
+        <div class="panel">
+          <h2 class="h2">Request a demo</h2>
+          <p class="p" style="margin-bottom:10px">Tell us what you are building and we will follow up.</p>
+          {% if sent %}<div class="notice ok">Thanks - your message was received.</div>{% endif %}
+          <form method="post" action="/contact">
+            <label>Your name</label>
+            <input name="name" placeholder="Jordan Lee" required>
+            <label>Work email</label>
+            <input type="email" name="email" placeholder="jordan@company.com" required>
+            <label>What are you trying to improve?</label>
+            <textarea name="message" placeholder="Onboarding, document approvals, client visibility..." required></textarea>
+            <div class="row" style="margin-top:12px">
+              <button class="btn" type="submit">Send</button>
+              <span><small>We reply within 1 business day.</small></span>
+            </div>
+          </form>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <h2 class="h2">Built for real client work</h2>
+    <p class="p">Projects, members, integrations, and files behave like a real product - which means lots of normal behavior and plenty of places things can go wrong.</p>
+    <div class="split">
+      <div class="callout">
+        <div class="callout-title">Audit-friendly</div>
+        <div class="p">Roles, project membership, and change history are first-class features.</div>
+      </div>
+      <div class="callout">
+        <div class="callout-title">Integration ready</div>
+        <div class="p">Webhooks and diagnostics tools help teams troubleshoot customer setups.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <section class="section section-alt">
+  <div class="wrap">
+    <div class="cta">
+      <div>
+        <h2 class="h2" style="margin-bottom:6px">Already have an account?</h2>
+        <p class="p">Sign in to your portal to access your workspace.</p>
+      </div>
+      <div class="row">
+        <a class="btn" href="http://portal.{{ lab_domain }}/login">Sign in</a>
+        <a class="btn secondary" href="http://auth.{{ lab_domain }}/reset">Reset password</a>
+      </div>
+    </div>
+    <div class="notice" style="margin-top:12px">Tip: Use the portal to invite members, manage projects, and share documents with clients.</div>
+  </div>
+</section>
+{% endblock %}

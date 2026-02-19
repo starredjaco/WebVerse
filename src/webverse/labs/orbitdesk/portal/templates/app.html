@@ -1,0 +1,134 @@
+{% extends "_layout.html" %}
+{% block content %}
+<div class="shell">
+  <aside class="sidebar">
+    <div class="h3" style="margin:4px 0 6px">Workspace</div>
+    <div class="p" style="font-size:13px">Projects, docs, and integrations.</div>
+    <div class="hr" style="margin:12px 0"></div>
+    <div class="group">
+      <a class="side-link active" href="/app">Overview <span class="badge">Home</span></a>
+      <a class="side-link" href="/app/documents">Documents <span class="badge">Files</span></a>
+      <a class="side-link" href="/app/integrations">Integrations <span class="badge">Webhooks</span></a>
+    </div>
+    <div class="hr" style="margin:12px 0"></div>
+    <a class="side-link" href="http://{{ lab_domain }}/security">Trust Center</a>
+    <a class="side-link" href="http://auth.{{ lab_domain }}/reset">Password reset</a>
+  </aside>
+
+  <main>
+    <div class="card"><div class="card-in">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <div>
+          <h1 class="h1" style="font-size:34px;margin-bottom:6px">Overview</h1>
+          <p class="p" style="margin:0">Keep clients updated and deliver work without the noise.</p>
+        </div>
+        <div class="row">
+          <button class="btn" onclick="Portal.logout()">Sign out</button>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div id="me" class="notice">Loading...</div>
+
+      <div class="hr"></div>
+
+      <div class="hr"></div>
+
+      <div class="row" style="justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+  <div>
+    <h2 class="h2" style="margin:0">Projects</h2>
+    <p class="p" style="margin:4px 0 0">Create workspaces, manage members, and post updates.</p>
+  </div>
+  <form id="createProject" class="row" style="gap:8px" onsubmit="return Portal.createProject(event)">
+    <input class="input" name="name" placeholder="New workspace name" style="min-width:260px" maxlength="80" required />
+    <button class="btn primary" type="submit">Create</button>
+  </form>
+</div>
+
+<table class="table" id="projects" style="margin-top:14px">
+  <thead>
+    <tr><th>Project</th><th>ID</th><th>Owner</th><th style="width:90px"></th></tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<div id="projectPanel" style="display:none;margin-top:16px" class="card subtle">
+  <div class="card-in">
+    <div class="row" style="justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+      <div>
+        <div class="h2" style="margin:0" id="pName">Project</div>
+        <div class="p" style="margin:6px 0 0;color:#52607a">ID: <span class="code" id="pId"></span></div>
+      </div>
+      <div class="row" style="gap:8px;align-items:center">
+        <button class="btn" onclick="Portal.refreshProject()">Refresh</button>
+        <button class="btn" onclick="Portal.closeProject()">Close</button>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="grid2" style="gap:16px">
+      <div>
+        <div class="h3">Members</div>
+        <div class="p" style="margin-top:4px">Invite a teammate or reviewer to this workspace.</div>
+        <form class="row" style="gap:8px;margin-top:10px" onsubmit="return Portal.inviteMember(event)">
+          <input class="input" name="email" placeholder="email@company.com" style="min-width:220px" required />
+          <select class="input" name="memberRole" style="width:140px">
+            <option value="member">Member</option>
+            <option value="viewer">Viewer</option>
+          </select>
+          <button class="btn" type="submit">Add</button>
+        </form>
+        <div class="hr" style="margin:12px 0"></div>
+        <div id="membersList" class="p"></div>
+      </div>
+
+      <div>
+        <div class="h3">Tasks</div>
+        <div class="p" style="margin-top:4px">Track deliverables for the project timeline.</div>
+        <form class="row" style="gap:8px;margin-top:10px" onsubmit="return Portal.createTask(event)">
+          <input class="input" name="title" placeholder="e.g., Upload onboarding pack" style="min-width:240px" maxlength="120" required />
+          <select class="input" name="priority" style="width:140px">
+            <option value="normal">Normal</option>
+            <option value="high">High</option>
+            <option value="urgent">Urgent</option>
+          </select>
+          <input class="input" name="dueDate" placeholder="YYYY-MM-DD" style="width:140px" />
+          <button class="btn" type="submit">Create</button>
+        </form>
+        <div class="hr" style="margin:12px 0"></div>
+        <div id="tasksList"></div>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="grid2" style="gap:16px">
+      <div>
+        <div class="h3">Timeline updates</div>
+        <div class="p" style="margin-top:4px">Post status updates visible to workspace members.</div>
+        <form style="margin-top:10px" onsubmit="return Portal.createUpdate(event)">
+          <input class="input" name="title" placeholder="Update title" maxlength="120" required />
+          <textarea class="input" name="body" placeholder="Write a short update..." style="height:110px;margin-top:8px" maxlength="5000" required></textarea>
+          <div class="row" style="justify-content:flex-end;margin-top:8px">
+            <button class="btn" type="submit">Post update</button>
+          </div>
+        </form>
+        <div class="hr" style="margin:12px 0"></div>
+        <div id="updatesList"></div>
+      </div>
+
+      <div>
+        <div class="h3">Activity</div>
+        <div class="p" style="margin-top:4px">A lightweight audit feed of workspace actions.</div>
+        <div class="hr" style="margin:12px 0"></div>
+        <div id="activityList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    </div></div>
+  </main>
+</div>
+{% endblock %}

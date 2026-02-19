@@ -1,0 +1,20 @@
+{% extends "_layout.html" %}
+{% block content %}
+<div class="card"><div class="card-in">
+  <h1 class="h1">Contact</h1>
+  <p class="p">Have a question about OrbitDesk? Send a message and we’ll get back to you.</p>
+  {% if sent %}<div class="notice ok">Thanks — your message was received.</div>{% endif %}
+  <form method="post">
+    <label>Your name</label>
+    <input name="name" required>
+    <label>Work email</label>
+    <input type="email" name="email" required>
+    <label>Message</label>
+    <textarea name="message" required></textarea>
+    <div class="row" style="margin-top:10px">
+      <button class="btn" type="submit">Send</button>
+      <a class="btn secondary" href="/">Back</a>
+    </div>
+  </form>
+</div></div>
+{% endblock %}

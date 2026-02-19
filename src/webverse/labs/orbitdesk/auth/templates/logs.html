@@ -1,0 +1,41 @@
+{% extends "_layout.html" %}
+{% block content %}
+<div class="card"><div class="card-in">
+  <h1 class="h1" style="font-size:34px">Delivery logs</h1>
+  <p class="p">Sandbox delivery preview for administrators.</p>
+
+  <div class="hr"></div>
+
+  <form method="get" class="row" style="align-items:end">
+    <div style="flex:1">
+      <label>Filter by recipient</label>
+      <input name="to" value="{{ to_filter or "" }}" placeholder="ella@company.com">
+    </div>
+    <button class="btn" type="submit">Filter</button>
+  </form>
+
+  <div class="hr"></div>
+
+  {% if items|length == 0 %}
+    <div class="notice">No messages.</div>
+  {% else %}
+    <table class="table">
+      <thead><tr><th>To</th><th>Subject</th><th>When</th></tr></thead>
+      <tbody>
+        {% for m in items %}
+        <tr>
+          <td class="code">{{ m["to_email"] }}</td>
+          <td>{{ m["subject"] }}</td>
+          <td class="code">{{ m["created_at"] }}</td>
+        </tr>
+        <tr>
+          <td colspan="3">
+            <div class="notice" style="white-space:pre-wrap">{{ m["body"] }}</div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</div></div>
+{% endblock %}

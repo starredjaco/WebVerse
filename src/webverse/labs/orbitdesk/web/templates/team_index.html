@@ -1,0 +1,40 @@
+{% extends "_layout.html" %}
+{% block content %}
+
+<div class="section hero">
+  <div class="kicker">
+    <div class="tag"><span class="dot"></span> Meet the team</div>
+    <div class="tag">OrbitDesk • Support & Ops</div>
+  </div>
+
+  <h1 class="h1">The people behind OrbitDesk</h1>
+  <p class="p">A small team obsessed with clean onboarding, fast support, and boringly reliable operations.</p>
+</div>
+
+<div class="section">
+  {% if members and members|length > 0 %}
+    <div class="feature-grid">
+      {% for m in members %}
+        <a class="feature team-card" href="/team/{{ m.id }}">
+          <div class="team-top">
+            <img class="team-photo" src="{{ m.photo_url }}" alt="{{ m.name }}" loading="lazy">
+            <div>
+              <div class="h3">{{ m.name }}</div>
+              <div class="p">{{ m.title }}</div>
+            </div>
+          </div>
+          <div class="hr"></div>
+          <div class="p">{{ m.short_bio }}</div>
+          <div class="team-cta">View profile →</div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="panel">
+      <div class="h2">Team directory unavailable</div>
+      <p class="p">Please try again in a moment.</p>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title or "Portal • OrbitDesk" }}</title>
+  <link rel="stylesheet" href="/static/site.css">
+</head>
+<body>
+  <div class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="http://{{ lab_domain }}/">
+        <div class="brand-mark"></div>
+        <div class="brand-title">
+          <strong>OrbitDesk</strong>
+          <span>Customer Portal</span>
+        </div>
+      </a>
+      <div class="nav">
+        <a href="http://{{ lab_domain }}/">Marketing</a>
+        <a id="navSignIn" href="/login">Sign in</a>
+        <a id="navCreate" href="/register">Create account</a>
+        <a id="navWorkspace" href="/app" style="display:none">Workspace</a>
+        <a id="navSignOut" href="#" style="display:none">Sign out</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    {% block content %}{% endblock %}
+    <div class="footer">
+      <div>Need help? <a href="http://auth.{{ lab_domain }}/reset" style="text-decoration:underline">Reset password</a></div>
+      <div class="row">
+        <a href="http://status.{{ lab_domain }}/">Status</a>
+        <a href="http://{{ lab_domain }}/security">Trust Center</a>
+      </div>
+    </div>
+  </div>
+<script>
+  window.__LAB = {{ lab_json|safe }};
+</script>
+
+<script>
+  // Hide auth links when the user already has a session token.
+  (function () {
+    var token = localStorage.getItem("od_token") || "";
+    if (!token) return;
+    var a = document.getElementById("navSignIn"); if (a) a.style.display = "none";
+    var b = document.getElementById("navCreate"); if (b) b.style.display = "none";
+  })();
+</script>
+
+<script src="/static/portal.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OrbitDesk Ops • Internal</title>
+  <link rel="stylesheet" href="/static/site.css">
+</head>
+<body>
+  <div class="topbar">
+    <div class="wrap topbar-inner">
+      <div class="brand">
+        <div class="brand-mark"></div>
+        <div class="brand-title">
+          <strong>OrbitDesk</strong>
+          <span>Ops Console (internal)</span>
+        </div>
+      </div>
+      <div class="nav">
+        <a href="/internal">Home</a>
+        <a href="/internal/diagnostics">Diagnostics</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="card"><div class="card-in">
+      <h1 class="h1" style="font-size:34px">Internal Ops</h1>
+      <p class="p">Use these tools carefully. Output may contain sensitive information.</p>
+      <div class="hr"></div>
+      <div class="notice ok">Trusted network verified.</div>
+      <div class="hr"></div>
+      <div class="row">
+        <a class="btn" href="/internal/diagnostics">Run DNS probe</a>
+        <a class="btn secondary" href="http://portal.{{ lab_domain }}/app">Portal</a>
+      </div>
+    </div></div>
+  </div>
+</body>
+</html>

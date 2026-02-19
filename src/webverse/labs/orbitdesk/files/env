@@ -1,0 +1,2 @@
+CONFIG_DIR = "/srv/orbitdesk/config"
+CONFIG_PATH = f"{CONFIG_DIR}/service.env"

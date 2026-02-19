@@ -1,0 +1,14 @@
+id: orbitdesk
+name: OrbitDesk
+difficulty: hard
+description: "Password reset token forgery -> GraphQL object authorization bug -> documents key leak -> signed link path traversal -> JWT forgery -> SSRF into internal ops -> diagnostics command injection."
+story: "OrbitDesk is a premium client portal and project hub used by boutique consultancies to share documents, coordinate workstreams, and automate customer onboarding.
+
+The company recently rolled out a new identity service and a next-gen GraphQL API powering the portal. A separate internal ops console helps engineers validate integrations and run diagnostics when customers report issues.
+
+You have been asked to assess how an external attacker could chain small weaknesses across these surfaces into a real incident, while keeping the experience realistic: lots of normal features, believable copy, and multiple dead ends that feel like a true web assessment."
+compose_file: docker-compose.yml
+image: cover.png
+entrypoint:
+  base_url: http://orbitdesk.local
+flag_sha256: aa9c890b9697dc055152957f01f51c27fa713c7b6e2ba7aa6053cf4e2974f989

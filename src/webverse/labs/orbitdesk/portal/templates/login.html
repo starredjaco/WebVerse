@@ -1,0 +1,34 @@
+{% extends "_layout.html" %}
+{% block content %}
+<div class="grid">
+  <div class="card"><div class="card-in">
+    <h1 class="h1">Sign in</h1>
+    <p class="p">Access your client workspaces, projects, and documents.</p>
+
+    <div id="notice" class="notice" style="display:none"></div>
+
+    <label>Email</label>
+    <input id="email" type="email" placeholder="you@company.com" autocomplete="username">
+    <label>Password</label>
+    <input id="password" type="password" placeholder="••••••••" autocomplete="current-password">
+    <div class="row" style="margin-top:12px">
+      <button class="btn" onclick="Portal.login()">Sign in</button>
+      <a class="btn secondary" href="/register">Create account</a>
+      <a class="btn secondary" href="http://auth.{{ lab_domain }}/reset">Forgot password</a>
+    </div>
+
+    <div class="hr"></div>
+    <p class="p"><small>Tip: This environment simulates email delivery for password resets and security notifications.</small></p>
+  </div></div>
+
+  <div class="card"><div class="card-in">
+    <h2 class="h2">What you can do</h2>
+    <p class="p">Create projects, invite teammates, and share documents with clients.</p>
+    <div class="hr"></div>
+    <div class="notice">
+      <div style="font-weight:700;color:var(--text)">Security features</div>
+      <div>Scoped document keys, audit trails, and internal operations tools for integration validation.</div>
+    </div>
+  </div></div>
+</div>
+{% endblock %}

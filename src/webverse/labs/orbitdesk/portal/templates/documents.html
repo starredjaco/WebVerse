@@ -1,0 +1,46 @@
+{% extends "_layout.html" %}
+{% block content %}
+<div class="shell">
+  <aside class="sidebar">
+    <div class="h3" style="margin:4px 0 6px">Workspace</div>
+    <div class="p" style="font-size:13px">Secure exchange for project documents.</div>
+    <div class="hr" style="margin:12px 0"></div>
+    <div class="group">
+      <a class="side-link" href="/app">Overview</a>
+      <a class="side-link active" href="/app/documents">Documents</a>
+      <a class="side-link" href="/app/integrations">Integrations</a>
+    </div>
+    <div class="hr" style="margin:12px 0"></div>
+    <a class="side-link" href="http://files.{{ lab_domain }}/">Files service</a>
+    <a class="side-link" href="http://auth.{{ lab_domain }}/reset">Password reset</a>
+  </aside>
+
+  <main>
+    <div class="card"><div class="card-in">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <div>
+          <h1 class="h1" style="font-size:34px;margin-bottom:6px">Documents</h1>
+          <p class="p" style="margin:0">Client deliverables and internal working files.</p>
+        </div>
+        <div class="row">
+          <a class="btn secondary" href="/app">Back</a>
+          <button class="btn" onclick="Portal.logout()">Sign out</button>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="notice">Share links are time-limited. For sensitive deliveries, use client-specific folders.</div>
+
+      <div class="hr"></div>
+
+      <table class="table" id="docs">
+        <thead>
+          <tr><th>Document</th><th>Project</th><th>Created At</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div></div>
+  </main>
+</div>
+{% endblock %}

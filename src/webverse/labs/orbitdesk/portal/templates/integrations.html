@@ -1,0 +1,73 @@
+{% extends "_layout.html" %}
+{% block content %}
+<div class="shell">
+  <aside class="sidebar">
+    <div class="h3" style="margin:4px 0 6px">Workspace</div>
+    <div class="p" style="font-size:13px">Connect tools and troubleshoot delivery.</div>
+    <div class="hr" style="margin:12px 0"></div>
+    <div class="group">
+      <a class="side-link" href="/app">Overview</a>
+      <a class="side-link" href="/app/documents">Documents</a>
+      <a class="side-link active" href="/app/integrations">Integrations</a>
+    </div>
+    <div class="hr" style="margin:12px 0"></div>
+    <a class="side-link" href="http://{{ lab_domain }}/security">Trust Center</a>
+    <a class="side-link" href="http://auth.{{ lab_domain }}/reset">Password reset</a>
+  </aside>
+
+  <main>
+    <div class="card"><div class="card-in">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <div>
+          <h1 class="h1" style="font-size:34px;margin-bottom:6px">Integrations</h1>
+          <p class="p" style="margin:0">Enterprise connectors and diagnostics.</p>
+        </div>
+        <div class="row">
+          <a class="btn secondary" href="/app">Back</a>
+          <button class="btn" onclick="Portal.logout()">Sign out</button>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div id="gate" class="notice">Loading...</div>
+
+      <div id="panel" style="display:none">
+        <div class="grid" style="grid-template-columns:1fr 1fr">
+          <div class="feature">
+            <div class="h3">Webhook test</div>
+            <div class="p">Send a request from the platform to validate connectivity.</div>
+            <div class="hr"></div>
+            <label>Destination URL</label>
+            <input id="hookUrl" placeholder="https://example.com/health">
+            <label>Method</label>
+            <select id="hookMethod">
+              <option>GET</option>
+              <option>POST</option>
+            </select>
+            <label>Headers (JSON)</label>
+            <input id="hookHeaders" class="code" placeholder='{"X-Request-Id":"123"}'>
+            <label>Body</label>
+            <textarea id="hookBody" class="code" placeholder='{ "hello": "world" }'></textarea>
+            <div class="row" style="margin-top:12px">
+              <button class="btn" onclick="Portal.testWebhook()">Run test</button>
+              <span><small>Response is summarized below.</small></span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="h3">Notes</div>
+            <div class="p">For secure endpoints, add required headers and validate the expected status code.</div>
+            <div class="hr"></div>
+            <div class="notice">If a destination requires internal routing, use the same host it expects behind your reverse proxy.</div>
+          </div>
+        </div>
+
+        <div class="hr"></div>
+        <pre id="result" class="notice code" style="white-space:pre-wrap;word-break:break-word">No test run yet.</pre>
+      </div>
+
+    </div></div>
+  </main>
+</div>
+{% endblock %}

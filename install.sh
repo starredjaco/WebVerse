@@ -403,4 +403,3 @@ info "Next steps (recommended):"
 warn "1) Log out/in (or reboot) so docker group + PATH updates apply cleanly."
 warn "2) Then run: ${CYAN}webverse${RESET}"
 warn "If anything fails, paste: ${CYAN}tail -n 120 \"$LOG\"${RESET}"
-

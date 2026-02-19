@@ -1,0 +1,107 @@
+services:
+  gateway:
+    build: ./gateway
+    ports:
+      - "80:80"
+    depends_on:
+      - web
+      - portal
+      - auth
+      - api
+      - files
+      - ops
+    networks:
+      orbitdesk_net:
+        aliases:
+          - orbitdesk.local
+          - www.orbitdesk.local
+          - portal.orbitdesk.local
+          - auth.orbitdesk.local
+          - api.orbitdesk.local
+          - files.orbitdesk.local
+          - ops.orbitdesk.local
+          - status.orbitdesk.local
+          - docs.orbitdesk.local
+
+  web:
+    build: ./web
+    environment:
+      - LAB_DOMAIN=orbitdesk.local
+      - API_BASE=http://api.orbitdesk.local
+    depends_on:
+      - api
+    networks:
+      - orbitdesk_net
+
+  portal:
+    build: ./portal
+    environment:
+      - LAB_DOMAIN=orbitdesk.local
+      - AUTH_BASE=http://auth.orbitdesk.local
+      - API_BASE=http://api.orbitdesk.local
+      - FILES_BASE=http://files.orbitdesk.local
+    depends_on:
+      - auth
+      - api
+      - files
+    networks:
+      - orbitdesk_net
+
+  auth:
+    build: ./auth
+    environment:
+      - LAB_DOMAIN=orbitdesk.local
+      - DB_PATH=/data/orbitdesk.db
+      - AUTH_SECRET=0rB1tD35kSecretAuthSign1ngK3y!
+    volumes:
+      - orbitdesk_data:/data
+    networks:
+      - orbitdesk_net
+
+  api:
+    build: ./api
+    environment:
+      - LAB_DOMAIN=orbitdesk.local
+      - DB_PATH=/data/orbitdesk.db
+      - AUTH_SECRET=0rB1tD35kSecretAuthSign1ngK3y!
+      - INTERNAL_API_KEY=odk_0ff89c983f63a9ed659c
+    volumes:
+      - orbitdesk_data:/data
+    depends_on:
+      - auth
+    networks:
+      - orbitdesk_net
+
+  files:
+    build: ./files
+    environment:
+      - LAB_DOMAIN=orbitdesk.local
+      - DB_PATH=/data/orbitdesk.db
+      - FILES_SIGNING_SECRET=0rB1tD35kSup3rSecretFileSign1ngK3y!
+      - AUTH_SECRET=0rB1tD35kSecretAuthSign1ngK3y!
+      - OPS_BASE_URL=http://ops.orbitdesk.local
+      - INTERNAL_API_KEY=odk_0ff89c983f63a9ed659c
+    volumes:
+      - orbitdesk_data:/data
+    networks:
+      - orbitdesk_net
+
+  ops:
+    build: ./ops
+    environment:
+      - LAB_DOMAIN=orbitdesk.local
+      - AUTH_SECRET=0rB1tD35kSecretAuthSign1ngK3y!
+      - FLAG=WEBVERSE{0rb1td3sk_0ps_t34m_0n_v4c4t10n}
+      - TRUST_NET_PREFIX=10.77.0.
+    networks:
+      - orbitdesk_net
+
+volumes:
+  orbitdesk_data:
+
+networks:
+  orbitdesk_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.77.0.0/24

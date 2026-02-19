@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title or "OrbitDesk" }}</title>
+  <link rel="stylesheet" href="/static/site.css">
+</head>
+<body>
+  <div class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="/">
+        <div class="brand-mark"></div>
+        <div class="brand-title">
+          <strong>OrbitDesk</strong>
+          <span>Client portals & document workflows</span>
+        </div>
+      </a>
+      <div class="nav">
+        <a href="/pricing">Pricing</a>
+        <a href="/team">Team</a>
+        <a href="/security">Security</a>
+        <a href="/contact">Contact</a>
+        {% if nav and nav.is_authed %}
+          <a class="cta" href="{{ nav.cta_href }}">Dashboard</a>
+        {% else %}
+          <a class="cta" href="http://portal.{{ lab_domain }}/login">Sign in</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    {% block content %}{% endblock %}
+    <div class="footer">
+      <div>© OrbitDesk, Inc. — All rights reserved.</div>
+      <div class="row">
+        <a href="/security">Trust Center</a>
+        <a href="http://status.{{ lab_domain }}/">Status</a>
+        <a href="http://docs.{{ lab_domain }}/">Docs</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
