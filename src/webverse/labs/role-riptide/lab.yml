@@ -12,3 +12,12 @@ entrypoint:
   base_url: http://localhost:8092
 flag_sha256: "a1162e16b8e40c69efc192aaf8e9dd878ba7c5a0d62c20168e6695af8463ca36"
 public_lab_url: https://webverselabs.com/labs/role-riptide
+walkthrough:
+  enabled: true
+  youtubeId: CwGfzLFHXDY
+  title: "Role RipTide Walkthrough (WebVerse)"
+writeup:
+  enabled: true
+  url: https://blog.webverselabs.com/webverse-role-riptide/
+  title: "Role RipTide Writeup"
+  spoiler: true

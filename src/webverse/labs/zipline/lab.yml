@@ -12,3 +12,12 @@ entrypoint:
   base_url: http://zipline.local
 flag_sha256: a334d92743a0e0961c9f175a2bc3535eb40346df69197e60149e273e11c4a606
 public_lab_url: https://webverselabs.com/labs/zipline
+walkthrough:
+  enabled: true
+  youtubeId: k-52byMHQYA
+  title: "ZipLine Walkthrough (WebVerse)"
+writeup:
+  enabled: true
+  url: https://blog.webverselabs.com/webverse-zipline/
+  title: "ZipLine Writeup"
+  spoiler: true
