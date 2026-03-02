@@ -1,0 +1,6 @@
+services:
+  app:
+    image: python:3.12-alpine
+    command: ["sh", "-c", "python -m http.server 8188"]
+    ports:
+      - "8188:8188"

@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{ title }}</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header class="nav">
+      <div class="container">
+        <div class="nav-inner">
+          <div class="brand">
+            <a class="logo" href="/">
+              <span class="logo-mark" aria-hidden="true"></span>
+              <span class="logo-text">Switchback</span>
+            </a>
+            <span class="env-pill">secure by default • isolated by policy</span>
+          </div>
+
+          <nav class="nav-links" aria-label="Navigation">
+            <a class="nav-link {% if title == 'Switchback Suite' %}active{% endif %}" href="/">Overview</a>
+            <a class="nav-link {% if title == 'Mail' %}active{% endif %}" href="/products/mail">Mail</a>
+            <a class="nav-link {% if title == 'Vault' %}active{% endif %}" href="/products/vault">Vault</a>
+            <a class="nav-link {% if title == 'Partner API' %}active{% endif %}" href="/products/partner-api">Partner API</a>
+            <a class="nav-link {% if title == 'Security' %}active{% endif %}" href="/security">Security</a>
+            <a class="nav-link {% if title == 'Status' %}active{% endif %}" href="/status">Status</a>
+          </nav>
+
+          <div class="nav-right">
+            <span class="badge warn"><span class="dot"></span>Staging</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        {% block content %}{% endblock %}
+
+        <div class="footer">
+          <div>© Switchback Systems</div>
+          <div>
+            <a href="/support">Support</a> •
+            <a href="/changelog">Changelog</a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

@@ -372,10 +372,85 @@ def qss_onyx_amber(scale: float = DEFAULT_UI_SCALE) -> str:
 	}}
 
 	/* ---- Cards / Tiles ---- */
-	QFrame#Card {{
+	QFrame#Card,
+	QPushButton#Card {{
 		background: rgba(16,20,28,0.45);
 		border: 1px solid rgba(255,255,255,0.08);
 		border-radius: {r_xl}px;
+	}}
+
+	QPushButton#Card {{
+		text-align: left;
+		padding: 0px;
+	}}
+	QPushButton#Card:hover {{
+		background: rgba(16,20,28,0.55);
+		border: 1px solid rgba(255,255,255,0.12);
+	}}
+	QPushButton#Card:pressed {{
+		background: rgba(16,20,28,0.62);
+	}}
+	QPushButton#Card:focus {{
+		outline: none;
+	}}
+
+	/* ---- Learning view text + progress ---- */
+	QLabel#SectionTitle {{
+		font-size: {h2}px;
+		font-weight: 950;
+		color: rgba(245,247,255,0.95);
+	}}
+	QLabel#SubtleText {{
+		color: rgba(235,241,255,0.62);
+		font-weight: 800;
+	}}
+
+	QPushButton#TrackCard {{
+		background: rgba(16,20,28,0.45);
+		border: 1px solid rgba(255,255,255,0.08);
+		border-radius: {r_xl}px;
+		padding: 0px;
+		text-align: left;
+	}}
+	QPushButton#TrackCard:hover {{
+		border: 1px solid rgba(255,255,255,0.12);
+		background: rgba(16,20,28,0.52);
+	}}
+	QPushButton#TrackCard:pressed {{
+		background: rgba(16,20,28,0.60);
+	}}
+	QPushButton#TrackCard:focus {{
+		outline: none;
+	}}
+
+	QLabel#CardTitle {{
+		font-weight: 950;
+		color: rgba(245,247,255,0.94);
+	}}
+	QLabel#TrackDetailTitle {{
+		font-size: {h1}px;
+		font-weight: 950;
+		color: rgba(245,247,255,0.96);
+	}}
+	QLabel#TrackProgressText {{
+		color: rgba(235,241,255,0.78);
+		font-weight: 900;
+	}}
+	QProgressBar#TrackProgressBar {{
+		background: rgba(255,255,255,0.05);
+		border: 1px solid rgba(255,255,255,0.10);
+		border-radius: 9px;
+		text-align: center;
+		color: rgba(245,247,255,0.92);
+		font-weight: 900;
+	}}
+	QProgressBar#TrackProgressBar::chunk {{
+		border-radius: 8px;
+		margin: 1px;
+		background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+			stop:0 rgba(245,197,66,0.55),
+			stop:1 rgba(245,197,66,0.88)
+		);
 	}}
 
 	/* ---- Flag Submission Panel ---- */

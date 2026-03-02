@@ -1,0 +1,23 @@
+id: switchback
+name: Switchback
+difficulty: medium
+description: 'A partner-facing referral API ships with public docs that expose a demo webmail login.
+
+Abuse a workspace boundary mix-up to reach an internal inbox, then bypass Vault MFA by extracting a TOTP seed via time-based SQLi.
+
+Finally, leverage an SSTI bug in secret names to dump environment variables and recover the flag.'
+story: |
+  They brand everything as “zero trust,” “secure by default,” “isolated,” and “battle-tested.”, Their suite bundles a secrets Vault, internal mail access, and dashboards under one domain.
+
+  The biggest weakness isn’t crypto — it’s the assumptions made in glue code between services.'
+compose_file: docker-compose.yml
+image: cover.png
+entrypoint:
+  base_url: http://switchback.local/
+tags:
+- time-based-sqli
+- mfa
+- tenant-boundary
+- email-ato
+- ssti
+flag_sha256: 03232ac72d88328ed5e15f771c8e35d24a76a566e221982fc6cf44a2c5beeb7d

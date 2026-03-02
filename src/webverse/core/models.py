@@ -25,6 +25,10 @@ class Lab:
     # sha256 of the exact flag string (after stripping whitespace)
     flag_sha256: str = ""
 
+    # lab = standard challenge, learning = mini learning lab
+    kind: str = "lab"
+    track: str = ""
+
     def base_url(self) -> Optional[str]:
         if isinstance(self.entrypoint, dict):
             v = self.entrypoint.get("base_url")
@@ -50,4 +54,31 @@ class Lab:
         except Exception:
             return None
 
+        return None
+
+@dataclass(frozen=True)
+class LearningTrack:
+    slug: str
+    name: str
+    description: str
+    path: Path
+    cover: str = ""
+    short_description: str = ""
+    order: int = 1000
+    difficulty_focus: str = ""
+    tags: Tuple[str, ...] = ()
+    labs: Tuple[Lab, ...] = ()
+
+    def cover_path(self) -> Optional[Path]:
+        cover = (self.cover or "").strip()
+        if not cover:
+            return None
+        try:
+            p = Path(cover)
+            if not p.is_absolute():
+                p = (self.path / p).resolve()
+            if p.exists():
+                return p
+        except Exception:
+            return None
         return None

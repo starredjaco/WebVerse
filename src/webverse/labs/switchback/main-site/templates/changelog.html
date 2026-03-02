@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="hero" style="padding-top:10px;">
+    <div class="badge"><span class="dot"></span>Changelog</div>
+    <h1 style="font-size:34px;margin-top:10px;">Updates</h1>
+    <p>Operational notes for staging rollouts.</p>
+  </section>
+
+  <section class="card">
+    <div class="section-title">2026-02-28</div>
+    <div class="small" style="line-height:1.7;">
+      <ul style="margin:0 0 0 18px;">
+        <li>Enabled workspace switcher in Mail for migration testing.</li>
+        <li>Hardened public response envelopes in Partner API.</li>
+        <li>Rolled out Vault audit events and secret metadata.</li>
+      </ul>
+    </div>
+  </section>
+{% endblock %}

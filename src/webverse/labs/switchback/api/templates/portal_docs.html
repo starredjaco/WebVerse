@@ -1,0 +1,183 @@
+{% extends "portal_base.html" %}
+{% block content %}
+  <section class="hero" style="padding-top:10px;">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <span class="badge warn"><span class="dot"></span>Internal documentation</span>
+      <span class="badge"><span class="dot"></span>Staging partners only</span>
+      <span class="badge purple"><span class="dot" style="background:var(--primary)"></span>Partner API</span>
+    </div>
+
+    <h1 style="font-size:34px;margin-top:12px;">Partner API onboarding</h1>
+    <p>
+      Internal onboarding notes for staging partners.
+      Do not distribute externally.
+    </p>
+
+    <div class="hero-actions" style="margin-top:12px;">
+      <a class="btn" href="/portal/verify">Verify a referral</a>
+      <a class="btn" href="/">Back to portal</a>
+    </div>
+  </section>
+
+  <section class="grid-2">
+    <div class="card">
+      <div class="section-title">Overview</div>
+      <div class="small" style="line-height:1.75;">
+        Base URL:
+        <div class="codeblock mono" style="margin-top:10px;">http://api.{{ lab_domain }}</div>
+
+        <div style="margin-top:12px;">
+          Public endpoints are intentionally low-information.
+          Use the portal verification flow for partner support and staging validation.
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="num mono">/v1/public/status</div>
+          <div class="lbl">Health + timestamp</div>
+        </div>
+        <div class="kpi">
+          <div class="num mono">/v1/public/version</div>
+          <div class="lbl">Build version</div>
+        </div>
+        <div class="kpi">
+          <div class="num mono">/v1/referrals/details</div>
+          <div class="lbl">Partner-safe lookup</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card soft">
+      <div class="section-title">Operational notes</div>
+      <div class="small" style="line-height:1.75;">
+        <ul style="margin:0 0 0 18px;">
+          <li>Rate limits are enforced in edge/proxy tiers.</li>
+          <li>Responses are designed to minimize data exposure in public contexts.</li>
+          <li>If you need to validate a code quickly, use <span class="mono">/portal/verify</span>.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:16px;">
+    <div class="section-title">Mail rendering test account</div>
+    <div class="small" style="line-height:1.75;">
+      Used by Marketing to validate transactional templates during rollout.
+      This account is scoped to the Mail app only.
+    </div>
+
+    <div class="grid-2" style="margin-top:12px;grid-template-columns:1fr 1fr;gap:14px;">
+      <div>
+        <div class="section-title">Access</div>
+        <pre class="mono" style="margin:10px 0 0;">Service: Mail
+URL: http://mail.{{ lab_domain }}/
+Email: {{ mail_demo_email }}
+Password: {{ mail_demo_pass }}</pre>
+      </div>
+      <div>
+        <div class="section-title">Notes</div>
+        <div class="small" style="line-height:1.75;">
+          Workspace switcher rollout is enabled. Support may need cross-workspace visibility during migration.
+          If mailbox rendering differs between workspaces, capture screenshots for the rollout ticket.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:16px;">
+    <div class="section-title">How to use the Referral Details API</div>
+
+    <div class="small" style="line-height:1.75;">
+      This is the partner-safe endpoint for validating referral metadata in staging.
+    </div>
+
+    <div class="grid-2" style="margin-top:12px;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="card soft" style="margin:0;box-shadow:none;">
+        <div class="section-title">Endpoint</div>
+        <div class="kv" style="margin-top:10px;">
+          <div class="k">Method</div><div class="v mono">GET</div>
+          <div class="k">Path</div><div class="v mono">/v1/referrals/details</div>
+          <div class="k">Query</div><div class="v mono">code=SWITCH-2026-DEMO</div>
+        </div>
+
+        <div class="section-title" style="margin-top:14px;">Example request</div>
+        <pre class="mono" style="margin-top:10px;">curl -s "http://api.{{ lab_domain }}/v1/referrals/details?code=SWITCH-2026-DEMO"</pre>
+      </div>
+
+      <div class="card soft" style="margin:0;box-shadow:none;">
+        <div class="section-title">Example response (success)</div>
+        <pre class="mono" style="margin-top:10px;">{
+  "ok": true,
+  "referral": {
+    "code": "SWITCH-2026-DEMO",
+    "referrer_email": "promo@marketing.switchback.local",
+    "points": 42,
+    "created_at": "2026-02-28T00:00:00Z"
+  }
+}</pre>
+
+        <div class="section-title" style="margin-top:14px;">Example response (not found)</div>
+        <pre class="mono" style="margin-top:10px;">{
+  "ok": false,
+  "status": "not_found"
+}</pre>
+      </div>
+    </div>
+
+    <div class="small" style="margin-top:12px;">
+      Tip: For a human-friendly lookup, use <a href="/portal/verify" class="mono">/portal/verify</a>.
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:16px;">
+    <div class="section-title">Legacy / old endpoints</div>
+    <div class="small" style="line-height:1.75;">
+      These endpoints exist for backward compatibility with older integrations.
+      They intentionally return minimal information and may be unsuitable for partner support.
+    </div>
+
+    <div class="grid-2" style="margin-top:12px;grid-template-columns:1fr 1fr;gap:14px;">
+      <div class="card soft" style="margin:0;box-shadow:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+          <div class="mono" style="font-weight:850;">GET /v1/referrals/lookup</div>
+          <span class="badge warn"><span class="dot"></span>Legacy</span>
+        </div>
+
+        <div class="small" style="margin-top:10px;line-height:1.75;">
+          Constant-envelope response by design. This endpoint is used by older attribution tooling and does not
+          expose referral details in the response body.
+        </div>
+
+        <div class="section-title" style="margin-top:14px;">Example request</div>
+        <pre class="mono" style="margin-top:10px;">curl -s "http://api.{{ lab_domain }}/v1/referrals/lookup?code=SWITCH-2026-DEMO"</pre>
+
+        <div class="section-title" style="margin-top:14px;">Example response</div>
+        <pre class="mono" style="margin-top:10px;">{
+  "ok": true,
+  "status": "received"
+}</pre>
+      </div>
+
+      <div class="card soft" style="margin:0;box-shadow:none;">
+        <div class="section-title">Migration guidance</div>
+        <div class="small" style="line-height:1.75;">
+          Partners should migrate to <span class="mono">/v1/referrals/details</span> for staging validation and support workflows.
+          Use the portal verification tool for human review.
+        </div>
+
+        <div class="section-title" style="margin-top:14px;">Recommended</div>
+        <div class="tabs" style="margin-top:10px;">
+          <span class="tab active">Details API</span>
+          <span class="tab">Portal verify</span>
+          <span class="tab">Public status/version</span>
+        </div>
+
+        <div class="small" style="margin-top:12px;line-height:1.75;">
+          If an old integration must remain online, confirm it only relies on the constant envelope and does not
+          require referral metadata.
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="hero" style="padding-top:10px;">
+    <div class="badge"><span class="dot"></span>MFA verified</div>
+    <h1 style="font-size:30px;margin-top:10px;">Vault</h1>
+    <p class="small" style="margin-top:8px;">Signed in as {{ email }}</p>
+
+    <div class="actions-bar">
+      <form class="searchbar" method="get" action="/">
+        <input name="q" value="{{ q }}" placeholder="Search name or tags…" aria-label="Search secrets" />
+        <button class="btn sm" type="submit">Search</button>
+      </form>
+      <div class="actions-right">
+        <a class="btn primary sm" href="/secrets/new">New secret</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="grid-2 even">
+    <div class="card">
+      <div class="section-title">Your secrets</div>
+      <table class="table" style="margin-top:10px;">
+        <thead>
+          <tr>
+            <th style="width:14%;">ID</th>
+            <th>Name</th>
+            <th style="width:18%;">Tags</th>
+            <th style="width:18%;">Expires</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in secrets %}
+            <tr>
+              <td class="mono">{{ s.id }}</td>
+              <td><a href="/secrets/{{ s.id }}">{{ s.name }}</a><div class="small mono">{{ s.created_at }}</div></td>
+              <td class="small">{{ s.tags or '-' }}</td>
+              <td class="small mono">{{ s.expires_at or '-' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if secrets|length == 0 %}
+        <div class="small" style="margin-top:10px;">No secrets yet.</div>
+      {% endif %}
+    </div>
+
+    <div class="card soft">
+      <div class="section-title">Audit events</div>
+      <table class="table" style="margin-top:10px;">
+        <thead>
+          <tr>
+            <th style="width:22%;">Time</th>
+            <th style="width:20%;">Action</th>
+            <th>Target</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in audit %}
+            <tr>
+              <td class="small mono">{{ a.created_at }}</td>
+              <td class="mono">{{ a.action }}</td>
+              <td class="small mono">{{ a.target }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if audit|length == 0 %}
+        <div class="small" style="margin-top:10px;">No events yet.</div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

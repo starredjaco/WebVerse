@@ -20,6 +20,7 @@ from webverse.core.updater import UpdateManager
 
 from webverse.gui.views.home import HomeView
 from webverse.gui.views.labs_browse import LabsBrowseView
+from webverse.gui.views.learning import LearningView
 from webverse.gui.views.lab_detail import LabDetailView
 from webverse.gui.views.progress import ProgressView
 from webverse.gui.views.settings import SettingsView
@@ -93,6 +94,7 @@ class MainWindow(QMainWindow):
 
 		self.home = HomeView(state)
 		self.browse = LabsBrowseView(state)
+		self.learning = LearningView(state)
 		self.profile = ProfileView(api_base_url=os.getenv("WEBVERSE_API_URL", "https://api-opensource.webverselabs.com/").rstrip("/"))
 		self.lab_detail = LabDetailView(state)
 		self.progress = ProgressView(state)
@@ -100,10 +102,41 @@ class MainWindow(QMainWindow):
 
 		self.stack.addWidget(self.home)       # 0
 		self.stack.addWidget(self.browse)     # 1
-		self.stack.addWidget(self.lab_detail) # 2
-		self.stack.addWidget(self.progress)   # 3
-		self.stack.addWidget(self.settings)   # 4
-		self.stack.addWidget(self.profile) # 5 (new)
+		self.stack.addWidget(self.learning)   # 2
+		self.stack.addWidget(self.lab_detail) # 3
+		self.stack.addWidget(self.progress)   # 4
+		self.stack.addWidget(self.settings)   # 5
+		self.stack.addWidget(self.profile) # 6 (new)
+
+		# Keep stack indexes centralized so future page inserts don't break navigation/history.
+		self.PAGE_HOME = 0
+		self.PAGE_BROWSE = 1
+		self.PAGE_LEARNING = 2
+		self.PAGE_LAB_DETAIL = 3
+		self.PAGE_PROGRESS = 4
+		self.PAGE_SETTINGS = 5
+		self.PAGE_PROFILE = 6
+
+		# Learning view -> lab detail (support multiple signal names for compatibility)
+		try:
+			self.learning.lab_selected.connect(self._select_and_open_lab)
+		except Exception:
+			pass
+
+		for _sig_name in ("request_open_lab", "open_lab_requested", "lab_open_requested"):
+			try:
+				sig = getattr(self.learning, _sig_name, None)
+				if sig is not None:
+					sig.connect(self._select_and_open_lab)
+			except Exception:
+				pass
+		for _sig_name in ("toast_requested",):
+			try:
+				sig = getattr(self.learning, _sig_name, None)
+				if sig is not None:
+					sig.connect(self.show_toast)
+			except Exception:
+				pass
 
 		# Let Progress jump into a lab detail page on row click
 		if hasattr(self.progress, "lab_selected"):
@@ -112,7 +145,25 @@ class MainWindow(QMainWindow):
 			except Exception:
 				pass
 
-		self.sidebar = Sidebar(self.stack, profile_index=5)
+		# -----------------------------------------
+		# Feature flag: hide Learning from sidebar
+		# -----------------------------------------
+		# Flip this to True to remove "Learning" from the sidebar buttons.
+		# (The page still exists in the stack; it's just not shown in the nav.)
+		self.HIDE_LEARNING_IN_SIDEBAR = True
+		try:
+			# Optional env override (set to 1/true/yes/on to hide)
+			_env_hide = str(os.getenv("WEBVERSE_HIDE_LEARNING_IN_SIDEBAR", "") or "").strip().lower()
+			if _env_hide in ("1", "true", "yes", "y", "on"):
+				self.HIDE_LEARNING_IN_SIDEBAR = True
+		except Exception:
+			pass
+
+		self.sidebar = Sidebar(
+			self.stack,
+			profile_index=self.PAGE_PROFILE,
+			show_learning=(not self.HIDE_LEARNING_IN_SIDEBAR),
+		)
 
 		# Sidebar login/signup and auto device-login must propagate auth changes
 		try:
@@ -120,6 +171,25 @@ class MainWindow(QMainWindow):
 				self.sidebar.auth_changed.connect(self._on_auth_changed)
 		except Exception:
 			pass
+
+		# Keep Learning page fresh when tracks/labs/progress/auth changes
+		for _sig_name in ("learning_tracks_changed", "learning_labs_changed", "progress_changed"):
+			try:
+				sig = getattr(state, _sig_name, None)
+				if sig is not None:
+					sig.connect(self._refresh_learning_view)
+			except Exception:
+				pass
+
+		# If your LearningView exposes track navigation helpers, wire them (optional)
+		for _sig_name in ("track_selected", "request_open_track", "open_track_requested"):
+			try:
+				sig = getattr(self.learning, _sig_name, None)
+				if sig is not None:
+					# Supported signatures vary by implementation; handle in helper.
+					sig.connect(self._open_learning_track)
+			except Exception:
+				pass
 
 		# When XP/rank changes (e.g. after a solve), refresh the sidebar badge.
 		try:
@@ -176,7 +246,29 @@ class MainWindow(QMainWindow):
 		self.topbar.search_requested.connect(self._open_palette)
 		self.topbar.running_requested.connect(self._open_running_lab)
 		
-		self.lab_detail.nav_to_labs.connect(lambda: self.navigate(1, push=True))
+		def _nav_from_lab_detail():
+			lab = self.state.selected()
+			if lab and (getattr(lab, "kind", "") == "learning"):
+				self.navigate(self.PAGE_LEARNING, push=True)
+			else:
+				self.navigate(self.PAGE_BROWSE, push=True)
+
+		self.lab_detail.nav_to_labs.connect(_nav_from_lab_detail)
+
+		# Learning breadcrumb navigation from LabDetailView (best-effort / backward compatible)
+		# Expected signals (if present in your LabDetailView):
+		# - nav_to_learning_tracks()       -> "Tracks" crumb
+		# - nav_to_learning_track(str)     -> track slug crumb
+		try:
+			if hasattr(self.lab_detail, "nav_to_learning_tracks"):
+				self.lab_detail.nav_to_learning_tracks.connect(self._open_learning_tracks_root)
+		except Exception:
+			pass
+		try:
+			if hasattr(self.lab_detail, "nav_to_learning_track"):
+				self.lab_detail.nav_to_learning_track.connect(self._open_learning_track_from_breadcrumb)
+		except Exception:
+			pass
 
 		self.state.running_changed.connect(self._update_running_pill)
 		self._update_running_pill(self.state.running())
@@ -192,13 +284,13 @@ class MainWindow(QMainWindow):
 		text, kind = self.state.docker_status()
 		self.sidebar.set_docker_status(text, kind)
 
-		self.home.nav_labs.connect(lambda: self.navigate(1, push=True))
+		self.home.nav_labs.connect(lambda: self.navigate(self.PAGE_BROWSE, push=True))
 		self.home.request_select_lab.connect(self._select_and_open_lab)
 		self.browse.request_open_lab.connect(self._select_and_open_lab)
 
 		self.stack.currentChanged.connect(self._on_stack_changed)
 
-		self.navigate(0, push=True)
+		self.navigate(self.PAGE_HOME, push=True)
 
 		self.timer = QTimer(self)
 		self.timer.timeout.connect(self.state.refresh_docker)
@@ -232,6 +324,96 @@ class MainWindow(QMainWindow):
 						pass
 		except Exception:
 			pass
+
+		# Learning page often shows progress/track locks; refresh immediately too.
+		try:
+			self._refresh_learning_view()
+		except Exception:
+			pass
+
+	def _open_learning_tracks_root(self):
+		"""
+		Open the Learning page at the tracks grid/root (not an already-open track detail).
+		Used by the clickable 'Tracks' breadcrumb in LabDetailView.
+		"""
+		self.navigate(self.PAGE_LEARNING, push=True)
+
+		def _go_root():
+			# Try common root/reset helpers on LearningView without hard-coupling to one name.
+			for name in (
+				"show_tracks_root",
+				"show_root",
+				"go_root",
+				"go_home",
+				"clear_track_selection",
+				"clear_selected_track",
+			):
+				try:
+					fn = getattr(self.learning, name, None)
+					if callable(fn):
+						fn()
+						return
+				except Exception:
+					continue
+
+			# Some implementations use select_track/open_track(None) to return to root.
+			for name in ("select_track", "open_track", "show_track"):
+				try:
+					fn = getattr(self.learning, name, None)
+					if callable(fn):
+						fn(None)
+						return
+				except Exception:
+					continue
+
+			# Fallback: at least refresh the page.
+			try:
+				self._refresh_learning_view()
+			except Exception:
+				pass
+
+		QTimer.singleShot(0, _go_root)
+
+	def _open_learning_track_from_breadcrumb(self, track_or_slug):
+		"""
+		Open the Learning page and then jump into a specific track.
+		Used by the clickable track-slug breadcrumb in LabDetailView.
+		"""
+		self.navigate(self.PAGE_LEARNING, push=True)
+		QTimer.singleShot(0, lambda: self._open_learning_track(track_or_slug))
+
+	def _refresh_learning_view(self, *args, **kwargs):
+		"""
+		Best-effort LearningView refresh adapter.
+		Supports multiple method names so the MainWindow wiring won't break while
+		you iterate on the Learning page implementation.
+		"""
+		for name in ("on_activated", "refresh_view", "refresh_tracks", "reload", "rebuild", "refresh"):
+			try:
+				fn = getattr(self.learning, name, None)
+				if callable(fn):
+					fn()
+					return
+			except Exception:
+				continue
+		try:
+			self.learning.update()
+		except Exception:
+			pass
+
+	def _open_learning_track(self, track_or_slug):
+		"""
+		Optional passthrough for LearningView track-card clicks when the view
+		handles track navigation internally (grid -> track detail grid).
+		"""
+		for name in ("open_track", "show_track", "select_track"):
+			try:
+				fn = getattr(self.learning, name, None)
+				if callable(fn):
+					fn(track_or_slug)
+					return
+			except Exception:
+				continue
 
 	def _on_update_available(self, info):
 		self._pending_update = info
@@ -461,7 +643,8 @@ class MainWindow(QMainWindow):
 			return
 
 		lab_id = None
-		if index == 2 and self.state.selected():
+		# Lab detail page is index 3 (not 2). Index 2 is Learning.
+		if index == self.PAGE_LAB_DETAIL and self.state.selected():
 			lab_id = self.state.selected().id
 
 		self._push_history(index, lab_id)
@@ -559,23 +742,26 @@ class MainWindow(QMainWindow):
 			logged_in = self._is_logged_in()
 			locked = bool(linked and (not logged_in))
 
-			# - Browse (1)
-			# - Lab Detail (2)
-			# - Progress (3)
-			# - Settings (4)
-			# - Profile (5)
-			if locked and stack_index in (1, 2, 3, 4, 5):
+			# Keep this synced to actual stack indexes.
+			# (Learning page remains accessible; lab opening itself is guarded separately.)
+			if locked and stack_index in (
+				self.PAGE_BROWSE,
+				self.PAGE_LAB_DETAIL,
+				self.PAGE_PROGRESS,
+				self.PAGE_SETTINGS,
+				self.PAGE_PROFILE,
+			):
 				self.show_toast("Login required", "Login to access locked pages", variant="warn", ms=2200)
-				stack_index = 0
+				stack_index = self.PAGE_HOME
 				lab_id = None
 		except Exception:
 			pass
 
 		self._suppress_history = True
 		try:
-			if stack_index == 2 and lab_id:
+			if stack_index == self.PAGE_LAB_DETAIL and lab_id:
 				self._select_lab_only(lab_id)
-				self.sidebar.set_page(2)
+				self.sidebar.set_page(self.PAGE_LAB_DETAIL)
 			else:
 				self.sidebar.set_page(stack_index)
 		finally:
@@ -587,20 +773,52 @@ class MainWindow(QMainWindow):
 		self._update_nav_buttons()
 
 		# Auto-refresh profile on every navigation to it.
-		if stack_index == 5:
+		if stack_index == self.PAGE_PROFILE:
 			try:
 				if hasattr(self.profile, "on_activated"):
 					self.profile.on_activated()
 			except Exception:
 				pass
 
-	def _select_lab_only(self, lab_id: str):
-		lab = next((x for x in self.state.labs() if x.id == lab_id), None)
+		# Auto-refresh Learning page on navigation to it (track progress / card badges / etc.)
+		if stack_index == self.PAGE_LEARNING:
+			try:
+				self._refresh_learning_view()
+			except Exception:
+				pass
+
+		# If LearningView wants a page-activated callback distinct from refresh
+		if stack_index == self.PAGE_LEARNING:
+			try:
+				if hasattr(self.learning, "on_page_activated"):
+					self.learning.on_page_activated()
+			except Exception:
+				pass
+
+	def _coerce_lab_id(self, lab_or_id):
+		if isinstance(lab_or_id, str):
+			return lab_or_id
+		if lab_or_id is None:
+			return None
+		return getattr(lab_or_id, "id", None)
+
+	def _select_lab_only(self, lab_or_id):
+		lab_id = self._coerce_lab_id(lab_or_id)
+		if not lab_id:
+			return
+		# Track/learning labs live in state.learning_labs(), not state.labs().
+		# all_labs() returns both normal labs + learning/track labs.
+		try:
+			pool = self.state.all_labs()
+		except Exception:
+			pool = list(self.state.labs()) + list(getattr(self.state, "learning_labs", lambda: [])())
+
+		lab = next((x for x in pool if str(x.id) == str(lab_id)), None)
 		if lab:
 			self.state.set_selected(lab)
 			self.lab_detail.set_lab(lab)
 
-	def _select_and_open_lab(self, lab_id: str):
+	def _select_and_open_lab(self, lab_or_id):
 		# Hard guard: even if a lab tile/list item is clicked, do nothing when locked.
 		try:
 			linked = self._device_is_linked()
@@ -611,8 +829,13 @@ class MainWindow(QMainWindow):
 		except Exception:
 			pass
 
+		lab_id = self._coerce_lab_id(lab_or_id)
+		if not lab_id:
+			return
+
 		self._select_lab_only(lab_id)
-		self.navigate(2, lab_id=lab_id, push=True)
+		# Open the Lab Detail page (index 3), not Learning (index 2).
+		self.navigate(self.PAGE_LAB_DETAIL, lab_id=lab_id, push=True)
 
 	def _ancestor_is_input(self, obj) -> bool:
 		w = obj

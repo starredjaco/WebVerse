@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="hero" style="padding-top:10px;">
+    <div class="badge purple"><span class="dot" style="background:var(--primary)"></span>Workspace: {{ workspace.name }}</div>
+    <h1 style="font-size:30px;margin-top:10px;">Inbox</h1>
+    <p class="small" style="margin-top:8px;">Signed in as {{ user.email }} • Migration mode enabled</p>
+
+    <div class="hero-actions" style="margin-top:12px;">
+      <form method="post" action="/switch-workspace" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin:0;">
+        <div class="field" style="min-width:220px;">
+          <label>Workspace</label>
+          <select name="workspace_id" onchange="this.form.submit()">
+            {% for w in workspaces %}
+              <option value="{{ w.id }}" {% if w.id == workspace.id %}selected{% endif %}>{{ w.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </form>
+
+      <form method="get" action="/" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin:0;">
+        <input type="hidden" name="folder" value="{{ folder }}" />
+        <input type="hidden" name="mailbox" value="{{ mailbox.id }}" />
+        <div class="field" style="min-width:260px;">
+          <label>Search</label>
+          <input name="q" value="{{ q }}" placeholder="Search subject, sender, body…" />
+        </div>
+        <button class="btn" style="height:44px;" type="submit">Search</button>
+      </form>
+    </div>
+  </section>
+
+  <div class="split">
+    <aside class="sidebar">
+      <div class="card">
+        <div class="section-title">Folders</div>
+        <div class="tabs" style="margin-top:10px;">
+          <a class="tab {% if folder=='inbox' %}active{% endif %}" href="/?folder=inbox&mailbox={{ mailbox.id }}">Inbox{% if unread.get('inbox') %} ({{ unread.get('inbox') }}){% endif %}</a>
+          <a class="tab {% if folder=='sent' %}active{% endif %}" href="/?folder=sent&mailbox={{ mailbox.id }}">Sent</a>
+          <a class="tab {% if folder=='archive' %}active{% endif %}" href="/?folder=archive&mailbox={{ mailbox.id }}">Archive</a>
+          <a class="tab {% if folder=='starred' %}active{% endif %}" href="/?folder=starred&mailbox={{ mailbox.id }}">Starred{% if starred_unread %} ({{ starred_unread }}){% endif %}</a>
+        </div>
+
+        <div class="section-title" style="margin-top:14px;">Mailboxes</div>
+        <div class="small">Visible mailboxes for the active workspace.</div>
+        <div style="margin-top:12px;display:grid;gap:8px;">
+          {% for mb in mailboxes %}
+            <a class="nav-link" style="display:block;" href="/?mailbox={{ mb.id }}&folder={{ folder }}">{{ mb.email }}</a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="card soft" style="margin-top:14px;">
+        <div class="section-title">Migration notice</div>
+        <div class="small" style="line-height:1.6;">
+          Workspace switching is enabled for rollout verification.
+          Access remains isolated by policy.
+        </div>
+      </div>
+    </aside>
+
+    <section>
+      <div class="card">
+        <div class="section-title">Mailbox — {{ mailbox.email }}</div>
+
+        <table class="table" style="margin-top:10px;">
+          <thead>
+            <tr>
+              <th style="width:30%;">From</th>
+              <th>Subject</th>
+              <th style="width:18%;">Date</th>
+              <th style="width:10%;">★</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in messages %}
+              <tr>
+                <td>{{ m.sender }}</td>
+                <td>
+                  <a href="/message/{{ m.id }}">{% if not m.is_read %}<strong>{{ m.subject }}</strong>{% else %}{{ m.subject }}{% endif %}</a>
+                  <div class="small">{{ m.body[:90] | replace('\n',' ') }}{% if m.body|length > 90 %}…{% endif %}</div>
+                </td>
+                <td class="small mono">{{ m.created_at }}</td>
+                <td class="mono">{% if m.is_starred %}★{% else %}☆{% endif %}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        {% if messages|length == 0 %}
+          <div class="small" style="margin-top:10px;">No messages.</div>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+{% endblock %}

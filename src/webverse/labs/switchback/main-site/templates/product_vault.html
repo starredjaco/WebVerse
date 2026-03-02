@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="hero" style="padding-top:10px;">
+    <div class="badge"><span class="dot"></span>Product</div>
+    <h1 style="font-size:34px;margin-top:10px;">Switchback Vault</h1>
+    <p>
+      MFA-protected secret storage built for internal tooling and partner workflows.
+      Designed to reduce blast radius when assumptions fail.
+    </p>
+  </section>
+
+  <section class="grid-2">
+    <div class="card">
+      <div class="section-title">Key capabilities</div>
+      <ul class="small" style="line-height:1.9;margin:0 0 0 18px;">
+        <li>MFA enforcement for all users</li>
+        <li>Audit event timeline for access and changes</li>
+        <li>Secret metadata (tags, expiry) for lifecycle control</li>
+        <li>Masking, reveal, and copy workflows</li>
+      </ul>
+    </div>
+
+    <div class="card soft">
+      <div class="section-title">Operational controls</div>
+      <div class="small" style="line-height:1.6;">
+        Secrets are scoped to owners and governed through policy pages.
+        Audit events provide traceability for investigations.
+      </div>
+    </div>
+  </section>
+{% endblock %}

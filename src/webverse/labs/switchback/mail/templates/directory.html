@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="hero" style="padding-top:10px;">
+    <div class="badge"><span class="dot"></span>Directory</div>
+    <h1 style="font-size:30px;margin-top:10px;">Workspace directory</h1>
+    <p class="small" style="margin-top:8px;">Workspace: {{ workspace.name }}</p>
+  </section>
+
+  <div class="card">
+    <div class="section-title">Users</div>
+    <table class="table" style="margin-top:10px;">
+      <thead><tr><th>ID</th><th>Email</th></tr></thead>
+      <tbody>
+        {% for u in users %}
+          <tr><td class="mono">{{ u.id }}</td><td>{{ u.email }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

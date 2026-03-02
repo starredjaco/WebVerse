@@ -1,0 +1,11 @@
+slug: ssrf-fundamentals
+name: SSRF Fundamentals
+description: Mini challenge tracks for focused practice in SSRF basics and common bypasses.
+short_description: Learn SSRF fundamentals through small focused labs.
+cover: cover.png
+order: 10
+difficulty_focus: Easy → Medium
+tags:
+  - SSRF
+  - Web Security
+  - URL Fetchers

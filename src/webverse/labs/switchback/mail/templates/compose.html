@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="hero" style="padding-top:10px;">
+    <div class="badge"><span class="dot"></span>Compose</div>
+    <h1 style="font-size:30px;margin-top:10px;">New message</h1>
+    <p class="small" style="margin-top:8px;">Workspace: {{ workspace.name }}</p>
+  </section>
+
+  {% if error %}<div class="alert">{{ error }}</div>{% endif %}
+  {% if success %}<div class="success">{{ success }}</div>{% endif %}
+
+  <div class="card" style="margin-top:12px;">
+    <div class="section-title">Message</div>
+    <form method="post" action="/compose">
+      <label>To</label>
+      <input name="to" placeholder="recipient@switchback.local" />
+
+      <label style="margin-top:12px;">Subject</label>
+      <input name="subject" placeholder="Subject" maxlength="255" />
+
+      <label style="margin-top:12px;">Body</label>
+      <textarea name="body" rows="7" placeholder="Write your message…"></textarea>
+
+      <button class="btn primary" style="margin-top:14px;">Send</button>
+    </form>
+
+    <div class="small" style="margin-top:12px;line-height:1.6;">
+      Messages are routed internally. External delivery is disabled in staging.
+    </div>
+  </div>
+{% endblock %}

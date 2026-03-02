@@ -13,7 +13,7 @@ from typing import Dict, List, Optional, Sequence
 import requests
 
 from webverse import __version__
-from webverse.core.registry import USER_LABS_DIR
+from webverse.core.registry import USER_LABS_DIR, USER_LEARNING_LABS_DIR
 
 
 DEFAULT_API_BASE = os.getenv("WEBVERSE_OPENSOURCE_API_BASE", "https://api-opensource.webverselabs.com").rstrip("/")
@@ -28,6 +28,7 @@ class RemoteLab:
     sha256: str
     size_bytes: int
     download_url: str
+    collection: str = "labs"
 
 
 class RemoteLabsError(RuntimeError):
@@ -54,9 +55,9 @@ def _safe_extract_zip(zf: zipfile.ZipFile, dest: Path) -> None:
     zf.extractall(dest)
 
 
-def check_missing(installed_lab_ids: Sequence[str], *, api_base: str = DEFAULT_API_BASE, timeout: float = 6.0) -> List[RemoteLab]:
+def check_missing(installed_lab_ids: Sequence[str], *, api_base: str = DEFAULT_API_BASE, timeout: float = 6.0, collection: str = "labs") -> List[RemoteLab]:
     """Ask the OSS API which labs are available that are not installed locally."""
-    url = f"{api_base}/v1/labs/check"
+    url = f"{api_base}/v1/{collection}/check"
     payload = {
         "installed": list({str(x) for x in installed_lab_ids if str(x).strip()}),
         "client": {"app_version": __version__},
@@ -81,6 +82,7 @@ def check_missing(installed_lab_ids: Sequence[str], *, api_base: str = DEFAULT_A
                 sha256=str(item.get("sha256") or "").strip().lower(),
                 size_bytes=int(item.get("size_bytes") or 0),
                 download_url=str(item.get("download_url") or "").strip(),
+                collection=collection,
             ))
         except Exception:
             continue
@@ -91,15 +93,15 @@ def check_missing(installed_lab_ids: Sequence[str], *, api_base: str = DEFAULT_A
 
 
 def install_labs(labs: Sequence[RemoteLab], *, api_base: str = DEFAULT_API_BASE, timeout: float = 18.0) -> List[str]:
-    """Download + install the given labs into USER_LABS_DIR.
+    """Download + install the given labs into the appropriate local collection directory.
 
     Returns a list of installed lab ids.
     """
     installed: List[str] = []
     USER_LABS_DIR.mkdir(parents=True, exist_ok=True)
+    USER_LEARNING_LABS_DIR.mkdir(parents=True, exist_ok=True)
 
     for lab in labs:
-        # Resolve download URL (allow API to hand us a full URL or a relative path)
         dl = lab.download_url
 
         if dl.startswith("/"):
@@ -115,58 +117,42 @@ def install_labs(labs: Sequence[RemoteLab], *, api_base: str = DEFAULT_API_BASE,
             raise RemoteLabsError(f"Failed to download {lab.id}: {e}")
 
         got = _sha256_bytes(blob)
-        if got != (lab.sha256 or "").lower():
-            raise RemoteLabsError(f"Checksum mismatch for {lab.id}")
+        if got.lower() != (lab.sha256 or "").lower():
+            raise RemoteLabsError(f"Checksum mismatch for {lab.id} (expected {lab.sha256}, got {got})")
 
-        target = (USER_LABS_DIR / lab.id)
-        tmpdir = Path(tempfile.mkdtemp(prefix=f"webverse_lab_{lab.id}_"))
-        tmp_zip: Optional[Path] = None
+        target_root = USER_LEARNING_LABS_DIR if getattr(lab, "collection", "labs") == "learning-labs" else USER_LABS_DIR
+        target = (target_root / lab.id)
+        tmp_parent = Path(tempfile.mkdtemp(prefix=f"wv_install_{lab.id}_"))
+        tmp_extract = tmp_parent / "extract"
+        tmp_extract.mkdir(parents=True, exist_ok=True)
 
         try:
-            with tempfile.NamedTemporaryFile(delete=False, suffix=f"_{lab.id}.zip") as f:
-                f.write(blob)
-                tmp_zip = Path(f.name)
+            with zipfile.ZipFile(Path(tmp_parent / "lab.zip"), "w") as _:
+                pass
+            lab_zip_path = tmp_parent / "lab.zip"
+            lab_zip_path.write_bytes(blob)
 
-            with zipfile.ZipFile(str(tmp_zip), "r") as zf:
-                _safe_extract_zip(zf, tmpdir)
+            with zipfile.ZipFile(lab_zip_path, "r") as zf:
+                _safe_extract_zip(zf, tmp_extract)
 
-            # The zip may contain either a flat lab folder or a nested folder.
-            # Detect the folder that contains lab.yml.
-            lab_root: Optional[Path] = None
-            if (tmpdir / "lab.yml").exists():
-                lab_root = tmpdir
-            else:
-                for child in tmpdir.iterdir():
-                    if child.is_dir() and (child / "lab.yml").exists():
-                        lab_root = child
-                        break
+            if not (tmp_extract / "lab.yml").exists():
+                raise RemoteLabsError(f"Invalid lab package for {lab.id}: missing lab.yml")
 
-            if not lab_root:
-                raise RemoteLabsError(f"Downloaded lab {lab.id} is missing lab.yml")
-
-            # Replace existing
             if target.exists():
                 shutil.rmtree(target, ignore_errors=True)
 
-            target.mkdir(parents=True, exist_ok=True)
-
-            # Copy extracted lab into target
-            for p in lab_root.rglob("*"):
-                rel = p.relative_to(lab_root)
-                dest = target / rel
-                if p.is_dir():
-                    dest.mkdir(parents=True, exist_ok=True)
-                else:
-                    dest.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copy2(str(p), str(dest))
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copytree(tmp_extract, target)
 
             installed.append(lab.id)
+        except RemoteLabsError:
+            raise
+        except Exception as e:
+            raise RemoteLabsError(f"Failed to install {lab.id}: {e}")
         finally:
-            try:
-                if tmp_zip and tmp_zip.exists():
-                    tmp_zip.unlink(missing_ok=True)
-            except Exception:
-                pass
-            shutil.rmtree(tmpdir, ignore_errors=True)
+            shutil.rmtree(tmp_parent, ignore_errors=True)
 
     return installed
+
+def check_missing_learning(installed_lab_ids: Sequence[str], *, api_base: str = DEFAULT_API_BASE, timeout: float = 6.0) -> List[RemoteLab]:
+    return check_missing(installed_lab_ids, api_base=api_base, timeout=timeout, collection="learning-labs")

@@ -1,0 +1,14 @@
+id: ssrf-starter-1
+name: SSRF Starter 1
+track: SSRF Fundamentals
+difficulty: easy
+description: Mini learning lab for SSRF basics. One URL-fetch feature is vulnerable; most other dashboard actions are decoys.
+story: |
+  A small internal tools dashboard exposes a URL preview/fetch utility for support staff.
+  Most buttons and routes are harmless noise, but one fetch path performs a server-side request with weak URL validation.
+  Your goal is to identify the SSRF sink and use it to retrieve the flag.
+compose_file: docker-compose.yml
+image: cover.png
+entrypoint:
+  base_url: http://localhost:8188
+flag_sha256: "34ea43d3d6bde780ce7cafa276a2c7a7d3d60784334e384407f0f25e3c0d10a2"

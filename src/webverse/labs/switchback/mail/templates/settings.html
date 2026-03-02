@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="hero" style="padding-top:10px;">
+    <div class="badge"><span class="dot"></span>Settings</div>
+    <h1 style="font-size:30px;margin-top:10px;">Settings</h1>
+    <p class="small" style="margin-top:8px;">Workspace: {{ workspace.name }}</p>
+  </section>
+
+  <div class="card">
+    <div class="section-title">Account</div>
+    <div class="kv" style="margin-top:10px;">
+      <div class="k">Email</div><div class="v">{{ user.email }}</div>
+      <div class="k">Workspace</div><div class="v">{{ workspace.name }}</div>
+    </div>
+
+    <div class="small" style="margin-top:14px;">User profile editing is disabled in staging.</div>
+  </div>
+{% endblock %}

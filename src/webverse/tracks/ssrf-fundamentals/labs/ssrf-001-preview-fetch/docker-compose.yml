@@ -1,0 +1,21 @@
+services:
+  web:
+    build:
+      context: ./web
+    container_name: webverse_ssrf_001_web
+    ports:
+      - "80:80"
+    depends_on:
+      - metadata
+    environment:
+      INTERNAL_METADATA_HOST: metadata
+      INTERNAL_METADATA_PORT: "5001"
+    restart: unless-stopped
+
+  metadata:
+    build:
+      context: ./metadata
+    container_name: webverse_ssrf_001_metadata
+    expose:
+      - "5001"
+    restart: unless-stopped

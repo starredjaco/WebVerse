@@ -8,16 +8,18 @@ from typing import Dict, List, Optional
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from webverse.core.registry import discover_labs
+from webverse.core.registry import discover_labs, discover_learning_labs, discover_learning_tracks
 from webverse.core.runtime import get_running_lab, set_running_lab
 from webverse.core.docker_ops import docker_available, compose_v2_available, compose_has_running
-from webverse.core.models import Lab
+from webverse.core.models import Lab, LearningTrack
 
 from webverse.core import progress_db
 
 
 class AppState(QObject):
 	labs_changed = pyqtSignal()
+	learning_labs_changed = pyqtSignal()
+	learning_tracks_changed = pyqtSignal()
 	filter_changed = pyqtSignal(str)
 	selected_changed = pyqtSignal(object)  # Lab|None
 	running_changed = pyqtSignal(object)   # Lab|None
@@ -30,6 +32,9 @@ class AppState(QObject):
 	def __init__(self):
 		super().__init__()
 		self._labs: List[Lab] = []
+		self._learning_labs: List[Lab] = []
+		self._learning_tracks: List[LearningTrack] = []
+		self._learning_track_index: Dict[str, LearningTrack] = {}
 		self._filter: str = ""
 		self._selected: Optional[Lab] = None
 		self._running_lab_id: Optional[str] = get_running_lab()
@@ -98,6 +103,10 @@ class AppState(QObject):
 			self.labs_changed.emit()
 		except Exception:
 			pass
+		try:
+			self.learning_tracks_changed.emit()
+		except Exception:
+ 			pass
 
 	# ---- Cache invalidation ----
 	def _invalidate_progress(self) -> None:
@@ -111,6 +120,12 @@ class AppState(QObject):
 		self._invalidate_progress()
 		self._invalidate_summary()
 		self.progress_changed.emit()
+
+		# Learning track cards often show progress badges / completion counts.
+		try:
+			self.learning_tracks_changed.emit()
+		except Exception:
+			pass
 
 	def clear_user_caches(self) -> None:
 		"""
@@ -144,6 +159,10 @@ class AppState(QObject):
 			self.labs_changed.emit()
 		except Exception:
 			pass
+		try:
+			self.learning_tracks_changed.emit()
+		except Exception:
+ 			pass
 
 	def _refresh_player_stats_async(self, *, expect_solved_increment: bool = False, prev_labs_solved: int = 0) -> None:
 		"""Force-refresh XP/rank/stats from the API and notify the UI.
@@ -333,12 +352,167 @@ class AppState(QObject):
 	# ---- Labs ----
 	def refresh_labs(self) -> None:
 		self._labs = discover_labs()
+		try:
+			self._learning_tracks = list(discover_learning_tracks()) or []
+		except Exception:
+			self._learning_tracks = []
+
+		self._learning_track_index = {}
+
+		# Flatten learning-track labs and annotate them so the UI can reason about
+		# track membership without re-parsing YAML/files in the view layer.
+		flat_learning: List[Lab] = []
+
+		try:
+			for t in self._learning_tracks:
+				track_slug = str(getattr(t, "slug", "") or getattr(t, "id", "") or "").strip()
+				if track_slug:
+					self._learning_track_index[track_slug] = t
+				track_name = str(getattr(t, "name", "") or "").strip()
+				for lab in list(getattr(t, "labs", ()) or []):
+					try:
+						if not getattr(lab, "kind", None):
+							setattr(lab, "kind", "learning")
+					except Exception:
+						pass
+					try:
+						if track_slug and not getattr(lab, "track_slug", None):
+							setattr(lab, "track_slug", track_slug)
+					except Exception:
+						pass
+					try:
+						if track_name and not getattr(lab, "track_name", None):
+							setattr(lab, "track_name", track_name)
+					except Exception:
+						pass
+					flat_learning.append(lab)
+		except Exception:
+			flat_learning = []
+
+		self._learning_labs = flat_learning
+		if not self._learning_labs:
+			try:
+				self._learning_labs = discover_learning_labs()
+				for lab in self._learning_labs:
+					try:
+						if not getattr(lab, "kind", None):
+							setattr(lab, "kind", "learning")
+					except Exception:
+						pass
+			except Exception:
+				self._learning_labs = []
 		if self._selected:
-			self._selected = next((x for x in self._labs if x.id == self._selected.id), None)
+			all_known = list(self._labs) + list(self._learning_labs)
+			self._selected = next((x for x in all_known if x.id == self._selected.id), None)
 		self.labs_changed.emit()
+		self.learning_labs_changed.emit()
+		self.learning_tracks_changed.emit()
 
 	def labs(self) -> List[Lab]:
 		return list(self._labs)
+
+	def learning_labs(self) -> List[Lab]:
+		return list(self._learning_labs)
+
+	def all_labs(self) -> List[Lab]:
+		# Dedupe by lab.id so lookups/navigation don't hit duplicate entries when
+		# a lab exists in both a normal catalog and a learning track.
+		out: List[Lab] = []
+		seen = set()
+		for lab in list(self._labs) + list(self._learning_labs):
+			try:
+				key = str(getattr(lab, "id", ""))
+			except Exception:
+				key = ""
+			if not key:
+				key = f"__obj__:{id(lab)}"
+			if key in seen:
+				continue
+			seen.add(key)
+			out.append(lab)
+		return out
+
+	def learning_tracks(self) -> List[LearningTrack]:
+		return list(self._learning_tracks)
+
+	def learning_track(self, track_slug: str) -> Optional[LearningTrack]:
+		slug = str(track_slug or "").strip()
+		if not slug:
+			return None
+		if slug in self._learning_track_index:
+			return self._learning_track_index.get(slug)
+		return next(
+			(
+				t
+				for t in self._learning_tracks
+				if str(getattr(t, "slug", "") or getattr(t, "id", "") or "").strip() == slug
+			),
+			None,
+		)
+
+	def learning_track_labs(self, track_slug: str) -> List[Lab]:
+		slug = str(track_slug or "").strip()
+		if not slug:
+			return []
+		track = self.learning_track(slug)
+		if track is not None:
+			try:
+				labs = list(getattr(track, "labs", ()) or [])
+				if labs:
+					return labs
+			except Exception:
+				pass
+		return [lab for lab in self._learning_labs if str(getattr(lab, "track_slug", "") or "").strip() == slug]
+
+	def learning_track_for_lab(self, lab_id: str) -> Optional[LearningTrack]:
+		lid = str(lab_id or "").strip()
+		if not lid:
+			return None
+		# Fast path: annotated track_slug on lab
+		try:
+			lab = next((x for x in self._learning_labs if str(getattr(x, "id", "")) == lid), None)
+			if lab is not None:
+				slug = str(getattr(lab, "track_slug", "") or "").strip()
+				if slug:
+					return self.learning_track(slug)
+		except Exception:
+			pass
+		# Fallback: walk track lists
+		for t in self._learning_tracks:
+			try:
+				for lab in list(getattr(t, "labs", ()) or []):
+					if str(getattr(lab, "id", "")) == lid:
+						return t
+			except Exception:
+				continue
+		return None
+
+	def learning_track_progress(self, track_slug: str) -> dict:
+		"""
+		Returns aggregate progress for a learning track:
+		{
+		  "total": int,
+		  "started": int,
+		  "solved": int,
+		  "percent": int,
+		}
+		"""
+		labs = self.learning_track_labs(track_slug)
+		total = len(labs)
+		if total <= 0:
+			return {"total": 0, "started": 0, "solved": 0, "percent": 0}
+
+		pm = self.progress_map()
+		started = 0
+		solved = 0
+		for lab in labs:
+			row = (pm or {}).get(str(getattr(lab, "id", "")), {}) or {}
+			if row.get("started_at"):
+				started += 1
+			if row.get("solved_at"):
+				solved += 1
+		percent = int(round((solved / total) * 100)) if total else 0
+		return {"total": total, "started": started, "solved": solved, "percent": percent}
 
 	def filtered_labs(self) -> List[Lab]:
 		q = (self._filter or "").strip().lower()
@@ -376,7 +550,7 @@ class AppState(QObject):
 	def running(self) -> Optional[Lab]:
 		if not self._running_lab_id:
 			return None
-		return next((x for x in self._labs if x.id == self._running_lab_id), None)
+		return next((x for x in self.all_labs() if x.id == self._running_lab_id), None)
 
 	def set_running_lab_id(self, lab_id: Optional[str]) -> None:
 		if lab_id == self._running_lab_id:
@@ -412,7 +586,7 @@ class AppState(QObject):
 		# Treat "running" as "started" so Progress -> Active works even before any flag attempts.
 		if lab_id:
 			try:
-				lab = next((x for x in self._labs if str(x.id) == str(lab_id)), None)
+				lab = next((x for x in self.all_labs() if str(x.id) == str(lab_id)), None)
 				diff = (getattr(lab, "difficulty", None) if lab else None)
 				progress_db.mark_started(str(lab_id), difficulty=str(diff) if diff else None)
 			except Exception:
@@ -455,7 +629,7 @@ class AppState(QObject):
 			# If Docker/Compose aren't available, don't mutate runtime state.
 			return
 
-		lab = next((x for x in self._labs if x.id == self._running_lab_id), None)
+		lab = next((x for x in self.all_labs() if x.id == self._running_lab_id), None)
 		if not lab:
 			set_running_lab(None)
 			self._running_lab_id = None
@@ -508,7 +682,7 @@ class AppState(QObject):
 
 	# Optional helpers (useful later)
 	def mark_started(self, lab_id: str) -> None:
-		lab = next((x for x in self._labs if str(x.id) == str(lab_id)), None)
+		lab = next((x for x in self.all_labs() if str(x.id) == str(lab_id)), None)
 		diff = (getattr(lab, "difficulty", None) if lab else None)
 		progress_db.mark_started(str(lab_id), difficulty=str(diff) if diff else None)
 		self._invalidate_all_progress_views()
@@ -518,7 +692,7 @@ class AppState(QObject):
 		self._invalidate_all_progress_views()
 
 	def mark_solved(self, lab_id: str) -> None:
-		lab = next((x for x in self._labs if str(x.id) == str(lab_id)), None)
+		lab = next((x for x in self.all_labs() if str(x.id) == str(lab_id)), None)
 		diff = (getattr(lab, "difficulty", None) if lab else None)
 		progress_db.mark_solved(str(lab_id), difficulty=str(diff) if diff else None)
 		self._invalidate_all_progress_views()

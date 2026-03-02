@@ -1,0 +1,38 @@
+[mysqld]
+# Ultra low-memory footprint configuration for lab environments.
+# Goal: keep MySQL idle memory tiny while remaining stable for a single-user lab.
+
+# Disable heavy subsystems
+performance_schema=0
+mysqlx=0
+skip_name_resolve=1
+skip-log-bin
+skip_ssl=1
+
+# Keep concurrency low
+max_connections=12
+thread_cache_size=0
+
+# Reduce metadata caches
+table_open_cache=32
+table_definition_cache=32
+
+# InnoDB memory controls (tiny but stable)
+innodb_buffer_pool_size=16M
+innodb_buffer_pool_instances=1
+innodb_log_buffer_size=1M
+innodb_redo_log_capacity=16M
+innodb_adaptive_hash_index=0
+innodb_change_buffering=none
+innodb_flush_log_at_trx_commit=2
+
+# Temp / per-connection buffers (keep very small)
+tmp_table_size=4M
+max_heap_table_size=4M
+sort_buffer_size=64K
+join_buffer_size=64K
+read_buffer_size=64K
+read_rnd_buffer_size=64K
+
+# Lab convenience
+default_time_zone='+00:00'

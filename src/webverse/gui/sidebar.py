@@ -41,30 +41,39 @@ class _NavButton(QPushButton):
 class Sidebar(QFrame):
 	auth_changed = pyqtSignal()
 
-	def __init__(self, stack, parent=None, profile_index: int = -1):
+	def __init__(self, stack, parent=None, profile_index: int = -1, show_learning: bool = True):
 		super().__init__(parent)
 		self.setObjectName("Sidebar")
 		self.stack = stack
 
 		self._settings = QSettings("WebVerse", "WebVerse")
 		self._profile_index = profile_index
+		self._show_learning = bool(show_learning)
 
 		layout = QVBoxLayout(self)
 		layout.setContentsMargins(14, 14, 14, 14)
 		layout.setSpacing(10)
 
-		self.buttons = [
-			_NavButton("Home"),
-			_NavButton("Browse Labs"),
-			_NavButton("Progress"),
-			_NavButton("Settings"),
+		# Build nav dynamically so we can hide Learning cleanly.
+		# Each item: (label, stack_index)
+		self._nav_items = [
+			("Home", 0),
+			("Browse Labs", 1),
+		]
+		if self._show_learning:
+			self._nav_items.append(("Learning", 2))
+		self._nav_items += [
+			("Progress", 4),
+			("Settings", 5),
 		]
 
-		self._page_for_button = [0, 1, 3, 4]  # Home, Browse, Progress, Settings -> stack index
-
-		page_for_button = [0, 1, 3, 4]  # Home, Browse, Progress, Settings -> stack index
-		for i, btn in enumerate(self.buttons):
-			btn.clicked.connect(lambda _, x=i: self.set_page(self._page_for_button[x]))
+		self.buttons = []
+		self._page_for_button = []
+		for (label, stack_idx) in self._nav_items:
+			btn = _NavButton(label)
+			btn.clicked.connect(lambda _=False, p=int(stack_idx): self.set_page(p))
+			self.buttons.append(btn)
+			self._page_for_button.append(int(stack_idx))
 			layout.addWidget(btn)
 
 		layout.addStretch(1)
@@ -180,24 +189,10 @@ class Sidebar(QFrame):
 		# index is the STACK index (not the button index)
 		self.stack.setCurrentIndex(index)
 
-		# Active state is based on "context"
-		# Home -> 0
-		# Browse Labs list -> 1
-		# Lab detail -> 2 (NO sidebar selection)
-		# Progress -> 3
-		# Settings -> 4
-		active_btn = None
-		if index == 0:
-			active_btn = 0
-		elif index == 1:
-			active_btn = 1
-		elif index == 3:
-			active_btn = 2
-		elif index == 4:
-			active_btn = 3
-
-		for i, btn in enumerate(self.buttons):
-			btn.set_active(active_btn is not None and i == active_btn)
+		# Active state: highlight the button whose stack index matches,
+		# except Lab Detail (3) which should highlight none.
+		for btn, (_label, stack_idx) in zip(self.buttons, self._nav_items):
+			btn.set_active(int(index) != 3 and int(index) == int(stack_idx))
 
 	def _device_is_linked(self) -> bool:
 		"""
@@ -231,9 +226,18 @@ class Sidebar(QFrame):
 			return False
 
 	def _is_logged_in(self) -> bool:
-		token = str(self._settings.value("auth/access_token", "") or "").strip()
-		username = str(self._settings.value("auth/username", "") or "").strip()
-		return bool(token and username)
+		# IMPORTANT: keep this aligned with MainWindow's lock rules (token-based).
+		try:
+			fn = getattr(progress_db, "is_logged_in", None)
+			if callable(fn):
+				return bool(fn())
+		except Exception:
+			pass
+		try:
+			token = str(self._settings.value("auth/access_token", "") or "").strip()
+			return bool(token)
+		except Exception:
+			return Fals
 
 	def _is_access_locked_for_index(self, stack_index: int) -> bool:
 		# Lock only applies if device is linked AND user is logged out.

@@ -1,0 +1,39 @@
+{% extends "portal_base.html" %}
+{% block content %}
+  <section class="hero" style="padding-top:10px;">
+    <div class="badge"><span class="dot"></span>Verify</div>
+    <h1 style="font-size:34px;margin-top:10px;">Verify a referral</h1>
+    <p>Partner-facing verification for staging codes.</p>
+  </section>
+
+  <section class="card">
+    <div class="section-title">Lookup</div>
+    <form method="post" action="/portal/verify">
+      <div class="form-row">
+        <div class="field">
+          <label>Referral code</label>
+          <input name="code" value="{{ code }}" placeholder="e.g. SWITCH-2026-DEMO" autocomplete="off" />
+        </div>
+        <button class="btn primary" style="height:44px;">Verify</button>
+      </div>
+    </form>
+
+    {% if code and not result %}
+      <div class="alert">No referral found for that code.</div>
+    {% endif %}
+
+    {% if result %}
+      <div class="success">Referral verified.</div>
+      <div class="kv" style="margin-top:12px;">
+        <div class="k">Code</div><div class="v mono">{{ result.code }}</div>
+        <div class="k">Referrer</div><div class="v">{{ result.referrer_email }}</div>
+        <div class="k">Points</div><div class="v">{{ result.points }}</div>
+        <div class="k">Created</div><div class="v mono">{{ result.created_at }}</div>
+      </div>
+    {% endif %}
+
+    <div class="small" style="margin-top:14px;">
+      Note: legacy attribution endpoints return constant envelopes to reduce public data exposure.
+    </div>
+  </section>
+{% endblock %}

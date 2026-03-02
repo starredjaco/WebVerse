@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="hero" style="padding-top:10px;">
+    <div class="badge"><span class="dot"></span>Product</div>
+    <h1 style="font-size:34px;margin-top:10px;">Switchback Partner API</h1>
+    <p>
+      Attribution and referral telemetry for partners.
+      Stable response envelopes and predictable performance.
+    </p>
+  </section>
+
+  <section class="grid-2">
+    <div class="card">
+      <div class="section-title">Design goals</div>
+      <ul class="small" style="line-height:1.9;margin:0 0 0 18px;">
+        <li>Minimal data exposure in public surfaces</li>
+        <li>Constant response envelopes</li>
+        <li>Operational readiness (health checks, versioning)</li>
+        <li>Partner portal documentation and examples</li>
+      </ul>
+    </div>
+
+    <div class="card soft">
+      <div class="section-title">Partner onboarding</div>
+      <div class="small" style="line-height:1.6;">
+        Partners integrate through a API-based workflow.
+      </div>
+    </div>
+  </section>
+{% endblock %}

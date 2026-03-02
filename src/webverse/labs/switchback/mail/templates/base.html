@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{ title }}</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header class="nav">
+      <div class="container">
+        <div class="nav-inner">
+          <div class="brand">
+            <a class="logo" href="/">
+              <span class="logo-mark" aria-hidden="true"></span>
+              <span class="logo-text">Switchback Mail</span>
+            </a>
+            <span class="env-pill">Switchback Mail • internal</span>
+          </div>
+
+          <nav class="nav-links" aria-label="Mail navigation">
+            <a class="nav-link {% if title == 'Mail' %}active{% endif %}" href="/">Inbox</a>
+            <a class="nav-link {% if title == 'Compose' %}active{% endif %}" href="/compose">Compose</a>
+            <a class="nav-link {% if title == 'Directory' %}active{% endif %}" href="/directory">Directory</a>
+            <a class="nav-link {% if title == 'Settings' %}active{% endif %}" href="/settings">Settings</a>
+          </nav>
+
+          <div class="nav-right">
+            {% if user %}
+              <span class="badge"><span class="dot"></span>{{ user.email }}</span>
+              <form method="post" action="/logout" style="margin:0;">
+                <button class="btn" type="submit">Logout</button>
+              </form>
+            {% else %}
+              <span class="badge warn"><span class="dot"></span>Internal</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+  </body>
+</html>

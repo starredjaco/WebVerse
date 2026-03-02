@@ -1,0 +1,23 @@
+id: ssrf-001-preview-fetch
+name: SSRF 001 - Preview Fetch
+category: Web Security
+status: active
+difficulty: easy
+description: |
+  A tiny link preview feature fetches a URL server-side so users can preview article content.
+  The developer added a naive localhost blacklist, but an internal metadata service still exists on the Docker network.
+story: |
+  Your team built a "URL Preview" widget for a customer dashboard. It fetches the supplied URL and shows the response body.
+  The feature blocks obvious loopback hostnames, but the app is deployed alongside an internal metadata service used for diagnostics.
+  Use SSRF to access the internal service and recover the flag.
+entrypoint: http://localhost:8088
+flag: WEBVERSE{ssrf_preview_internal_metadata}
+flag_sha256: 284100516a6c25ec8ff6349df744f947a49577d7ca70f639d1b4f5ee58c7ee35
+track: SSRF Fundamentals
+tags:
+  - ssrf
+  - internal-services
+  - docker-network
+  - url-preview
+image: cover.png
+image_alt: SSRF preview fetch learning lab cover

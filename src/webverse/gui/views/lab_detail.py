@@ -623,6 +623,8 @@ class LabDetailView(QWidget):
 	nav_back = pyqtSignal()
 	nav_forward = pyqtSignal()
 	nav_to_labs = pyqtSignal()
+	nav_to_learning_tracks = pyqtSignal()
+	nav_to_learning_track = pyqtSignal(str)
 
 	def __init__(self, state):
 		super().__init__()
@@ -656,25 +658,47 @@ class LabDetailView(QWidget):
 		bb.setContentsMargins(14, 10, 14, 0)
 		bb.setSpacing(10)
 
-		self.crumb_labs = QToolButton()
-		self.crumb_labs.setObjectName("CrumbLink")
-		self.crumb_labs.setText("Labs")
-		self.crumb_labs.setCursor(Qt.PointingHandCursor)
-		self.crumb_labs.setAutoRaise(True)
-		self.crumb_labs.clicked.connect(lambda: self.nav_to_labs.emit())
-		bb.addWidget(self.crumb_labs, 0, Qt.AlignVCenter)
+		self.crumb_root = QToolButton()
+		self.crumb_root.setObjectName("CrumbLink")
+		self.crumb_root.setText("Labs")
+		self.crumb_root.setCursor(Qt.PointingHandCursor)
+		self.crumb_root.setAutoRaise(True)
+		self.crumb_root.clicked.connect(self._on_crumb_root_clicked)
+		bb.addWidget(self.crumb_root, 0, Qt.AlignVCenter)
 
-		self.crumb_sep = QLabel(" / ")
-		self.crumb_sep.setObjectName("CrumbSep")
-		bb.addWidget(self.crumb_sep, 0, Qt.AlignVCenter)
+		self.crumb_sep1 = QLabel(" / ")
+		self.crumb_sep1.setObjectName("CrumbSep")
+		bb.addWidget(self.crumb_sep1, 0, Qt.AlignVCenter)
+
+		self.crumb_track = QToolButton()
+		self.crumb_track.setObjectName("CrumbLink")
+		self.crumb_track.setText("")
+		self.crumb_track.setCursor(Qt.PointingHandCursor)
+		self.crumb_track.setAutoRaise(True)
+		self.crumb_track.clicked.connect(self._on_crumb_track_clicked)
+		self.crumb_track.setVisible(False)
+		bb.addWidget(self.crumb_track, 0, Qt.AlignVCenter)
+
+		self.crumb_sep2 = QLabel(" / ")
+		self.crumb_sep2.setObjectName("CrumbSep")
+		self.crumb_sep2.setVisible(False)
+		bb.addWidget(self.crumb_sep2, 0, Qt.AlignVCenter)
 
 		self.crumb_current = QLabel("—")
 		self.crumb_current.setObjectName("CrumbCurrent")
 		self.crumb_current.setTextInteractionFlags(Qt.TextSelectableByMouse)
-		bb.addWidget(self.crumb_current, 1, Qt.AlignVCenter)
+		bb.addWidget(self.crumb_current, 0, Qt.AlignVCenter)
 
 		bb.addStretch(1)
 		outer.addWidget(self.breadcrumb_bar, 0)
+
+		# breadcrumb nav state (LabDetail-only)
+		self._crumb_mode = "labs"           # "labs" | "tracks"
+		self._crumb_track_slug = None       # type: Optional[str]
+		self._crumb_lab_slug = None         # type: Optional[str]
+
+		# default breadcrumb mode
+		self._set_breadcrumb_for_lab(None)
 
 		surface = QFrame()
 		surface.setObjectName("ContentSurface")
@@ -1315,6 +1339,118 @@ class LabDetailView(QWidget):
 		# Nav buttons are in TopBar; keep for backward-compat.
 		return
 
+	def _on_crumb_root_clicked(self):
+		"""
+		Root crumb behavior is context-sensitive:
+		- Labs mode   -> Browse Labs page
+		- Tracks mode -> Learning Tracks grid page
+		"""
+		if str(getattr(self, "_crumb_mode", "labs")) == "tracks":
+			self.nav_to_learning_tracks.emit()
+			return
+		self.nav_to_labs.emit()
+
+	def _on_crumb_track_clicked(self):
+		slug = str(getattr(self, "_crumb_track_slug", "") or "").strip()
+		if slug:
+			self.nav_to_learning_track.emit(slug)
+
+	def _extract_track_lab_slugs_from_path(self, lab) -> tuple[Optional[str], Optional[str]]:
+		"""
+		Best-effort parser for local learning track paths:
+		  .../tracks/{TRACK_SLUG}/labs/{LAB_SLUG}
+		Returns (track_slug, lab_slug_from_path) or (None, None).
+		"""
+		try:
+			raw_path = getattr(lab, "path", None)
+			if not raw_path:
+				return None, None
+
+			parts = [str(p) for p in Path(str(raw_path)).parts if str(p)]
+			lower = [p.lower() for p in parts]
+
+			for i, seg in enumerate(lower):
+				if seg != "tracks" or (i + 1) >= len(parts):
+					continue
+
+				track_slug = (parts[i + 1] or "").strip() or None
+				lab_slug = None
+
+				# Look for ".../labs/{LAB_SLUG}" after the matched track segment.
+				for j in range(i + 2, len(parts) - 1):
+					if lower[j] == "labs":
+						candidate = (parts[j + 1] or "").strip()
+						if candidate:
+							lab_slug = candidate
+						break
+
+				return track_slug, lab_slug
+		except Exception:
+			pass
+
+		return None, None
+
+	def _set_breadcrumb_for_lab(self, lab) -> None:
+		"""
+		Lab detail breadcrumb only:
+		- Normal lab:   Labs / LAB_SLUG
+		- Learning lab: Tracks / TRACK_SLUG / LAB_SLUG
+		"""
+		if not hasattr(self, "crumb_root"):
+			return
+
+		if lab is None:
+			self._crumb_mode = "labs"
+			self._crumb_track_slug = None
+			self._crumb_lab_slug = None
+			self.crumb_root.setText("Labs")
+			self.crumb_root.setEnabled(True)
+			self.crumb_root.setToolTip("")
+			self.crumb_track.setVisible(False)
+			self.crumb_sep2.setVisible(False)
+			self.crumb_current.setText("—")
+			return
+
+		# Prefer path-derived slugs for learning-track labs
+		track_slug, path_lab_slug = self._extract_track_lab_slugs_from_path(lab)
+
+		# Fallback lab slug for regular labs / weird paths
+		lab_slug = (
+			(path_lab_slug or "").strip()
+			or str(getattr(lab, "id", "") or "").strip()
+			or str(getattr(lab, "name", "—") or "—").strip()
+			or "—"
+		)
+
+		self._crumb_lab_slug = lab_slug
+
+		if track_slug:
+			self._crumb_mode = "tracks"
+			self._crumb_track_slug = str(track_slug)
+			self.crumb_root.setText("Tracks")
+			self.crumb_root.setEnabled(True)
+			self.crumb_root.setToolTip("Go to Tracks")
+			self.crumb_track.setText(str(track_slug))
+			self.crumb_track.setVisible(True)
+
+			self.crumb_track.setEnabled(True)
+			self.crumb_track.setToolTip(f"Open track: {track_slug}")
+
+			self.crumb_sep2.setVisible(True)
+			self.crumb_current.setText(lab_slug)
+		else:
+			self._crumb_mode = "labs"
+			self._crumb_track_slug = None
+
+			self.crumb_root.setText("Labs")
+			self.crumb_root.setEnabled(True)
+			self.crumb_root.setToolTip("Go to Labs")
+			self.crumb_track.setText("")
+			self.crumb_track.setVisible(False)
+			self.crumb_track.setEnabled(False)
+			self.crumb_sep2.setVisible(False)
+			self.crumb_current.setText(lab_slug)
+
 	def set_lab(self, lab):
 		self._lab = lab
 		self.flag_input.clear()
@@ -1324,8 +1460,8 @@ class LabDetailView(QWidget):
 		story = (getattr(lab, "story", "") or "").strip()
 		self.story_body.setText(story if story else "NONE")
 
-		# breadcrumbs
-		self.crumb_current.setText(getattr(lab, 'name', '—') or '—')
+		# breadcrumbs (LabDetail only): Labs/LAB_SLUG or Tracks/TRACK_SLUG/LAB_SLUG
+		self._set_breadcrumb_for_lab(lab)
 
 		self.lab_name.setText(lab.name)
 

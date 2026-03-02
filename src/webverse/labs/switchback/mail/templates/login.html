@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="auth-shell">
+    <div class="auth-head">
+      <span class="logo-mark" aria-hidden="true"></span>
+      <div>
+        <h2 class="auth-title">Sign in</h2>
+      </div>
+    </div>
+
+    <div class="card">
+      {% if error %}
+        <div class="alert">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" action="/login">
+        <label>Email</label>
+        <input name="email" placeholder="you@{{ lab_domain }}" autocomplete="username" />
+
+        <label style="margin-top:12px;">Password</label>
+        <input name="password" type="password" placeholder="••••••••" autocomplete="current-password" />
+
+        <button class="btn primary" style="margin-top:14px;width:100%;">Continue</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="hero" style="padding-top:10px;">
+    <div class="badge"><span class="dot"></span>Support</div>
+    <h1 style="font-size:34px;margin-top:10px;">Support</h1>
+    <p>Common questions and operational guidance.</p>
+  </section>
+
+  <section class="grid-2">
+    <div class="card">
+      <div class="section-title">FAQ</div>
+      <div class="small" style="line-height:1.8;">
+        <div style="font-weight:750;">Is MFA required?</div>
+        <div>Yes. Vault enforces TOTP MFA for all users.</div>
+        <div style="height:10px;"></div>
+        <div style="font-weight:750;">Are workspaces isolated?</div>
+        <div>Mail is segmented by workspace and governed by policy.</div>
+        <div style="height:10px;"></div>
+        <div style="font-weight:750;">How do partners integrate?</div>
+        <div>Partners integrate through the Partner API.</div>
+      </div>
+    </div>
+
+    <div class="card soft">
+      <div class="section-title">Contact</div>
+      <div class="small">For staging access, contact your internal sponsor.</div>
+      <div class="small" style="margin-top:10px;">Email: support@switchback.local</div>
+    </div>
+  </section>
+{% endblock %}

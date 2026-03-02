@@ -1,0 +1,12 @@
+{% extends "portal_base.html" %}
+{% block content %}
+  <section class="hero" style="padding-top:10px;">
+    <div class="badge warn"><span class="dot"></span>{{ code }}</div>
+    <h1 style="font-size:34px;margin-top:10px;">{{ title }}</h1>
+    <p>This path isn’t available in this portal.</p>
+    <div class="hero-actions">
+      <a class="btn" href="/">Back to portal</a>
+      <a class="btn" href="/portal/verify">Verify</a>
+    </div>
+  </section>
+{% endblock %}

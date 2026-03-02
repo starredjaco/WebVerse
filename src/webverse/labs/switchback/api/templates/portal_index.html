@@ -1,0 +1,39 @@
+{% extends "portal_base.html" %}
+{% block content %}
+  <section class="hero" style="padding-top:10px;">
+    <div class="badge"><span class="dot"></span>Partner Portal</div>
+    <h1 style="font-size:34px;margin-top:10px;">Switchback Partner API</h1>
+    <p>
+      Staging portal for partner attribution and telemetry.
+      Public surfaces return generic envelopes; deeper details are provided through partner onboarding.
+    </p>
+
+    <div class="hero-actions">
+      <a class="btn primary" href="/portal/verify">Verify a referral</a>
+      <a class="btn" href="/v1/public/status">Public status</a>
+      <a class="btn" href="/v1/public/version">Version</a>
+    </div>
+  </section>
+
+  <section class="grid-2">
+    <div class="card">
+      <div class="section-title">Public endpoints</div>
+      <pre class="mono" style="margin:0;">GET /v1/public/status
+GET /v1/public/version
+</pre>
+      <div class="small" style="margin-top:10px;line-height:1.6;">
+        Some legacy endpoints return constant envelopes for safety.
+      </div>
+    </div>
+
+    <div class="card soft">
+      <div class="section-title">Build</div>
+      <div class="kv" style="margin-top:10px;">
+        <div class="k">Version</div>
+        <div class="v mono">{{ version }}</div>
+        <div class="k">Environment</div>
+        <div class="v">staging</div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

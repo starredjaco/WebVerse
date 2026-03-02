@@ -1,0 +1,111 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: wv_switchback_db
+    command: ["--default-authentication-plugin=mysql_native_password"]
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpass
+      - TZ=UTC
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db/conf.d:/etc/mysql/conf.d:ro
+      - ./db/initdb.d:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    networks:
+      - wvnet
+    restart: unless-stopped
+
+  proxy:
+    image: nginx:1.27-alpine
+    container_name: wv_switchback_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - main_site
+      - api
+      - mail
+      - vault
+    networks:
+      - wvnet
+    restart: unless-stopped
+
+  main_site:
+    build: ./main-site
+    container_name: wv_switchback_main_site
+    environment:
+      - LAB_DOMAIN=switchback.local
+      - API_BASE=http://api.switchback.local
+    networks:
+      - wvnet
+    restart: unless-stopped
+
+  api:
+    build: ./api
+    container_name: wv_switchback_api
+    environment:
+      - LAB_DOMAIN=switchback.local
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=switchback_app
+      - DB_USER=wv_api
+      - DB_PASSWORD=wv_api_pass
+      - MAIL_DEMO_EMAIL=demo@marketing.switchback.local
+      - MAIL_DEMO_PASS=DemoMail!2026
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - wvnet
+    restart: unless-stopped
+
+  mail:
+    build: ./mail
+    container_name: wv_switchback_mail
+    environment:
+      - LAB_DOMAIN=switchback.local
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=switchback_mail
+      - DB_USER=wv_mail
+      - DB_PASSWORD=wv_mail_pass
+      - SESSION_SECRET=switchback-mail-dev-secret
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - wvnet
+    restart: unless-stopped
+
+  vault:
+    build: ./vault
+    container_name: wv_switchback_vault
+    environment:
+      - LAB_DOMAIN=switchback.local
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=switchback_vault
+      - DB_USER=wv_vault
+      - DB_PASSWORD=wv_vault_pass
+      - TOTP_DB_NAME=switchback_totp
+      - SESSION_SECRET=switchback-vault-dev-secret
+      - FLAG=WEBVERSE{sw17chb4ck3d_th3_b0und4ry_4nd_th3_v4u1t_sp1ll3d}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - wvnet
+    restart: unless-stopped
+
+networks:
+  wvnet:
+
+volumes:
+  db_data:

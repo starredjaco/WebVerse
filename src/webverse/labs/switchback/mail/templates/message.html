@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="hero" style="padding-top:10px;">
+    <div class="badge purple"><span class="dot" style="background:var(--primary)"></span>Message view</div>
+    <h1 style="font-size:30px;margin-top:10px;">{{ msg.subject }}</h1>
+    <p class="small" style="margin-top:8px;">
+      Signed in as <span class="badge"><span class="dot"></span>{{ user.email }}</span>
+      • workspace <span class="badge purple"><span class="dot" style="background:var(--primary)"></span>{{ workspace.name }}</span>
+    </p>
+
+    <div class="hero-actions" style="margin-top:12px;">
+      <a class="btn" href="/">Back to inbox</a>
+      <form method="post" action="/logout">
+        <button class="btn">Logout</button>
+      </form>
+    </div>
+  </section>
+
+  <div class="card">
+    <div class="section-title">Envelope</div>
+
+    <div class="grid-2" style="grid-template-columns:1fr 1fr;gap:14px;">
+      <div>
+        <div class="small">From</div>
+        <div style="font-weight:750;margin-top:6px;">{{ msg.sender }}</div>
+      </div>
+      <div>
+        <div class="small">To</div>
+        <div style="font-weight:750;margin-top:6px;">{{ msg.recipient }}</div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;">
+      <div class="small">Body</div>
+      <pre class="mono" style="margin-top:8px;">{{ msg.body }}</pre>
+    </div>
+  </div>
+{% endblock %}

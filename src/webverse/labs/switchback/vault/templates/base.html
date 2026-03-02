@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{ title }}</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header class="nav">
+      <div class="container">
+        <div class="nav-inner">
+          <div class="brand">
+            <a class="logo" href="/">
+              <span class="logo-mark" aria-hidden="true"></span>
+              <span class="logo-text">Switchback Vault</span>
+            </a>
+            <span class="env-pill">mfa required • audit enabled</span>
+          </div>
+
+          <nav class="nav-links" aria-label="Vault navigation">
+            <a class="nav-link {% if title == 'Vault' %}active{% endif %}" href="/">Dashboard</a>
+            <a class="nav-link {% if title == 'New secret' %}active{% endif %}" href="/secrets/new">New secret</a>
+            <a class="nav-link {% if title == 'Policies' %}active{% endif %}" href="/policies">Policies</a>
+          </nav>
+
+          <div class="nav-right">
+            {% if email %}
+              <span class="badge"><span class="dot"></span>{{ email }}</span>
+              <a class="btn sm" href="/logout">Logout</a>
+            {% else %}
+              <span class="badge warn"><span class="dot"></span>Internal</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+  </body>
+</html>

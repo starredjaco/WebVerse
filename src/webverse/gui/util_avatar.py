@@ -50,6 +50,8 @@ def _ring_color(difficulty):
 		return QColor("#ef4444")  # red
 	if d in ("master", "insane", "expert", "4", "5"):
 		return QColor("#a855f7")  # violet
+	if d in ("learning-orange", "learning", "track"):
+		return QColor("#ff8a00")  # bright orange
 
 	return QColor("#64748b")      # muted slate
 
@@ -197,4 +199,22 @@ def lab_badge_icon(lab_name: str, difficulty: str, image_path=None, size: int = 
 
 	_cache[key] = icon
 	return icon
+
+def make_lab_avatar(lab, size: int = 56):
+	"""Return a QLabel avatar widget for a lab card.
+	Learning labs get a bright orange ring.
+	"""
+	from PyQt5.QtWidgets import QLabel
+	from PyQt5.QtCore import QSize
+	name = getattr(lab, "name", "Lab")
+	diff = getattr(lab, "difficulty", "")
+	kind = (getattr(lab, "kind", "lab") or "lab").lower()
+	if kind == "learning":
+		diff = "learning-orange"
+	# local override by mapping special pseudo difficulty to orange ring
+	icon = lab_badge_icon(name, diff, image_path=(getattr(lab, "image_path", None)() if callable(getattr(lab, "image_path", None)) else None), size=size)
+	lbl = QLabel()
+	lbl.setFixedSize(size, size)
+	lbl.setPixmap(icon.pixmap(QSize(size, size)))
+	return lbl
 

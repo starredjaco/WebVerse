@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="hero">
+    <div class="badge purple"><span class="dot" style="background:var(--primary)"></span>Switchback Suite</div>
+    <h1 style="margin-top:10px;">SwitchBack</h1>
+    <p>
+      We build mail for departments. A vault for everything. Partner-grade attribution.
+    </p>
+    <div class="hero-actions">
+      <a class="btn primary" href="/products/mail">Explore Mail</a>
+      <a class="btn" href="/products/vault">Explore Vault</a>
+      <a class="btn" href="/security">Security posture</a>
+    </div>
+  </section>
+
+  <section class="grid-3">
+    <div class="card">
+      <div class="section-title">Department Mail</div>
+      <div class="small" style="line-height:1.6;">
+        Multi-workspace mail with migration tooling for cross-department rollouts.
+        Built for internal teams and shared service desks.
+      </div>
+      <div style="margin-top:12px;"><a class="btn" href="/products/mail">Learn more</a></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Secrets Vault</div>
+      <div class="small" style="line-height:1.6;">
+        MFA-protected secret storage with audit logging and policy-driven access.
+        Designed to minimize blast radius.
+      </div>
+      <div style="margin-top:12px;"><a class="btn" href="/products/vault">Learn more</a></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Partner API</div>
+      <div class="small" style="line-height:1.6;">
+        Lightweight attribution and referral telemetry for partners.
+        Stable response envelopes and rate-limited access.
+      </div>
+      <div style="margin-top:12px;"><a class="btn" href="/products/partner-api">Learn more</a></div>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:16px;">
+    <div class="section-title">Announcement</div>
+    <div class="small" style="line-height:1.6;">
+      Workspace switcher rollout is enabled across internal tools.
+      Access remains isolated by policy.
+    </div>
+  </section>
+{% endblock %}

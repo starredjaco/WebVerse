@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{{ title }}</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header class="nav">
+      <div class="container">
+        <div class="nav-inner">
+          <div class="brand">
+            <a class="logo" href="/">
+              <span class="logo-mark" aria-hidden="true"></span>
+              <span class="logo-text">Switchback</span>
+            </a>
+            <span class="env-pill">partner api • portal</span>
+          </div>
+
+          <nav class="nav-links" aria-label="Portal navigation">
+            <a class="nav-link {% if title == 'Partner Portal' %}active{% endif %}" href="/">Portal</a>
+            <a class="nav-link {% if title == 'Verify referral' %}active{% endif %}" href="/portal/verify">Verify</a>
+          </nav>
+
+          <div class="nav-right">
+            <span class="badge warn"><span class="dot"></span>Staging</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        {% block content %}{% endblock %}
+
+        <div class="footer">
+          <div>© Switchback Systems</div>
+          <div class="mono">api.{{ lab_domain }}</div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="hero" style="padding-top:10px;">
+    <div class="badge"><span class="dot"></span>Security</div>
+    <h1 style="font-size:34px;margin-top:10px;">Secure by default</h1>
+    <p>
+      We enforce MFA where it matters, isolate workspaces by policy, and minimize data exposure in public surfaces.
+      Zero trust is a practice, not a slogan.
+    </p>
+  </section>
+
+  <section class="grid-3">
+    <div class="card">
+      <div class="section-title">MFA enforcement</div>
+      <div class="small" style="line-height:1.6;">Vault users must pass TOTP-based MFA to access secrets.</div>
+    </div>
+    <div class="card">
+      <div class="section-title">Workspace isolation</div>
+      <div class="small" style="line-height:1.6;">Mail is segmented into workspaces for departments and shared service desks.</div>
+    </div>
+    <div class="card">
+      <div class="section-title">Audit visibility</div>
+      <div class="small" style="line-height:1.6;">Audit events are retained for access and change tracking in Vault.</div>
+    </div>
+  </section>
+{% endblock %}
