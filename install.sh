@@ -6,10 +6,10 @@ set -Eeuo pipefail
 # - Installs Docker (distro packages) ONLY if Docker isn't already present
 # - Ensures Docker Compose works (without breaking docker-ce installs)
 # - Installs/updates WebVerse via pipx
-# - Attempts to remove the “privileged ports” first-run blocker (setcap; sysctl fallback)
+# - Attempts to remove the "privileged ports" first-run blocker (setcap; sysctl fallback)
 # - Idempotent: safe to re-run
 
-# ---------- colors (bright, never “blends”) ----------
+# ---------- colors (bright, never "blends") ----------
 RESET=$'\033[0m'
 BOLD=$'\033[1m'
 PURPLE=$'\033[95m'   # bright magenta/purple
@@ -114,11 +114,11 @@ DIST_ID="${ID:-}"
 DIST_LIKE="${ID_LIKE:-}"
 
 case "$DIST_ID" in
-  ubuntu|debian) : ;;
+  ubuntu|debian|kali) : ;;
   *)
-    # allow “like debian/ubuntu”
+    # allow "like debian/ubuntu"
     if [[ "$DIST_LIKE" != *debian* && "$DIST_LIKE" != *ubuntu* ]]; then
-      die "Unsupported distro: ${DIST_ID:-unknown}. This installer supports Ubuntu/Debian."
+      die "Unsupported distro: ${DIST_ID:-unknown}. This installer supports Ubuntu/Debian & Kali."
     fi
     ;;
 esac
@@ -167,6 +167,37 @@ apt_install_available() {
     wait_for_apt_locks
     run "Installing apt dependencies: ${CYAN}${to_install[*]}${RESET}" \
       sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${to_install[@]}"
+  fi
+}
+
+fix_nftables_for_docker() {
+  local iptables_version
+  iptables_version="$(iptables --version 2>/dev/null || true)"
+
+  if [[ "$iptables_version" == *"nf_tables"* ]]; then
+    info "Detected iptables nf_tables backend (incompatible with Docker)."
+    if have update-alternatives; then
+      local switched=false
+      if update-alternatives --list iptables 2>/dev/null | grep -q legacy; then
+        run "Switching iptables to legacy mode" \
+          sudo update-alternatives --set iptables /usr/sbin/iptables-legacy
+        switched=true
+      fi
+      if update-alternatives --list ip6tables 2>/dev/null | grep -q legacy; then
+        run "Switching ip6tables to legacy mode" \
+          sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+        switched=true
+      fi
+      if [[ "$switched" == false ]]; then
+        warn "iptables-legacy alternatives not available. Docker may have networking issues."
+        warn "Consider installing iptables and ensuring the legacy variant is present."
+      fi
+    else
+      warn "update-alternatives not found — cannot switch iptables to legacy mode."
+      warn "Docker networking may fail on nftables. Install iptables-legacy manually if needed."
+    fi
+  else
+    ok "iptables is already using legacy backend (or nf_tables not detected)."
   fi
 }
 
@@ -233,9 +264,100 @@ docker_works_as_user() {
   as_user "docker ps >/dev/null 2>&1"
 }
 
+restart_docker_service() {
+  # Try to start/restart Docker using whatever service/socket unit actually exists.
+  # On Kali, docker.io ships docker.service but it's disabled by default, so
+  # "restart" fails on a unit that was never started — we must "enable --now" first.
+  if have systemctl; then
+    sudo systemctl daemon-reload >>"$LOG" 2>&1 || true
+
+    if systemctl list-unit-files docker.service 2>/dev/null | grep -q docker.service; then
+      # Enable first (idempotent), then restart to pick up any config changes
+      info "Enabling + (re)starting docker.service…"
+      sudo systemctl enable docker.service >>"$LOG" 2>&1 || true
+      sudo systemctl restart docker.service >>"$LOG" 2>&1 && return 0
+      # If restart failed, try just start (restart can fail on a never-started unit on some inits)
+      sudo systemctl start docker.service >>"$LOG" 2>&1 && return 0
+    fi
+
+    if systemctl list-unit-files docker.socket 2>/dev/null | grep -q docker.socket; then
+      info "Enabling + starting via docker.socket…"
+      sudo systemctl enable --now docker.socket >>"$LOG" 2>&1
+      # Poke the socket so the daemon actually spawns
+      sudo docker info >>"$LOG" 2>&1 || true
+      return 0
+    fi
+
+    # Last attempt: maybe the unit exists but isn't in list-unit-files (masked, etc.)
+    info "No docker.service or docker.socket found in unit files — trying direct start…"
+    if sudo systemctl enable --now docker >>"$LOG" 2>&1; then
+      return 0
+    fi
+
+    warn "Could not start Docker via systemd."
+  elif have service; then
+    info "Starting Docker via service command…"
+    sudo service docker start >>"$LOG" 2>&1 && return 0
+    warn "service docker start failed."
+  fi
+
+  # If Docker daemon is already running, that's fine
+  if sudo docker info >>"$LOG" 2>&1; then
+    warn "Could not restart Docker service, but daemon is already responsive."
+    return 0
+  fi
+
+  return 1
+}
+
+verify_docker_healthy() {
+  # Restart to pick up iptables changes (best-effort)
+  if ! restart_docker_service; then
+    die "Docker daemon is not running and could not be started. Check: systemctl list-unit-files '*docker*'"
+  fi
+  sleep 2
+
+  # Check 1: daemon alive?
+  if ! sudo docker info >>"$LOG" 2>&1; then
+    die "Docker daemon failed to start."
+  fi
+
+  # Check 2: networking works? (catches nftables breakage)
+  local test_net="webverse-install-test-$$"
+  if sudo docker network create "$test_net" >>"$LOG" 2>&1; then
+    sudo docker network rm "$test_net" >>"$LOG" 2>&1 || true
+    ok "Docker networking is working."
+  else
+    die "Docker network creation failed (likely iptables/nftables issue)."
+  fi
+}
+
 ensure_docker_service_running() {
   if have systemctl; then
-    run "Enabling + starting Docker service" sudo systemctl enable --now docker
+    # Reload unit files so systemd picks up newly-installed units
+    info "Reloading systemd daemon units…"
+    sudo systemctl daemon-reload >>"$LOG" 2>&1 || true
+
+    # containerd is a dependency — make sure it's up first
+    if systemctl list-unit-files containerd.service 2>/dev/null | grep -q containerd.service; then
+      sudo systemctl enable --now containerd >>"$LOG" 2>&1 || true
+    fi
+
+    # Enable whichever docker unit exists, then use restart_docker_service to start it
+    if systemctl list-unit-files docker.service 2>/dev/null | grep -q docker.service; then
+      run "Enabling Docker service" sudo systemctl enable docker.service
+    elif systemctl list-unit-files docker.socket 2>/dev/null | grep -q docker.socket; then
+      run "Enabling Docker socket" sudo systemctl enable docker.socket
+    else
+      warn "No docker.service or docker.socket unit found after install."
+      warn "Available docker/containerd units:"
+      systemctl list-unit-files '*docker*' '*containerd*' 2>&1 | tee -a "$LOG" | sed -e "s/^/${PURPLE}/" -e "s/$/${RESET}/"
+    fi
+
+    # Actually start the daemon
+    if ! restart_docker_service; then
+      die "Docker installed but could not be started. Check: systemctl list-unit-files '*docker*'"
+    fi
   elif have service; then
     run "Starting Docker service (service)" sudo service docker start
   else
@@ -243,13 +365,31 @@ ensure_docker_service_running() {
   fi
 }
 
-# If docker is missing, install distro Docker (stable, low-drama)
-if ! have docker; then
-  warn "Docker not found — installing distro Docker (docker.io)."
+# ---------- Docker detection ----------
+# Check for the DAEMON (dockerd), not just the CLI (docker).
+# Kali and some Debian systems install docker-cli separately without the daemon,
+# so "have docker" is true but there's nothing to actually run containers.
+
+docker_daemon_installed() {
+  # Check for dockerd binary OR the docker.io / docker-ce package
+  have dockerd || dpkg -s docker.io >/dev/null 2>&1 || dpkg -s docker-ce >/dev/null 2>&1
+}
+
+# *** FIX: Run nftables check BEFORE Docker install/start ***
+fix_nftables_for_docker
+
+if ! docker_daemon_installed; then
+  if have docker; then
+    warn "Docker CLI found but no Docker daemon (dockerd). Only client packages are installed."
+    warn "Installing docker.io to get the full Docker engine…"
+  else
+    warn "Docker not found — installing distro Docker (docker.io)."
+  fi
   apt_install_available docker.io
   ensure_docker_service_running
+  verify_docker_healthy
 else
-  ok "Docker found: $(docker --version 2>/dev/null || true)"
+  ok "Docker daemon found: $(docker --version 2>/dev/null || true)"
   if docker_is_podman; then
     warn "Your 'docker' is actually Podman (podman-docker). WebVerse expects real Docker."
     warn "Removing podman-docker and installing docker.io."
@@ -257,6 +397,15 @@ else
     run "Removing podman-docker" sudo DEBIAN_FRONTEND=noninteractive apt-get remove -y podman-docker || true
     apt_install_available docker.io
     ensure_docker_service_running
+    verify_docker_healthy
+  else
+    # Docker daemon package exists but daemon might not be running (common on Kali
+    # where docker.io installs but doesn't auto-enable the service).
+    if ! sudo docker info >>"$LOG" 2>&1; then
+      warn "Docker daemon installed but not running — enabling service."
+      ensure_docker_service_running
+    fi
+    verify_docker_healthy
   fi
 fi
 
@@ -293,7 +442,7 @@ else
   fi
 fi
 
-# docker group membership (so user doesn’t need sudo for docker)
+# docker group membership (so user doesn't need sudo for docker)
 if getent group docker >/dev/null 2>&1; then :; else
   run "Creating docker group" sudo groupadd docker || true
 fi
@@ -337,7 +486,7 @@ else
   fi
 fi
 
-# ---------- Fix the “privileged ports” blocker (setcap; sysctl fallback) ----------
+# ---------- Fix the "privileged ports" blocker (setcap; sysctl fallback) ----------
 # Your CLI currently blocks startup if it thinks low-port bind isn't allowed.
 # We try to set CAP_NET_BIND_SERVICE on the python actually used.
 VENV_PY="${TARGET_HOME}/.local/share/pipx/venvs/webverse/bin/python"
