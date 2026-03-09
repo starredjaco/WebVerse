@@ -31,7 +31,7 @@ Re-run the installer script — it will reinstall/refresh the WebVerse pipx envi
 
 ## Screenshot / Demo]
 
-<img width="1911" height="887" alt="HOME PAGE NEW" src="https://github.com/user-attachments/assets/49002836-10ca-43ba-983c-1502bd84536c" />
+<img width="1906" height="1019" alt="new home page" src="https://github.com/user-attachments/assets/7cd7d168-cfc0-4409-8dc8-d9af90ec84bc" />
 
 <img width="1907" height="891" alt="PIXEL PIVOT PAGE NEW" src="https://github.com/user-attachments/assets/aac378e8-b0b0-461a-b263-78d3492f7599" />
 
