@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#e8f4f8" rx="12"/>
+  <!-- Water ripples bg -->
+  <ellipse cx="200" cy="350" rx="180" ry="30" fill="#b8dce8" opacity="0.3"/>
+  <ellipse cx="200" cy="340" rx="160" ry="25" fill="#c8e8f0" opacity="0.2"/>
+  <!-- Starfish -->
+  <g transform="translate(80,180) rotate(-15)">
+    <path d="M0,-35 L8,-12 L32,-12 L14,4 L20,28 L0,14 L-20,28 L-14,4 L-32,-12 L-8,-12 Z" fill="#e8845c" stroke="#d4734a" stroke-width="1.5"/>
+    <circle cx="-2" cy="-6" r="2" fill="#d4734a" opacity="0.5"/>
+    <circle cx="6" cy="2" r="1.5" fill="#d4734a" opacity="0.5"/>
+    <circle cx="-8" cy="4" r="1.5" fill="#d4734a" opacity="0.5"/>
+    <circle cx="0" cy="-2" r="5" fill="#f0a080" opacity="0.4"/>
+  </g>
+  <!-- Seahorse -->
+  <g transform="translate(200,160)">
+    <path d="M0,-50 Q15,-45 12,-30 Q10,-18 5,-10 Q0,0 -5,15 Q-8,28 -3,38 Q5,48 8,55 Q5,60 0,58 Q-5,55 -8,48 Q-12,38 -10,25 Q-8,15 -5,5 Q-15,10 -20,5 Q-18,0 -10,0 Q-5,-5 -8,-15 Q-12,-25 -8,-35 Q-5,-45 0,-50 Z" fill="#68b89e" stroke="#4a9a82" stroke-width="1.5"/>
+    <circle cx="-2" cy="-32" r="2.5" fill="#2a5a48"/>
+    <circle cx="-2" cy="-32" r="1.2" fill="#fff" opacity="0.5"/>
+    <path d="M-8,-42 Q-3,-48 2,-44" stroke="#4a9a82" stroke-width="1.5" fill="none"/>
+    <!-- Belly ridges -->
+    <path d="M-6,-20 Q-2,-22 2,-18" stroke="#4a9a82" stroke-width="0.8" fill="none" opacity="0.6"/>
+    <path d="M-6,-12 Q-2,-14 2,-10" stroke="#4a9a82" stroke-width="0.8" fill="none" opacity="0.6"/>
+    <path d="M-6,-4 Q-2,-6 2,-2" stroke="#4a9a82" stroke-width="0.8" fill="none" opacity="0.6"/>
+  </g>
+  <!-- Turtle -->
+  <g transform="translate(310,220)">
+    <ellipse cx="0" cy="0" rx="28" ry="22" fill="#7cb88a" stroke="#5a9a68" stroke-width="1.5"/>
+    <!-- Shell pattern -->
+    <ellipse cx="0" cy="-2" rx="16" ry="12" fill="#5a9a68" opacity="0.3"/>
+    <line x1="-10" y1="-8" x2="-5" y2="8" stroke="#5a9a68" stroke-width="0.8" opacity="0.5"/>
+    <line x1="10" y1="-8" x2="5" y2="8" stroke="#5a9a68" stroke-width="0.8" opacity="0.5"/>
+    <line x1="-15" y1="0" x2="15" y2="0" stroke="#5a9a68" stroke-width="0.8" opacity="0.5"/>
+    <!-- Head -->
+    <ellipse cx="28" cy="-5" rx="10" ry="8" fill="#8acc98"/>
+    <circle cx="33" cy="-8" r="2" fill="#2a5a38"/>
+    <!-- Flippers -->
+    <ellipse cx="18" cy="18" rx="12" ry="5" fill="#8acc98" transform="rotate(-20,18,18)"/>
+    <ellipse cx="-18" cy="18" rx="12" ry="5" fill="#8acc98" transform="rotate(20,-18,18)"/>
+    <ellipse cx="18" cy="-18" rx="10" ry="4" fill="#8acc98" transform="rotate(15,18,-18)"/>
+    <ellipse cx="-18" cy="-18" rx="10" ry="4" fill="#8acc98" transform="rotate(-15,-18,-18)"/>
+  </g>
+  <!-- Octopus -->
+  <g transform="translate(130,290)">
+    <ellipse cx="0" cy="-15" rx="22" ry="18" fill="#c882b0" stroke="#b06898" stroke-width="1.5"/>
+    <circle cx="-7" cy="-18" r="3" fill="#fff"/>
+    <circle cx="7" cy="-18" r="3" fill="#fff"/>
+    <circle cx="-7" cy="-18" r="1.8" fill="#4a2840"/>
+    <circle cx="7" cy="-18" r="1.8" fill="#4a2840"/>
+    <path d="M-4,-10 Q0,-7 4,-10" stroke="#b06898" stroke-width="1" fill="none"/>
+    <!-- Tentacles -->
+    <path d="M-18,0 Q-25,20 -18,35 Q-15,30 -20,15" fill="#c882b0" stroke="#b06898" stroke-width="1"/>
+    <path d="M-10,2 Q-15,25 -8,38 Q-5,32 -12,18" fill="#c882b0" stroke="#b06898" stroke-width="1"/>
+    <path d="M0,4 Q-2,28 5,40 Q7,33 0,20" fill="#c882b0" stroke="#b06898" stroke-width="1"/>
+    <path d="M10,2 Q15,25 8,38 Q5,32 12,18" fill="#c882b0" stroke="#b06898" stroke-width="1"/>
+    <path d="M18,0 Q25,20 18,35 Q15,30 20,15" fill="#c882b0" stroke="#b06898" stroke-width="1"/>
+  </g>
+  <!-- Clownfish -->
+  <g transform="translate(290,310)">
+    <ellipse cx="0" cy="0" rx="25" ry="14" fill="#e8884c" stroke="#d07040" stroke-width="1.5"/>
+    <path d="M-8,-14 Q-8,0 -8,14" stroke="#fff" stroke-width="4" fill="none" opacity="0.8"/>
+    <path d="M8,-12 Q8,0 8,12" stroke="#fff" stroke-width="4" fill="none" opacity="0.8"/>
+    <circle cx="-12" cy="-3" r="2.5" fill="#fff"/>
+    <circle cx="-12" cy="-3" r="1.5" fill="#1a1a2e"/>
+    <path d="M22,0 Q32,-8 30,0 Q32,8 22,0 Z" fill="#e8884c" stroke="#d07040" stroke-width="1"/>
+  </g>
+  <!-- Bubbles -->
+  <circle cx="160" cy="130" r="5" fill="none" stroke="#b8dce8" stroke-width="1"/>
+  <circle cx="250" cy="110" r="3" fill="none" stroke="#b8dce8" stroke-width="1"/>
+  <circle cx="340" cy="150" r="4" fill="none" stroke="#b8dce8" stroke-width="1"/>
+</svg>

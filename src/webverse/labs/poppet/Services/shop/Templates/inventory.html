@@ -1,0 +1,5 @@
+{% extends 'staff_base.html' %}{% block title %}Inventory - Poppet Shop{% endblock %}
+{% block content %}<h1>Products &amp; Inventory</h1>
+<table class="data-table"><thead><tr><th>SKU</th><th>Product</th><th>Category</th><th>Price</th><th>Stock</th></tr></thead><tbody>
+{% for p in products %}<tr><td><code>{{ p.sku }}</code></td><td>{{ p.name }}</td><td>{{ p.category }}</td>
+  <td>${{ "%.2f" | format(p.price) }}</td><td class="{% if p.stock < 50 %}low-stock{% endif %}">{{ p.stock }}</td></tr>{% endfor %}</tbody></table>{% endblock %}

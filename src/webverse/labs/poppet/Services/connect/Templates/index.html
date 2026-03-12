@@ -1,0 +1,14 @@
+{% extends 'base.html' %}{% block title %}API Reference - Poppet Connect{% endblock %}
+{% block body %}<div class="api-layout"><aside class="api-sidebar">
+  <h4>Products</h4><a href="#list-products">List Products</a><a href="#search-products">Search Products</a><a href="#get-product">Get Product</a>
+  <h4>System</h4><a href="/changelog">Changelog</a><a href="/status">Status</a></aside>
+  <main class="api-content"><h1>Poppet Connect API</h1>
+    <p style="color:var(--brand-muted);margin-bottom:var(--brand-space-5);">Integration reference for wholesale partners and internal services. Base URL: <code>http://connect-api.poppet.local</code></p>
+    <h2 id="list-products">List Products</h2><div class="endpoint-card"><div class="method-bar"><span class="method-badge method-get">GET</span><span class="path">/api/v1/products</span></div>
+      <div class="desc">Returns all products in the catalog.</div></div>
+    <h2 id="search-products">Search Products</h2><div class="endpoint-card"><div class="method-bar"><span class="method-badge method-get">GET</span><span class="path">/api/v1/products/search?q={term}</span></div>
+      <div class="desc">Search products by name. Returns matching products as JSON.</div></div>
+    <pre class="code-block">curl http://connect-api.poppet.local/api/v1/products/search?q=bear</pre>
+    <h2 id="get-product">Get Product</h2><div class="endpoint-card"><div class="method-bar"><span class="method-badge method-get">GET</span><span class="path">/api/v1/products/{id}</span></div>
+      <div class="desc">Get a single product by ID.</div></div>
+  </main></div>{% endblock %}

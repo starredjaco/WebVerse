@@ -1,0 +1,39 @@
+{% extends "base.html" %}{% block title %}Pay Runs - Poppet Payroll{% endblock %}
+{% block content %}<div class="pr-layout"><aside class="pr-sidebar">
+  <div class="sb-brand"><img src="/Static/icon.svg" alt=""><span>Poppet Payroll</span></div>
+  <nav class="sb-nav">
+    <a href="/dashboard" class="sb-link {% if active=='dash' %}active{% endif %}"><span class="sb-icon">&#9632;</span>Overview</a>
+    <div class="sb-section">Compensation</div>
+    <a href="/employees" class="sb-link {% if active=='emp' %}active{% endif %}"><span class="sb-icon">&#9673;</span>People</a>
+    <a href="/payruns" class="sb-link {% if active=='payruns' %}active{% endif %}"><span class="sb-icon">&#9654;</span>Pay Runs</a>
+    <a href="/deductions" class="sb-link {% if active=='deductions' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Deductions</a>
+    <div class="sb-section">Leave</div>
+    <a href="/timeoff" class="sb-link {% if active=='timeoff' %}active{% endif %}"><span class="sb-icon">&#9788;</span>Time Off{% if pending_pto %}<span class="sb-badge">{{ pending_pto }}</span>{% endif %}</a>
+    <div class="sb-section">Insights</div>
+    <a href="/reports" class="sb-link {% if active=='reports' %}active{% endif %}"><span class="sb-icon">&#9776;</span>Reports</a>
+    <div class="sb-section">System</div>
+    <a href="/integrations" class="sb-link {% if active=='integrations' %}active{% endif %}"><span class="sb-icon">&#8644;</span>Integrations</a>
+    <a href="/settings" class="sb-link {% if active=='settings' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Settings</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-avatar">{{ session.get('payroll_user','?')[0] | upper }}</div>
+    <div class="sb-user-info"><div class="name">{{ session.get('payroll_user','') }}</div><div class="role">{{ session.get('payroll_role','') }}</div></div>
+    <a href="/logout" style="color:var(--theme-sidebar-text);font-size:0.75rem;margin-left:auto;">&#x2192;</a>
+  </div>
+</aside><main class="pr-main">
+
+<h1>Pay Runs</h1>
+<p class="page-desc">Monthly payroll processing history.</p>
+<table class="pr-table">
+  <thead><tr><th>Period</th><th>Run Date</th><th>Employees</th><th>Status</th><th class="money">Gross</th><th class="money">Taxes</th><th class="money">Deductions</th><th class="money">Net</th><th></th></tr></thead>
+  <tbody>{% for r in runs %}
+  <tr><td style="font-weight:500;">{{ r.period_start.strftime('%b %Y') }}</td>
+    <td>{{ r.run_date.strftime('%b %d') if r.run_date else '-' }}</td><td>{{ r.employee_count }}</td>
+    <td><span class="badge b-{{ r.status }}">{{ r.status }}</span></td>
+    <td class="money">${{ "%.0f" | format(r.total_gross) }}</td><td class="money">${{ "%.0f" | format(r.total_tax) }}</td>
+    <td class="money">${{ "%.0f" | format(r.total_deductions) }}</td><td class="money" style="font-weight:600;">${{ "%.0f" | format(r.total_net) }}</td>
+    <td><a href="/payruns/{{ r.id }}" class="btn btn-sm btn-ghost">Details</a></td></tr>
+  {% endfor %}</tbody>
+</table>
+
+</main></div>{% endblock %}

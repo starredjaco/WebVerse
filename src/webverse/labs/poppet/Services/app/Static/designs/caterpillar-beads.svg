@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#f5f0e8" rx="12"/>
+  <!-- Wire/elastic cord arc -->
+  <path d="M60 250 Q100 140 160 160 Q220 180 240 200 Q280 230 340 210" stroke="#c8b890" stroke-width="3" fill="none"/>
+  <!-- Bead 1 - red (head) -->
+  <g transform="translate(68,240)">
+    <circle r="22" fill="#e05050"/>
+    <circle r="19" fill="#e86060"/>
+    <!-- Face -->
+    <circle cx="-6" cy="-4" r="3" fill="#fff"/><circle cx="6" cy="-4" r="3" fill="#fff"/>
+    <circle cx="-6" cy="-4" r="1.8" fill="#2a2020"/><circle cx="6" cy="-4" r="1.8" fill="#2a2020"/>
+    <path d="M-5 5 Q0 10 5 5" stroke="#c03030" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <!-- Antennae -->
+    <line x1="-8" y1="-20" x2="-14" y2="-32" stroke="#2a2020" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="8" y1="-20" x2="14" y2="-32" stroke="#2a2020" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="-14" cy="-32" r="3" fill="#e86060"/>
+    <circle cx="14" cy="-32" r="3" fill="#e86060"/>
+  </g>
+  <!-- Bead 2 - orange -->
+  <circle cx="105" cy="200" r="19" fill="#e8884c"/><circle cx="105" cy="200" r="16" fill="#f09858"/>
+  <text x="105" y="205" text-anchor="middle" font-family="system-ui" font-size="14" font-weight="700" fill="#c06830" opacity="0.5">2</text>
+  <!-- Bead 3 - yellow -->
+  <circle cx="135" cy="170" r="19" fill="#e8c832"/><circle cx="135" cy="170" r="16" fill="#f0d040"/>
+  <text x="135" y="175" text-anchor="middle" font-family="system-ui" font-size="14" font-weight="700" fill="#b89818" opacity="0.5">3</text>
+  <!-- Bead 4 - green -->
+  <circle cx="165" cy="155" r="19" fill="#48a860"/><circle cx="165" cy="155" r="16" fill="#58b870"/>
+  <text x="165" y="160" text-anchor="middle" font-family="system-ui" font-size="14" font-weight="700" fill="#308848" opacity="0.5">4</text>
+  <!-- Bead 5 - blue -->
+  <circle cx="195" cy="160" r="19" fill="#4888d0"/><circle cx="195" cy="160" r="16" fill="#5898e0"/>
+  <text x="195" y="165" text-anchor="middle" font-family="system-ui" font-size="14" font-weight="700" fill="#3070b0" opacity="0.5">5</text>
+  <!-- Bead 6 - purple -->
+  <circle cx="220" cy="175" r="19" fill="#8858a8"/><circle cx="220" cy="175" r="16" fill="#9868b8"/>
+  <text x="220" y="180" text-anchor="middle" font-family="system-ui" font-size="14" font-weight="700" fill="#704890" opacity="0.5">6</text>
+  <!-- Bead 7 - pink -->
+  <circle cx="245" cy="195" r="19" fill="#d8588c"/><circle cx="245" cy="195" r="16" fill="#e8689c"/>
+  <text x="245" y="200" text-anchor="middle" font-family="system-ui" font-size="14" font-weight="700" fill="#b84070" opacity="0.5">7</text>
+  <!-- Bead 8 - teal -->
+  <circle cx="272" cy="210" r="19" fill="#38a0a0"/><circle cx="272" cy="210" r="16" fill="#48b0b0"/>
+  <text x="272" y="215" text-anchor="middle" font-family="system-ui" font-size="14" font-weight="700" fill="#208888" opacity="0.5">8</text>
+  <!-- Bead 9 - lime -->
+  <circle cx="302" cy="215" r="19" fill="#78b830"/><circle cx="302" cy="215" r="16" fill="#88c840"/>
+  <text x="302" y="220" text-anchor="middle" font-family="system-ui" font-size="14" font-weight="700" fill="#609820" opacity="0.5">9</text>
+  <!-- Bead 10 - coral (tail) -->
+  <circle cx="335" cy="208" r="17" fill="#e87060"/><circle cx="335" cy="208" r="14" fill="#f08070"/>
+  <text x="335" y="213" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="700" fill="#c85040" opacity="0.5">10</text>
+  <!-- Little legs on each bead -->
+  <g stroke="#2a2020" stroke-width="1.5" stroke-linecap="round" opacity="0.3">
+    <line x1="105" y1="219" x2="98" y2="232"/><line x1="105" y1="219" x2="112" y2="232"/>
+    <line x1="135" y1="189" x2="128" y2="202"/><line x1="135" y1="189" x2="142" y2="202"/>
+    <line x1="165" y1="174" x2="158" y2="187"/><line x1="165" y1="174" x2="172" y2="187"/>
+    <line x1="195" y1="179" x2="188" y2="192"/><line x1="195" y1="179" x2="202" y2="192"/>
+    <line x1="220" y1="194" x2="213" y2="207"/><line x1="220" y1="194" x2="227" y2="207"/>
+    <line x1="245" y1="214" x2="238" y2="227"/><line x1="245" y1="214" x2="252" y2="227"/>
+    <line x1="272" y1="229" x2="265" y2="242"/><line x1="272" y1="229" x2="279" y2="242"/>
+    <line x1="302" y1="234" x2="295" y2="247"/><line x1="302" y1="234" x2="309" y2="247"/>
+  </g>
+</svg>

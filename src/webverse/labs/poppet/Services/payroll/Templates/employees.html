@@ -1,0 +1,38 @@
+{% extends "base.html" %}{% block title %}People - Poppet Payroll{% endblock %}
+{% block content %}<div class="pr-layout"><aside class="pr-sidebar">
+  <div class="sb-brand"><img src="/Static/icon.svg" alt=""><span>Poppet Payroll</span></div>
+  <nav class="sb-nav">
+    <a href="/dashboard" class="sb-link {% if active=='dash' %}active{% endif %}"><span class="sb-icon">&#9632;</span>Overview</a>
+    <div class="sb-section">Compensation</div>
+    <a href="/employees" class="sb-link {% if active=='emp' %}active{% endif %}"><span class="sb-icon">&#9673;</span>People</a>
+    <a href="/payruns" class="sb-link {% if active=='payruns' %}active{% endif %}"><span class="sb-icon">&#9654;</span>Pay Runs</a>
+    <a href="/deductions" class="sb-link {% if active=='deductions' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Deductions</a>
+    <div class="sb-section">Leave</div>
+    <a href="/timeoff" class="sb-link {% if active=='timeoff' %}active{% endif %}"><span class="sb-icon">&#9788;</span>Time Off{% if pending_pto %}<span class="sb-badge">{{ pending_pto }}</span>{% endif %}</a>
+    <div class="sb-section">Insights</div>
+    <a href="/reports" class="sb-link {% if active=='reports' %}active{% endif %}"><span class="sb-icon">&#9776;</span>Reports</a>
+    <div class="sb-section">System</div>
+    <a href="/integrations" class="sb-link {% if active=='integrations' %}active{% endif %}"><span class="sb-icon">&#8644;</span>Integrations</a>
+    <a href="/settings" class="sb-link {% if active=='settings' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Settings</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-avatar">{{ session.get('payroll_user','?')[0] | upper }}</div>
+    <div class="sb-user-info"><div class="name">{{ session.get('payroll_user','') }}</div><div class="role">{{ session.get('payroll_role','') }}</div></div>
+    <a href="/logout" style="color:var(--theme-sidebar-text);font-size:0.75rem;margin-left:auto;">&#x2192;</a>
+  </div>
+</aside><main class="pr-main">
+
+<h1>People</h1>
+<p class="page-desc">Employee compensation records synced from CRM.</p>
+<table class="pr-table">
+  <thead><tr><th>Name</th><th>Department</th><th>Email</th><th class="money">Annual Salary</th><th class="money">Monthly</th><th>Hire Date</th><th></th></tr></thead>
+  <tbody>{% for e in employees %}
+  <tr><td><a href="/employees/{{ e.id }}">{{ e.full_name }}</a></td><td><span class="badge b-{{ e.department }}">{{ e.department }}</span></td>
+    <td style="color:var(--brand-muted);">{{ e.email }}</td>
+    <td class="money">${{ "%.0f" | format(e.salary) }}</td><td class="money">${{ "%.0f" | format(e.salary / 12) }}</td>
+    <td>{{ e.hire_date.strftime('%b %d, %Y') if e.hire_date else '-' }}</td>
+    <td><a href="/employees/{{ e.id }}" class="btn btn-sm btn-ghost">View</a></td></tr>
+  {% endfor %}</tbody>
+</table>
+
+</main></div>{% endblock %}

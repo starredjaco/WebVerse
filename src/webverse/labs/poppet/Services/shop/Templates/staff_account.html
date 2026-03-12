@@ -1,0 +1,64 @@
+{% extends 'staff_base.html' %}{% block title %}My Profile - Poppet Shop{% endblock %}
+{% block content %}
+<div class="acct-breadcrumb"><a href="/dashboard">Dashboard</a><span>/</span><span>My Profile</span></div>
+
+{% if flash_msg %}<div class="alert alert-success">{{ flash_msg }}</div>{% endif %}
+
+<div class="acct-profile-header">
+  <div class="acct-avatar-lg">
+    <img src="{{ my_avatar }}" alt="{{ session.get('user','') }}">
+  </div>
+  <div class="acct-profile-header-info">
+    <h1>{{ display_name }}</h1>
+    <div class="acct-profile-meta">
+      <span class="badge {% if session.get('role') == 'staff' %}badge-active{% elif session.get('role') == 'helpdesk' %}badge-processing{% else %}badge-inactive{% endif %}">{{ session.get('role','') | upper }}</span>
+      <span class="acct-meta-sep">&middot;</span>
+      <span>{{ email or 'No email on file' }}</span>
+      <span class="acct-meta-sep">&middot;</span>
+      <span>ID #{{ session.get('user_id','') }}</span>
+    </div>
+  </div>
+  <div class="acct-profile-header-actions">
+    <a href="/staff/account/edit" class="btn btn-secondary">Edit Profile</a>
+  </div>
+</div>
+
+<div class="acct-grid">
+  <div class="panel">
+    <h3>Account Information</h3>
+    <table class="acct-info-table">
+      <tr><td class="acct-info-label">Username</td><td>{{ session.get('user','') }}</td></tr>
+      <tr><td class="acct-info-label">Email Address</td><td>{{ email or '—' }}</td></tr>
+      <tr><td class="acct-info-label">Role</td><td>{{ session.get('role','') | title }}</td></tr>
+      <tr><td class="acct-info-label">User ID</td><td>#{{ session.get('user_id','') }}</td></tr>
+      <tr><td class="acct-info-label">Member Since</td><td>{{ member_since }}</td></tr>
+      <tr><td class="acct-info-label">Department</td><td>{{ department }}</td></tr>
+    </table>
+  </div>
+
+  <div class="panel">
+    <h3>Security</h3>
+    <table class="acct-info-table">
+      <tr><td class="acct-info-label">Password</td><td>&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull; <a href="/staff/account/recovery" style="font-size:0.82rem;margin-left:var(--brand-space-3);">Change</a></td></tr>
+      <tr><td class="acct-info-label">Last Sign-In</td><td>{{ last_login }}</td></tr>
+      <tr><td class="acct-info-label">Sessions</td><td>1 active session (this device)</td></tr>
+      <tr><td class="acct-info-label">Two-Factor Auth</td><td><span style="color:var(--brand-muted);">Not available</span></td></tr>
+    </table>
+    <div style="margin-top:var(--brand-space-4);padding-top:var(--brand-space-3);border-top:1px solid var(--theme-border);">
+      <a href="/staff/account/recovery" class="btn btn-sm btn-secondary">Password Recovery Tool</a>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <h3>Recent Activity</h3>
+  <table class="data-table" style="margin-top:var(--brand-space-3);">
+    <thead><tr><th>Timestamp</th><th>Action</th><th>Details</th><th>IP Address</th></tr></thead>
+    <tbody>
+      {% for log in activity_log %}
+      <tr><td style="white-space:nowrap;font-size:0.85rem;">{{ log.time }}</td><td>{{ log.action }}</td><td style="color:var(--brand-muted);font-size:0.85rem;">{{ log.detail }}</td><td style="font-family:monospace;font-size:0.82rem;">{{ log.ip }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

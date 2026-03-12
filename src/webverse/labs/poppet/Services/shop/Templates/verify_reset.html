@@ -1,0 +1,9 @@
+{% extends 'base.html' %}{% block title %}Verify Reset Code - Poppet Shop{% endblock %}
+{% block content %}<div class="login-box"><h2>Verify Reset Code</h2>
+  {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+  {% if message %}<div class="alert alert-success">{{ message }}</div>{% endif %}
+  <form method="POST" action="/verify-reset">
+  <div class="form-group"><label>User ID</label><input type="number" name="user_id" required></div>
+  <div class="form-group"><label>4-Digit Reset Code</label><input type="text" name="code" maxlength="4" pattern="[0-9]{4}" required></div>
+  <div class="form-group"><label>New Password</label><input type="password" name="new_password" required></div>
+  <button type="submit" class="btn btn-primary" style="width:100%;">Reset Password</button></form></div>{% endblock %}

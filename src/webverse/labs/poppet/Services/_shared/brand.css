@@ -1,0 +1,16 @@
+:root {
+  --brand-bg: #faf8f5; --brand-fg: #2c2420; --brand-muted: #7a6e65;
+  --brand-card: #ffffff; --brand-border: #e8e0d8;
+  --brand-primary: #c84b31; --brand-primary-2: #4a7c6f;
+  --brand-danger: #c42b2b; --brand-success: #3d7a5f; --brand-warning: #c48a2b;
+  --brand-font-sans: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --brand-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --brand-radius-sm: 4px; --brand-radius-md: 8px; --brand-radius-lg: 12px;
+  --brand-shadow-1: 0 1px 3px rgba(44,36,32,0.07); --brand-shadow-2: 0 4px 12px rgba(44,36,32,0.10);
+  --brand-space-1: 4px; --brand-space-2: 8px; --brand-space-3: 12px; --brand-space-4: 16px;
+  --brand-space-5: 24px; --brand-space-6: 32px; --brand-space-7: 48px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--brand-font-sans); color: var(--brand-fg); background: var(--brand-bg); line-height: 1.5; }
+a { color: var(--brand-primary-2); text-decoration: none; } a:hover { text-decoration: underline; }
+code, pre { font-family: var(--brand-font-mono); } img { max-width: 100%; }

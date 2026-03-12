@@ -1,0 +1,88 @@
+{% extends 'staff_base.html' %}{% block title %}Integrations - Poppet Shop{% endblock %}
+{% block content %}<h1>Apps &amp; Integrations</h1>
+<div class="settings-nav"><a href="/settings">General</a><a href="/settings/integrations" class="active">Integrations</a><a href="/settings/notifications">Notifications</a></div>
+<p style="color:var(--brand-muted);margin-bottom:var(--brand-space-5);max-width:600px;">Connected services that power the Poppet Shop platform. API keys are used for server-to-server authentication between internal services.</p>
+
+<div class="intg-grid">
+
+  <!-- Poppet Connect -->
+  <div class="intg-card">
+    <div class="intg-card-header">
+      <div class="intg-icon" style="background:linear-gradient(135deg,#4a7c6f,#6a9e8f);">C</div>
+      <div class="intg-card-title">
+        <h3>Poppet Connect</h3>
+        <span class="intg-status"><span class="intg-status-dot"></span>Connected</span>
+      </div>
+    </div>
+    <p class="intg-desc">Product catalog API and partner integrations. Powers the storefront product feed and external partner access.</p>
+    <div class="intg-details">
+      <div class="intg-detail-row">
+        <span class="intg-detail-label">Endpoint</span>
+        <code class="intg-detail-value">http://connect-api.poppet.local/api/v1/</code>
+      </div>
+      <div class="intg-detail-row">
+        <span class="intg-detail-label">API Key</span>
+        <div class="intg-key-wrap">
+          <code class="intg-key">{{ connect_api_key }}</code>
+        </div>
+      </div>
+      <div class="intg-detail-row">
+        <span class="intg-detail-label">Last Sync</span>
+        <span class="intg-detail-value">2 hours ago</span>
+      </div>
+      <div class="intg-detail-row">
+        <span class="intg-detail-label">Version</span>
+        <span class="intg-detail-value">v1.4.2</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dispatch API -->
+  <div class="intg-card">
+    <div class="intg-card-header">
+      <div class="intg-icon" style="background:linear-gradient(135deg,#c84b31,#e8725a);">D</div>
+      <div class="intg-card-title">
+        <h3>Dispatch API</h3>
+        <span class="intg-status"><span class="intg-status-dot"></span>Connected</span>
+      </div>
+    </div>
+    <p class="intg-desc">Order fulfillment, shipping label generation, carrier management, and real-time tracking sync for all outbound shipments.</p>
+    <div class="intg-details">
+      <div class="intg-detail-row">
+        <span class="intg-detail-label">Endpoint</span>
+        <code class="intg-detail-value">http://dispatch-api.poppet.local/api/v1/</code>
+      </div>
+      <div class="intg-detail-row">
+        <span class="intg-detail-label">API Key</span>
+        <div class="intg-key-wrap">
+          <code class="intg-key">{{ dispatch_api_key }}</code>
+        </div>
+      </div>
+      <div class="intg-detail-row">
+        <span class="intg-detail-label">Last Sync</span>
+        <span class="intg-detail-value">34 minutes ago</span>
+      </div>
+      <div class="intg-detail-row">
+        <span class="intg-detail-label">Version</span>
+        <span class="intg-detail-value">v1.1.0</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Activity -->
+<div class="panel" style="margin-top:var(--brand-space-5);">
+  <h3>Connection Activity</h3>
+  <table class="data-table" style="margin-top:var(--brand-space-3);">
+    <thead><tr><th>Service</th><th>Event</th><th>Timestamp</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Poppet Connect</td><td>Product catalog sync completed (8 products)</td><td style="white-space:nowrap;">Dec 5, 2024 14:12</td><td><span class="badge badge-active">Success</span></td></tr>
+      <tr><td>Dispatch API</td><td>Shipment tracking update (3 shipments refreshed)</td><td style="white-space:nowrap;">Dec 5, 2024 15:38</td><td><span class="badge badge-active">Success</span></td></tr>
+      <tr><td>Poppet Connect</td><td>CRM user directory refresh</td><td style="white-space:nowrap;">Dec 5, 2024 12:00</td><td><span class="badge badge-active">Success</span></td></tr>
+      <tr><td>Dispatch API</td><td>Label generation for order #8</td><td style="white-space:nowrap;">Dec 4, 2024 16:22</td><td><span class="badge badge-active">Success</span></td></tr>
+      <tr><td>Poppet Connect</td><td>Scheduled health check</td><td style="white-space:nowrap;">Dec 4, 2024 06:00</td><td><span class="badge badge-active">Success</span></td></tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}

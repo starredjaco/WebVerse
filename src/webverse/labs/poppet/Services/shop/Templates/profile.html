@@ -1,0 +1,6 @@
+{% extends 'base.html' %}{% block title %}Profile - Poppet Shop{% endblock %}
+{% block content %}<h1>My Profile</h1><div class="panel" style="max-width:500px;">
+  {% if message %}<div class="alert alert-success">{{ message }}</div>{% endif %}
+  <form method="POST" action="/profile"><div class="form-group"><label>Username</label><input type="text" value="{{ session.get('user','') }}" disabled></div>
+  <div class="form-group"><label>Email</label><input type="email" name="email" value="{{ email or '' }}"></div>
+  <button type="submit" class="btn btn-primary">Update Profile</button></form></div>{% endblock %}

@@ -1,0 +1,8 @@
+{% extends 'base.html' %}{% block title %}Status - Poppet Connect{% endblock %}
+{% block body %}<div class="api-layout"><aside class="api-sidebar"><h4>Navigation</h4><a href="/">API Reference</a><a href="/changelog">Changelog</a><a href="/status" class="active">Status</a></aside>
+  <main class="api-content"><h1>System Status</h1><p style="color:var(--brand-muted);">All systems operational.</p>
+    <div class="status-grid"><div class="status-card"><span class="indicator indicator-up"></span>Product API</div>
+      <div class="status-card"><span class="indicator indicator-up"></span>Search Engine</div>
+      <div class="status-card"><span class="indicator indicator-up"></span>Database</div>
+      <div class="status-card"><span class="indicator indicator-up"></span>Partner Gateway</div></div>
+  </main></div>{% endblock %}

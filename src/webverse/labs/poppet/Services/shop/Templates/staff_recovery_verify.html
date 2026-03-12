@@ -1,0 +1,43 @@
+{% extends 'staff_base.html' %}{% block title %}Verify Reset Code - Poppet Shop{% endblock %}
+{% block content %}
+<div class="acct-breadcrumb"><a href="/dashboard">Dashboard</a><span>/</span><a href="/staff/account">My Profile</a><span>/</span><a href="/staff/account/recovery">Password Recovery</a><span>/</span><span>Verify Code</span></div>
+
+<h1>Verify Reset Code</h1>
+<p style="color:var(--brand-muted);margin-bottom:var(--brand-space-5);max-width:580px;">Enter the 4-digit verification code the user received, along with a new temporary password for their account.</p>
+
+{% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+{% if message %}<div class="alert alert-success">{{ message }}</div>{% endif %}
+
+<div class="acct-verify-layout" style="display:flex;flex-direction:column;align-items:center;max-width:520px;margin:0 auto;">
+  <div class="panel" style="width:100%;">
+    <form method="POST" action="/staff/account/recovery/verify">
+      <div class="form-group">
+        <label>Account ID</label>
+        <input type="number" name="user_id" value="{{ prefill_uid or '' }}" placeholder="e.g. 3" required>
+        <div class="acct-field-hint">The numeric user ID from the account lookup.</div>
+      </div>
+      <div class="form-group">
+        <label>Verification Code</label>
+        <input type="text" name="code" maxlength="4" pattern="[0-9]{4}" placeholder="0000" required style="max-width:140px;text-align:center;font-size:1.4rem;letter-spacing:0.3em;font-weight:600;">
+        <div class="acct-field-hint">The 4-digit code the user received via their registered contact method.</div>
+      </div>
+      <div class="form-group">
+        <label>New Password</label>
+        <input type="password" name="new_password" placeholder="Set a temporary password" required>
+        <div class="acct-field-hint">Must be at least 8 characters. Instruct the user to change it after sign-in.</div>
+      </div>
+      <div class="acct-form-actions">
+        <button type="submit" class="btn btn-primary">Reset Password</button>
+        <a href="/staff/account/recovery" class="btn btn-secondary">Back to Recovery</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="acct-verify-notes">
+    <div class="panel">
+      <h4>Troubleshooting</h4>
+      <p style="font-size:0.85rem;color:var(--brand-muted);line-height:1.6;">If the code isn't working, it may have expired (codes are valid for 15 minutes). Return to the <a href="/staff/account/recovery">recovery page</a> and generate a new one. Only the most recently generated code is valid — previous codes are automatically invalidated.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

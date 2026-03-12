@@ -1,0 +1,30 @@
+{% extends 'base.html' %}{% block title %}Contact - Poppet{% endblock %}
+{% block content %}
+<div class="topbar"><a href="/" class="logo"><img src="/Static/icon.svg" alt="Poppet"><span>Poppet</span></a>
+  <nav><a href="/">Home</a><a href="/gallery">Gallery</a><a href="/about">About</a><a href="/contact" class="active">Contact</a></nav>
+  <div class="user-menu">{% if session.get('user') %}<a href="/dashboard" class="btn btn-primary btn-sm">Studio</a>{% else %}<a href="/login" class="btn btn-primary btn-sm">Designer Sign In</a>{% endif %}</div>
+</div>
+<div class="container">
+  <div style="text-align:center;padding:32px 0 8px;"><h1 style="font-size:2rem;">Get in Touch</h1><p style="color:var(--brand-muted);">Wholesale inquiries, press, repairs, or just to say hello.</p></div>
+  {% if message %}<div class="alert alert-success">{{ message }}</div>{% endif %}
+  <div class="contact-layout">
+    <div class="card">
+      <form method="POST" action="/contact">
+        <div class="form-row"><div class="form-group"><label>Name</label><input type="text" name="name" required></div>
+          <div class="form-group"><label>Email</label><input type="email" name="email" required></div></div>
+        <div class="form-group"><label>Subject</label><input type="text" name="subject" placeholder="Wholesale, press, repair, general" required></div>
+        <div class="form-group"><label>Message</label><textarea name="message" rows="5" required placeholder="Tell us what's on your mind..."></textarea></div>
+        <button type="submit" class="btn btn-primary">Send Message</button>
+      </form>
+    </div>
+    <div class="contact-info">
+      <h3>Poppet Studio LLC</h3>
+      <p>45 Craft Lane<br>Asheville, NC 28801</p>
+      <p><strong>Phone:</strong> (828) 555-0190<br><strong>Email:</strong> hello@poppet.local</p>
+      <p><strong>Studio Hours:</strong><br>Monday — Friday, 9am — 5pm ET<br>Closed weekends and holidays</p>
+      <p><strong>Repairs:</strong><br>Ship your toy to our studio address with a note describing the damage. We will fix and return it free of charge.</p>
+    </div>
+  </div>
+</div>
+<div class="site-footer">&copy; 2024 Poppet Studio LLC &middot; 45 Craft Lane, Asheville, NC 28801</div>
+{% endblock %}

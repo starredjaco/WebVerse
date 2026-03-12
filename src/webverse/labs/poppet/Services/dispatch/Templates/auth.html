@@ -1,0 +1,45 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Poppet Dispatch API — Authentication</title>
+<link rel="icon" type="image/svg+xml" href="/Static/icon.svg">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:#0f1419;color:#e1e8ed;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.auth-bg{position:fixed;inset:0;background:linear-gradient(135deg,#0f1419 0%,#1a2332 50%,#a33d28 100%);z-index:0;}
+.auth-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(74,124,111,0.08) 0%,transparent 50%);}
+.auth-wrap{position:relative;z-index:1;width:100%;max-width:420px;padding:24px;}
+.auth-brand{text-align:center;margin-bottom:40px;}
+.auth-brand img{height:32px;filter:brightness(10);margin-bottom:12px;}
+.auth-brand h1{font-size:1.4rem;font-weight:700;color:#fff;margin-bottom:6px;}
+.auth-brand p{font-size:0.88rem;color:#8899a6;line-height:1.5;}
+.auth-card{background:#1c2938;border:1px solid #2e3d4f;border-radius:12px;padding:32px;box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+.auth-card h2{font-size:1rem;font-weight:600;color:#fff;margin-bottom:4px;}
+.auth-card .subtitle{font-size:0.82rem;color:#657786;margin-bottom:24px;}
+.auth-input{width:100%;padding:12px 16px;background:#0f1419;border:1px solid #2e3d4f;border-radius:8px;color:#fff;font-size:0.95rem;font-family:monospace;letter-spacing:0.5px;outline:none;transition:border 0.15s;}
+.auth-input:focus{border-color:#c84b31;box-shadow:0 0 0 3px rgba(74,124,111,0.15);}
+.auth-input::placeholder{color:#4a5568;}
+.auth-label{display:block;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.5px;color:#8899a6;margin-bottom:8px;font-weight:500;}
+.auth-btn{width:100%;padding:12px;background:#c84b31;color:#fff;border:none;border-radius:8px;font-size:0.95rem;font-weight:600;cursor:pointer;margin-top:20px;transition:all 0.15s;}
+.auth-btn:hover{background:#a33d28;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.2);}
+.auth-error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:10px 14px;margin-bottom:20px;font-size:0.85rem;color:#fca5a5;}
+.auth-footer{text-align:center;margin-top:24px;font-size:0.78rem;color:#4a5568;}
+.auth-footer a{color:#c84b31;}
+</style></head><body>
+<div class="auth-bg"></div>
+<div class="auth-wrap">
+  <div class="auth-brand">
+    <img src="/Static/icon.svg" alt="">
+    <h1>Poppet Dispatch API</h1>
+    <p>Order fulfillment, shipping, carrier management, and tracking.</p>
+  </div>
+  <div class="auth-card">
+    <h2>Authentication Required</h2>
+    <p class="subtitle">Provide a valid API key to access the interactive documentation and test endpoints.</p>
+    {% if error %}<div class="auth-error">{{ error }}</div>{% endif %}
+    <form method="POST" action="/docs/auth">
+      <label class="auth-label">API Key</label>
+      <input type="password" name="api_key" class="auth-input" placeholder="PPCT-XXX-XXXXXXXXXXXX" required autofocus>
+      <button type="submit" class="auth-btn">Authenticate &amp; Continue</button>
+    </form>
+  </div>
+  <div class="auth-footer">API keys are available from the <a href="http://shop.poppet.local/settings/integrations">Integrations dashboard</a>.</div>
+</div></body></html>

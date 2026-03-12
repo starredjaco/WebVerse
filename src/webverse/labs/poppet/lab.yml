@@ -1,0 +1,19 @@
+id: poppet
+name: Poppet
+difficulty: master
+description: 'Poppet is a boutique toy studio with interconnected services handling storefront, fulfillment, CRM, and payroll.'
+story: |
+  Poppet is a boutique toy studio in Asheville, NC — handcrafted wooden figurines, plush animals, and educational kits. Their internal tooling has grown organically: a webshop, integration APIs, a CRM, and a payroll system. A recent Toy Design Studio launch lets artists upload concept sketches directly. You have been brought in to assess their web infrastructure.
+compose_file: docker-compose.yml
+image: cover.png
+entrypoint:
+  base_url: http://poppet.local/
+tags:
+- sqli
+- bola
+- brute-force
+- jwt
+- ssti
+- xxe
+- multi-service
+flag_sha256: 421daf25b6a23103c7e5b8cc834feb4b51c2aed2a7c753342dfbf9f30a61d417

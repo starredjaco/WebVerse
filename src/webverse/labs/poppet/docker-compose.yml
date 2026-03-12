@@ -1,0 +1,126 @@
+version: "3.9"
+
+services:
+  gateway:
+    build: { context: ./gateway }
+    container_name: wv_poppet_gateway
+    ports: ["80:80"]
+    depends_on: [app, shop, connect-api, crm, payroll, dispatch-api]
+    restart: unless-stopped
+    networks: [wvnet]
+
+  db:
+    build: { context: ./Services/db }
+    command: --default-authentication-plugin=mysql_native_password
+    container_name: wv_poppet_db
+    environment:
+      MYSQL_ROOT_PASSWORD: r00tPoppetDB!
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./Services/db/initdb.d:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+    networks: [wvnet]
+
+  app:
+    build: { context: ./Services/app }
+    container_name: wv_poppet_app
+    environment:
+      DB_HOST: db
+      DB_USER: app_svc
+      DB_PASSWORD: "AppSvc#2024!"
+      DB_NAME: app_db
+      SECRET_KEY: appSK2024xz
+      FLAG: WEBVERSE{pl4st1c_dr34ms_m3lt_1n_th3_sun}
+    depends_on:
+      db: { condition: service_healthy }
+    restart: unless-stopped
+    networks: [wvnet]
+
+  shop:
+    build: { context: ./Services/shop }
+    container_name: wv_poppet_shop
+    environment:
+      DB_HOST: db
+      DB_USER: shop_svc
+      DB_PASSWORD: "ShopSvc#2024!"
+      DB_NAME: shop_db
+      SECRET_KEY: shopSK2024ab
+      CONNECT_API_KEY: PPCT-INT-8a3f92cbd471
+      DISPATCH_API_KEY: PPCT-DSP-7e2f4a91c830
+    depends_on:
+      db: { condition: service_healthy }
+      connect-api: { condition: service_started }
+    restart: unless-stopped
+    networks: [wvnet]
+
+  connect-api:
+    build: { context: ./Services/connect}
+    container_name: wv_poppet_connect-api
+    environment:
+      DB_HOST: db
+      DB_USER: connect_svc
+      DB_PASSWORD: "ConnSvc#2024!"
+      DB_NAME: shop_db
+      CONNECT_API_KEY: PPCT-INT-8a3f92cbd471
+      SECRET_KEY: connectDocsSK2024
+    depends_on:
+      db: { condition: service_healthy }
+    restart: unless-stopped
+    networks: [wvnet]
+
+  crm:
+    build: { context: ./Services/crm }
+    container_name: wv_poppet_crm
+    environment:
+      DB_HOST: db
+      DB_USER: crm_svc
+      DB_PASSWORD: "CrmSvc#2024!"
+      DB_NAME: crm_db
+      JWT_SECRET: toystory2
+    depends_on:
+      db: { condition: service_healthy }
+    restart: unless-stopped
+    networks: [wvnet]
+
+  payroll:
+    build: { context: ./Services/payroll }
+    container_name: wv_poppet_payroll
+    environment:
+      DB_HOST: db
+      DB_USER: payroll_svc
+      DB_PASSWORD: "PaySvc#2024!"
+      DB_NAME: payroll_db
+      SECRET_KEY: payrollSK2024qr
+      AUTOMATION_USER: toybot
+      AUTOMATION_PASS: FactoryLine!2024
+    depends_on:
+      db: { condition: service_healthy }
+    restart: unless-stopped
+    networks: [wvnet]
+
+  dispatch-api:
+    build: { context: ./Services/dispatch }
+    container_name: wv_poppet_dispatch-api
+    environment:
+      DB_HOST: db
+      DB_USER: dispatch_svc
+      DB_PASSWORD: "DspSvc#2024!"
+      DB_NAME: dispatch_db
+      DISPATCH_API_KEY: PPCT-DSP-7e2f4a91c830
+      SECRET_KEY: dispatchDocsSK2024
+    depends_on:
+      db: { condition: service_healthy }
+    restart: unless-stopped
+    networks: [wvnet]
+
+networks:
+  wvnet:
+    driver: bridge
+
+volumes:
+  db_data:

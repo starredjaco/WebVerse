@@ -1,0 +1,46 @@
+{% extends "base.html" %}{% block title %}Tasks - Poppet CRM{% endblock %}
+{% block body %}<div class="crm-layout"><aside class="crm-sidebar">
+  <div class="sb-brand"><img src="/Static/icon.svg" alt=""><span>Poppet CRM</span></div>
+  <nav class="sb-nav">
+    <a href="/dashboard" class="sb-link {% if active=='dash' %}active{% endif %}"><span class="sb-icon">&#9632;</span>Dashboard</a>
+    <div class="sb-section">Relationships</div>
+    <a href="/contacts" class="sb-link {% if active=='contacts' %}active{% endif %}"><span class="sb-icon">&#9679;</span>Contacts</a>
+    <a href="/pipeline" class="sb-link {% if active=='pipeline' %}active{% endif %}"><span class="sb-icon">&#9654;</span>Pipeline{% if deal_counts %}<span class="sb-badge">{{ deal_counts.open }}</span>{% endif %}</a>
+    <div class="sb-section">Operations</div>
+    <a href="/employees" class="sb-link {% if active=='emp' %}active{% endif %}"><span class="sb-icon">&#9673;</span>Employees</a>
+    <a href="/tasks" class="sb-link {% if active=='tasks' %}active{% endif %}"><span class="sb-icon">&#10003;</span>Tasks{% if task_count %}<span class="sb-badge">{{ task_count }}</span>{% endif %}</a>
+    <a href="/cases" class="sb-link {% if active=='cases' %}active{% endif %}"><span class="sb-icon">&#9888;</span>Cases</a>
+    <div class="sb-section">Insights</div>
+    <a href="/activity" class="sb-link {% if active=='activity' %}active{% endif %}"><span class="sb-icon">&#8634;</span>Activity</a>
+    <a href="/reports" class="sb-link {% if active=='reports' %}active{% endif %}"><span class="sb-icon">&#9776;</span>Reports</a>
+    <div class="sb-section">System</div>
+    <a href="/settings" class="sb-link {% if active=='settings' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Settings</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-user-avatar">{{ user.username[0] | upper if user else '?' }}</div>
+    <div class="sb-user-info"><div class="name">{{ user.username if user else 'Unknown' }}</div><div class="role">{{ user.role if user else '' }}</div></div>
+    <a href="/logout" style="color:var(--theme-sidebar-text);font-size:0.75rem;margin-left:auto;">&#x2192;</a>
+  </div>
+</aside><main class="crm-main">
+
+<h1>Tasks</h1>
+<p class="page-desc">Follow-ups, action items, and reminders for the team.</p>
+<div class="toolbar">
+  <div class="filter-pills">
+    <a href="/tasks" class="filter-pill {% if not status_filter %}active{% endif %}">All</a>
+    <a href="/tasks?status=open" class="filter-pill {% if status_filter=='open' %}active{% endif %}">Open</a>
+    <a href="/tasks?status=completed" class="filter-pill {% if status_filter=='completed' %}active{% endif %}">Completed</a>
+  </div>
+</div>
+<table class="crm-table">
+  <thead><tr><th style="width:30px;"></th><th>Task</th><th>Due Date</th><th>Priority</th><th>Contact</th><th>Assigned</th></tr></thead>
+  <tbody>{% for t in tasks %}
+  <tr><td style="color:{% if t.status=='completed' %}var(--brand-success){% else %}var(--brand-muted){% endif %};font-size:1rem;">{% if t.status=='completed' %}&#10003;{% else %}&#9675;{% endif %}</td>
+    <td><div style="font-weight:500;{% if t.status=='completed' %}text-decoration:line-through;color:var(--brand-muted);{% endif %}">{{ t.title }}</div>{% if t.description %}<div style="font-size:0.78rem;color:var(--brand-muted);margin-top:2px;">{{ t.description[:80] }}{% if t.description|length > 80 %}...{% endif %}</div>{% endif %}</td>
+    <td style="white-space:nowrap;{% if t.overdue %}color:var(--brand-danger);font-weight:600;{% endif %}">{{ t.due_date.strftime('%b %d, %Y') if t.due_date else '—' }}{% if t.overdue %} <span style="font-size:0.7rem;">(overdue)</span>{% endif %}</td>
+    <td><span class="badge b-{{ t.priority }}">{{ t.priority }}</span></td>
+    <td>{{ t.contact_name or '—' }}</td><td>{{ t.assigned_name or '—' }}</td></tr>
+  {% endfor %}</tbody>
+</table>
+
+</main></div>{% endblock %}

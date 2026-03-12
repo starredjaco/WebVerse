@@ -1,0 +1,93 @@
+{% extends "base.html" %}{% block title %}Integrations - Poppet Payroll{% endblock %}
+{% block content %}<div class="pr-layout"><aside class="pr-sidebar">
+  <div class="sb-brand"><img src="/Static/icon.svg" alt=""><span>Poppet Payroll</span></div>
+  <nav class="sb-nav">
+    <a href="/dashboard" class="sb-link {% if active=='dash' %}active{% endif %}"><span class="sb-icon">&#9632;</span>Overview</a>
+    <div class="sb-section">Compensation</div>
+    <a href="/employees" class="sb-link {% if active=='emp' %}active{% endif %}"><span class="sb-icon">&#9673;</span>People</a>
+    <a href="/payruns" class="sb-link {% if active=='payruns' %}active{% endif %}"><span class="sb-icon">&#9654;</span>Pay Runs</a>
+    <a href="/deductions" class="sb-link {% if active=='deductions' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Deductions</a>
+    <div class="sb-section">Leave</div>
+    <a href="/timeoff" class="sb-link {% if active=='timeoff' %}active{% endif %}"><span class="sb-icon">&#9788;</span>Time Off{% if pending_pto %}<span class="sb-badge">{{ pending_pto }}</span>{% endif %}</a>
+    <div class="sb-section">Insights</div>
+    <a href="/reports" class="sb-link {% if active=='reports' %}active{% endif %}"><span class="sb-icon">&#9776;</span>Reports</a>
+    <div class="sb-section">System</div>
+    <a href="/integrations" class="sb-link {% if active=='integrations' %}active{% endif %}"><span class="sb-icon">&#8644;</span>Integrations</a>
+    <a href="/settings" class="sb-link {% if active=='settings' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Settings</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-avatar">{{ session.get('payroll_user','?')[0] | upper }}</div>
+    <div class="sb-user-info"><div class="name">{{ session.get('payroll_user','') }}</div><div class="role">{{ session.get('payroll_role','') }}</div></div>
+    <a href="/logout" style="color:var(--theme-sidebar-text);font-size:0.75rem;margin-left:auto;">&#x2192;</a>
+  </div>
+</aside><main class="pr-main">
+
+<h1>Integrations</h1>
+<p class="page-desc">Connected services that feed employee and compensation data into Poppet Payroll.</p>
+
+<div class="intg-card">
+  <div class="intg-icon" style="background:linear-gradient(135deg,#7c5cbf,#9b7dd4);">C</div>
+  <div class="intg-info">
+    <h4>Poppet CRM - Employee Sync</h4>
+    <p>Pulls employee records from the CRM system including personal details, department assignments, salary information, and position descriptions. Data is rendered dynamically on employee profile pages.</p>
+    <div class="intg-meta">
+      <div><strong>Endpoint:</strong> crm.poppet.local</div>
+      <div><strong>Database:</strong> crm_db.employees</div>
+      <div><strong>Sync Mode:</strong> Live read (real-time)</div>
+      <div><strong>Last Checked:</strong> 2 minutes ago</div>
+    </div>
+  </div>
+  <div style="text-align:center;flex-shrink:0;">
+    <div class="intg-status" style="color:var(--brand-success);"><span class="intg-dot up"></span>Operational</div>
+    <div class="intg-detail">5 records synced</div>
+  </div>
+</div>
+
+<div class="intg-card">
+  <div class="intg-icon" style="background:linear-gradient(135deg,#2d6b4f,#3d9a6f);">T</div>
+  <div class="intg-info">
+    <h4>Tax Withholding Engine</h4>
+    <p>Calculates federal and North Carolina state tax withholdings based on current IRS and NCDOR brackets. Rates are updated at the start of each fiscal year.</p>
+    <div class="intg-meta">
+      <div><strong>Federal Rate:</strong> 22.00% (flat)</div>
+      <div><strong>State Rate:</strong> 5.25% (NC)</div>
+      <div><strong>FICA:</strong> 6.20% + 1.45%</div>
+      <div><strong>Last Updated:</strong> Jan 1, 2024</div>
+    </div>
+  </div>
+  <div style="text-align:center;flex-shrink:0;">
+    <div class="intg-status" style="color:var(--brand-success);"><span class="intg-dot up"></span>Operational</div>
+    <div class="intg-detail">2024 rates active</div>
+  </div>
+</div>
+
+<div class="intg-card">
+  <div class="intg-icon" style="background:linear-gradient(135deg,#b45309,#d97706);">B</div>
+  <div class="intg-info">
+    <h4>Benefits Administration</h4>
+    <p>Manages health insurance, dental coverage, and 401(k) retirement plan enrollment and deductions.</p>
+    <div class="intg-meta">
+      <div><strong>Health Plan:</strong> PPO ($285/mo)</div>
+      <div><strong>Dental:</strong> Basic ($45/mo)</div>
+      <div><strong>401(k) Match:</strong> Up to 6%</div>
+      <div><strong>Enrollment:</strong> Open</div>
+    </div>
+  </div>
+  <div style="text-align:center;flex-shrink:0;">
+    <div class="intg-status" style="color:var(--brand-success);"><span class="intg-dot up"></span>Operational</div>
+    <div class="intg-detail">5 enrolled</div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:20px;">
+  <h3>Sync Log</h3>
+  <table class="pr-table" style="margin-top:8px;"><thead><tr><th>Timestamp</th><th>Integration</th><th>Action</th><th>Status</th><th>Details</th></tr></thead><tbody>
+    <tr><td style="white-space:nowrap;">Dec 5, 14:22</td><td>CRM Employee Sync</td><td>Read employees</td><td><span class="badge b-completed">OK</span></td><td style="color:var(--brand-muted);">5 employee records loaded from crm_db.employees</td></tr>
+    <tr><td style="white-space:nowrap;">Dec 5, 14:22</td><td>CRM Employee Sync</td><td>Render profiles</td><td><span class="badge b-completed">OK</span></td><td style="color:var(--brand-muted);">Position descriptions processed via template engine</td></tr>
+    <tr><td style="white-space:nowrap;">Dec 5, 08:00</td><td>Tax Engine</td><td>Rate validation</td><td><span class="badge b-completed">OK</span></td><td style="color:var(--brand-muted);">2024 federal and state rates confirmed</td></tr>
+    <tr><td style="white-space:nowrap;">Dec 4, 14:20</td><td>CRM Employee Sync</td><td>Read employees</td><td><span class="badge b-completed">OK</span></td><td style="color:var(--brand-muted);">5 employee records loaded from crm_db.employees</td></tr>
+    <tr><td style="white-space:nowrap;">Dec 1, 09:00</td><td>Benefits Admin</td><td>Premium calculation</td><td><span class="badge b-completed">OK</span></td><td style="color:var(--brand-muted);">Monthly premiums applied to December payroll</td></tr>
+  </tbody></table>
+</div>
+
+</main></div>{% endblock %}

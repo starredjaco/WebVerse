@@ -1,0 +1,10 @@
+{% extends 'base.html' %}{% block title %}Poppet Shop - Browse Toys{% endblock %}
+{% block content %}<h1 style="margin-bottom:var(--brand-space-3);">Our Products</h1>
+<div class="search-bar"><input type="text" id="search" placeholder="Search toys..." value="{{ query or '' }}">
+  <button class="btn btn-primary" onclick="window.location='/products?q='+document.getElementById('search').value">Search</button></div>
+<div class="product-grid">{% for p in products %}<div class="product-card">
+  <div class="category">{{ p.category }}</div><h3>{{ p.name }}</h3>
+  <p style="color:var(--brand-muted);font-size:0.9rem;margin-bottom:var(--brand-space-3);">{{ p.description[:80] }}...</p>
+  <div class="price">${{ "%.2f" | format(p.price) }}</div>
+  <div style="margin-top:var(--brand-space-3);"><a href="/product/{{ p.id }}" class="btn btn-sm btn-secondary">View Details</a></div>
+</div>{% endfor %}</div>{% endblock %}

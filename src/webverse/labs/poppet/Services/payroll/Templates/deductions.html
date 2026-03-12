@@ -1,0 +1,44 @@
+{% extends "base.html" %}{% block title %}Deductions - Poppet Payroll{% endblock %}
+{% block content %}<div class="pr-layout"><aside class="pr-sidebar">
+  <div class="sb-brand"><img src="/Static/icon.svg" alt=""><span>Poppet Payroll</span></div>
+  <nav class="sb-nav">
+    <a href="/dashboard" class="sb-link {% if active=='dash' %}active{% endif %}"><span class="sb-icon">&#9632;</span>Overview</a>
+    <div class="sb-section">Compensation</div>
+    <a href="/employees" class="sb-link {% if active=='emp' %}active{% endif %}"><span class="sb-icon">&#9673;</span>People</a>
+    <a href="/payruns" class="sb-link {% if active=='payruns' %}active{% endif %}"><span class="sb-icon">&#9654;</span>Pay Runs</a>
+    <a href="/deductions" class="sb-link {% if active=='deductions' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Deductions</a>
+    <div class="sb-section">Leave</div>
+    <a href="/timeoff" class="sb-link {% if active=='timeoff' %}active{% endif %}"><span class="sb-icon">&#9788;</span>Time Off{% if pending_pto %}<span class="sb-badge">{{ pending_pto }}</span>{% endif %}</a>
+    <div class="sb-section">Insights</div>
+    <a href="/reports" class="sb-link {% if active=='reports' %}active{% endif %}"><span class="sb-icon">&#9776;</span>Reports</a>
+    <div class="sb-section">System</div>
+    <a href="/integrations" class="sb-link {% if active=='integrations' %}active{% endif %}"><span class="sb-icon">&#8644;</span>Integrations</a>
+    <a href="/settings" class="sb-link {% if active=='settings' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Settings</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-avatar">{{ session.get('payroll_user','?')[0] | upper }}</div>
+    <div class="sb-user-info"><div class="name">{{ session.get('payroll_user','') }}</div><div class="role">{{ session.get('payroll_role','') }}</div></div>
+    <a href="/logout" style="color:var(--theme-sidebar-text);font-size:0.75rem;margin-left:auto;">&#x2192;</a>
+  </div>
+</aside><main class="pr-main">
+
+<h1>Deductions &amp; Benefits</h1>
+<p class="page-desc">Tax withholdings, insurance premiums, and retirement contributions.</p>
+<div class="card-grid">
+  <div class="card"><h3>Tax Withholdings</h3>
+    <table class="pr-table" style="margin-top:8px;"><thead><tr><th>Name</th><th>Rate</th><th>Applies To</th></tr></thead><tbody>
+    {% for d in deductions if d.category == 'tax' %}
+    <tr><td>{{ d.name }}</td><td style="font-family:var(--brand-font-mono);">{{ "%.2f" | format(d.rate * 100) }}%</td><td>{{ d.applies_to | title }}</td></tr>
+    {% endfor %}</tbody></table>
+  </div>
+  <div class="card"><h3>Benefits &amp; Retirement</h3>
+    <table class="pr-table" style="margin-top:8px;"><thead><tr><th>Name</th><th>Category</th><th>Rate</th><th>Status</th></tr></thead><tbody>
+    {% for d in deductions if d.category != 'tax' %}
+    <tr><td>{{ d.name }}</td><td><span class="badge b-{{ d.category }}">{{ d.category }}</span></td>
+      <td style="font-family:var(--brand-font-mono);">{% if d.is_percentage %}{{ "%.2f" | format(d.rate * 100) }}%{% else %}Flat{% endif %}</td>
+      <td>{% if d.active %}<span style="color:var(--brand-success);">Active</span>{% else %}<span style="color:var(--brand-muted);">Inactive</span>{% endif %}</td></tr>
+    {% endfor %}</tbody></table>
+  </div>
+</div>
+
+</main></div>{% endblock %}

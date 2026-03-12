@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#f0ebe3" rx="12"/>
+  <!-- Tree trunk -->
+  <rect x="180" y="200" width="40" height="160" rx="4" fill="#8b7355"/>
+  <rect x="185" y="200" width="30" height="160" fill="#9a8468"/>
+  <line x1="195" y1="210" x2="195" y2="360" stroke="#7a6248" stroke-width="0.5" opacity="0.4"/>
+  <line x1="205" y1="210" x2="205" y2="360" stroke="#7a6248" stroke-width="0.5" opacity="0.4"/>
+  <!-- Branches -->
+  <path d="M180 250 Q140 240 110 260" stroke="#8b7355" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M220 270 Q260 260 285 275" stroke="#8b7355" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <!-- Room 1 - main -->
+  <rect x="140" y="130" width="120" height="80" rx="4" fill="#d4a872" stroke="#b8905c" stroke-width="2"/>
+  <rect x="148" y="138" width="104" height="64" fill="#e8c898"/>
+  <!-- Window -->
+  <rect x="160" y="148" width="24" height="20" rx="2" fill="#a8d8e8" stroke="#b8905c" stroke-width="1.5"/>
+  <line x1="172" y1="148" x2="172" y2="168" stroke="#b8905c" stroke-width="1"/>
+  <line x1="160" y1="158" x2="184" y2="158" stroke="#b8905c" stroke-width="1"/>
+  <!-- Door -->
+  <rect x="218" y="152" width="18" height="28" rx="8 8 0 0" fill="#a8d8e8" stroke="#b8905c" stroke-width="1.5"/>
+  <circle cx="232" cy="168" r="1.5" fill="#b8905c"/>
+  <!-- Roof -->
+  <path d="M130 135 L200 80 L270 135 Z" fill="#c84b31" stroke="#a83d28" stroke-width="2"/>
+  <path d="M140 135 L200 88 L260 135 Z" fill="#d45a3c"/>
+  <!-- Room 2 - side -->
+  <rect x="260" y="170" width="70" height="60" rx="4" fill="#d4a872" stroke="#b8905c" stroke-width="2"/>
+  <rect x="266" y="176" width="58" height="48" fill="#e8c898"/>
+  <rect x="275" y="184" width="16" height="14" rx="2" fill="#a8d8e8" stroke="#b8905c" stroke-width="1"/>
+  <path d="M255 174 L295 148 L335 174 Z" fill="#c84b31" stroke="#a83d28" stroke-width="1.5"/>
+  <!-- Bridge -->
+  <rect x="255" y="195" width="10" height="4" fill="#b8905c"/>
+  <!-- Rope ladder -->
+  <line x1="190" y1="210" x2="190" y2="330" stroke="#c8a060" stroke-width="2"/>
+  <line x1="210" y1="210" x2="210" y2="330" stroke="#c8a060" stroke-width="2"/>
+  <line x1="188" y1="230" x2="212" y2="230" stroke="#c8a060" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="188" y1="255" x2="212" y2="255" stroke="#c8a060" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="188" y1="280" x2="212" y2="280" stroke="#c8a060" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="188" y1="305" x2="212" y2="305" stroke="#c8a060" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Room 3 - small left -->
+  <rect x="75" y="200" width="60" height="50" rx="4" fill="#d4a872" stroke="#b8905c" stroke-width="2"/>
+  <rect x="81" y="206" width="48" height="38" fill="#e8c898"/>
+  <rect x="92" y="212" width="14" height="12" rx="2" fill="#a8d8e8" stroke="#b8905c" stroke-width="1"/>
+  <path d="M70 204 L105 178 L140 204 Z" fill="#c84b31" stroke="#a83d28" stroke-width="1.5"/>
+  <!-- Leaves -->
+  <circle cx="100" cy="160" r="30" fill="#6b8f71" opacity="0.6"/>
+  <circle cx="130" cy="140" r="25" fill="#7aa080" opacity="0.5"/>
+  <circle cx="75" cy="180" r="20" fill="#6b8f71" opacity="0.4"/>
+  <circle cx="300" cy="145" r="25" fill="#6b8f71" opacity="0.5"/>
+  <circle cx="330" cy="165" r="20" fill="#7aa080" opacity="0.4"/>
+  <!-- Wooden figurine hint -->
+  <circle cx="168" cy="196" r="4" fill="#d4a872"/>
+  <rect x="165" y="196" width="6" height="10" rx="2" fill="#d4a872"/>
+</svg>

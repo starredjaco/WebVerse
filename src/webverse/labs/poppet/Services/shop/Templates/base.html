@@ -1,0 +1,12 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>{% block title %}Poppet Shop{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="/Static/icon.svg">
+  <link rel="stylesheet" href="/Static/brand.css"><link rel="stylesheet" href="/Static/theme.css"><link rel="stylesheet" href="/Static/styles.css">
+</head><body>
+  <div class="shop-header"><a href="/" class="logo"><img src="/Static/icon.svg" alt="">Poppet Shop</a>
+    <div class="shop-nav"><a href="/">Products</a><a href="/cart">Cart</a>
+      {% if session.get("user") %}{% if session.get("role") in ["staff","manager"] %}<a href="/dashboard">Dashboard</a>{% endif %}
+        <a href="/profile">{{ session["user"] }}</a><a href="/logout">Sign Out</a>
+      {% else %}<a href="/login">Sign In</a>{% endif %}</div></div>
+  <div class="container">{% block content %}{% endblock %}</div>
+</body></html>

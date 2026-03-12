@@ -1,0 +1,7 @@
+{% extends 'staff_base.html' %}{% block title %}Customers - Poppet Shop{% endblock %}
+{% block content %}<h1>Customers</h1>
+<div class="search-bar" style="max-width:400px;"><input type="text" id="csearch" placeholder="Search customers...">
+  <button class="btn btn-primary" onclick="window.location='/customers?q='+document.getElementById('csearch').value">Search</button></div>
+<table class="data-table"><thead><tr><th>Username</th><th>Email</th><th>Orders</th><th>Total Spent</th><th>Joined</th></tr></thead><tbody>
+{% for c in customers %}<tr><td>{{ c.username }}</td><td>{{ c.email }}</td><td>{{ c.order_count }}</td>
+  <td>${{ "%.2f" | format(c.total_spent or 0) }}</td><td>{{ c.created_at }}</td></tr>{% endfor %}</tbody></table>{% endblock %}

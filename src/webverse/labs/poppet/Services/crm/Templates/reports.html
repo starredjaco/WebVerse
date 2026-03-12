@@ -1,0 +1,49 @@
+{% extends "base.html" %}{% block title %}Reports - Poppet CRM{% endblock %}
+{% block body %}<div class="crm-layout"><aside class="crm-sidebar">
+  <div class="sb-brand"><img src="/Static/icon.svg" alt=""><span>Poppet CRM</span></div>
+  <nav class="sb-nav">
+    <a href="/dashboard" class="sb-link {% if active=='dash' %}active{% endif %}"><span class="sb-icon">&#9632;</span>Dashboard</a>
+    <div class="sb-section">Relationships</div>
+    <a href="/contacts" class="sb-link {% if active=='contacts' %}active{% endif %}"><span class="sb-icon">&#9679;</span>Contacts</a>
+    <a href="/pipeline" class="sb-link {% if active=='pipeline' %}active{% endif %}"><span class="sb-icon">&#9654;</span>Pipeline{% if deal_counts %}<span class="sb-badge">{{ deal_counts.open }}</span>{% endif %}</a>
+    <div class="sb-section">Operations</div>
+    <a href="/employees" class="sb-link {% if active=='emp' %}active{% endif %}"><span class="sb-icon">&#9673;</span>Employees</a>
+    <a href="/tasks" class="sb-link {% if active=='tasks' %}active{% endif %}"><span class="sb-icon">&#10003;</span>Tasks{% if task_count %}<span class="sb-badge">{{ task_count }}</span>{% endif %}</a>
+    <a href="/cases" class="sb-link {% if active=='cases' %}active{% endif %}"><span class="sb-icon">&#9888;</span>Cases</a>
+    <div class="sb-section">Insights</div>
+    <a href="/activity" class="sb-link {% if active=='activity' %}active{% endif %}"><span class="sb-icon">&#8634;</span>Activity</a>
+    <a href="/reports" class="sb-link {% if active=='reports' %}active{% endif %}"><span class="sb-icon">&#9776;</span>Reports</a>
+    <div class="sb-section">System</div>
+    <a href="/settings" class="sb-link {% if active=='settings' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Settings</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-user-avatar">{{ user.username[0] | upper if user else '?' }}</div>
+    <div class="sb-user-info"><div class="name">{{ user.username if user else 'Unknown' }}</div><div class="role">{{ user.role if user else '' }}</div></div>
+    <a href="/logout" style="color:var(--theme-sidebar-text);font-size:0.75rem;margin-left:auto;">&#x2192;</a>
+  </div>
+</aside><main class="crm-main">
+
+<h1>Reports</h1>
+<p class="page-desc">Revenue metrics, pipeline analysis, and team performance.</p>
+<div class="stats-row">
+  <div class="stat-card"><div class="number">${{ "%.0f" | format(pipeline_total) }}</div><div class="label">Pipeline Total</div></div>
+  <div class="stat-card"><div class="number">${{ "%.0f" | format(won_total) }}</div><div class="label">Won Revenue</div></div>
+  <div class="stat-card"><div class="number">{{ won_count }}</div><div class="label">Deals Won</div></div>
+  <div class="stat-card"><div class="number">{{ "%.0f" | format(win_rate) }}%</div><div class="label">Win Rate</div></div>
+</div>
+<div class="card-grid">
+  <div class="card"><h3>Pipeline by Stage</h3>
+    <table class="crm-table" style="margin-top:8px;"><thead><tr><th>Stage</th><th>Deals</th><th>Value</th></tr></thead><tbody>
+    {% for s in stage_breakdown %}
+    <tr><td><span class="badge b-{{ s.stage }}">{{ s.stage | title }}</span></td><td>{{ s.count }}</td><td>${{ "%.0f" | format(s.value) }}</td></tr>
+    {% endfor %}</tbody></table>
+  </div>
+  <div class="card"><h3>Top Accounts by Revenue</h3>
+    <table class="crm-table" style="margin-top:8px;"><thead><tr><th>Contact</th><th>Deals</th><th>Total Value</th></tr></thead><tbody>
+    {% for a in top_accounts %}
+    <tr><td>{{ a.name }}</td><td>{{ a.deals }}</td><td style="font-weight:600;">${{ "%.0f" | format(a.value) }}</td></tr>
+    {% endfor %}</tbody></table>
+  </div>
+</div>
+
+</main></div>{% endblock %}

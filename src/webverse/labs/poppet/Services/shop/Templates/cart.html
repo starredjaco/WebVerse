@@ -1,0 +1,4 @@
+{% extends 'base.html' %}{% block title %}Cart - Poppet Shop{% endblock %}
+{% block content %}<h1>Shopping Cart</h1>{% if cart %}<table class="data-table"><thead><tr><th>Product</th><th>Quantity</th><th>Price</th></tr></thead><tbody>
+{% for item in cart %}<tr><td>{{ item.name }}</td><td>{{ item.qty }}</td><td>${{ "%.2f" | format(item.price) }}</td></tr>{% endfor %}
+</tbody></table>{% else %}<p style="color:var(--brand-muted);margin-top:var(--brand-space-5);">Your cart is empty. <a href="/">Browse products</a> to get started.</p>{% endif %}{% endblock %}

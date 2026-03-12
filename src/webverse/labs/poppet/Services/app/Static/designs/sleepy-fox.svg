@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#faf5f0" rx="12"/>
+  <!-- Shadow -->
+  <ellipse cx="200" cy="355" rx="80" ry="10" fill="#d8c8b8" opacity="0.3"/>
+  <!-- Tail - curled around body -->
+  <path d="M260 300 Q310 280 320 240 Q325 210 300 200 Q280 195 270 210 Q265 225 275 235 Q290 240 295 225" fill="#d4733c" stroke="#c06030" stroke-width="1.5"/>
+  <path d="M295 225 Q292 218 285 220 Q280 225 285 232" fill="#f8f0e8"/>
+  <!-- Body -->
+  <ellipse cx="200" cy="290" rx="75" ry="50" fill="#d4733c"/>
+  <ellipse cx="200" cy="295" rx="70" ry="45" fill="#dc8040"/>
+  <!-- Belly -->
+  <ellipse cx="200" cy="300" rx="40" ry="28" fill="#f8f0e8"/>
+  <!-- Head -->
+  <ellipse cx="170" cy="240" rx="45" ry="38" fill="#d4733c"/>
+  <ellipse cx="170" cy="242" rx="42" ry="35" fill="#dc8040"/>
+  <!-- Ears -->
+  <path d="M140 215 L128 175 L155 205 Z" fill="#d4733c" stroke="#c06030" stroke-width="1"/>
+  <path d="M143 213 L133 182 L153 207 Z" fill="#e08848"/>
+  <path d="M145 212 L138 192 L152 208 Z" fill="#3a2018" opacity="0.3"/>
+  <path d="M195 210 L208 172 L185 200 Z" fill="#d4733c" stroke="#c06030" stroke-width="1"/>
+  <path d="M193 208 L203 180 L186 202 Z" fill="#e08848"/>
+  <path d="M192 207 L198 190 L187 203 Z" fill="#3a2018" opacity="0.3"/>
+  <!-- Face - white cheeks -->
+  <path d="M155 240 Q140 230 135 245 Q132 260 150 265 Q165 268 175 258 Q180 250 170 242 Z" fill="#f8f0e8"/>
+  <path d="M185 240 Q200 230 205 245 Q208 260 190 265 Q175 268 165 258 Q160 250 170 242 Z" fill="#f8f0e8"/>
+  <!-- Nose -->
+  <ellipse cx="168" cy="255" rx="6" ry="4" fill="#3a2018"/>
+  <!-- Closed eyes - embroidered -->
+  <path d="M148 238 Q155 232 162 238" stroke="#3a2018" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M175 236 Q182 230 189 236" stroke="#3a2018" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Eyelash stitches -->
+  <line x1="149" y1="240" x2="147" y2="243" stroke="#3a2018" stroke-width="1" stroke-linecap="round"/>
+  <line x1="161" y1="240" x2="163" y2="243" stroke="#3a2018" stroke-width="1" stroke-linecap="round"/>
+  <!-- Mouth -->
+  <path d="M163 260 Q168 264 173 260" stroke="#3a2018" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+  <!-- Scarf -->
+  <path d="M135 265 Q170 280 210 268" stroke="#4a7a90" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M135 265 Q170 280 210 268" stroke="#5a8aa0" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <!-- Scarf knit texture -->
+  <path d="M142 268 Q148 264 154 268 Q160 272 166 268 Q172 264 178 268 Q184 272 190 268 Q196 264 202 268" stroke="#4a7a90" stroke-width="1" fill="none" opacity="0.4"/>
+  <!-- Scarf tail -->
+  <path d="M210 268 Q220 275 215 295 Q212 305 218 310" stroke="#4a7a90" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M210 268 Q220 275 215 295 Q212 305 218 310" stroke="#5a8aa0" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <!-- Paws -->
+  <ellipse cx="150" cy="332" rx="18" ry="10" fill="#dc8040"/>
+  <ellipse cx="240" cy="335" rx="16" ry="9" fill="#dc8040"/>
+  <!-- Zzz -->
+  <text x="230" y="210" font-family="system-ui" font-size="16" font-weight="700" fill="#b8a898" opacity="0.4">z</text>
+  <text x="245" y="195" font-family="system-ui" font-size="13" font-weight="700" fill="#b8a898" opacity="0.3">z</text>
+  <text x="255" y="183" font-family="system-ui" font-size="10" font-weight="700" fill="#b8a898" opacity="0.2">z</text>
+</svg>

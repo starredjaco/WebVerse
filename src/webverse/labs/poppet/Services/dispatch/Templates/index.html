@@ -1,0 +1,24 @@
+{% extends 'base.html' %}{% block title %}Dispatch API Reference{% endblock %}
+{% block content %}<div class="api-content"><h1>Dispatch API</h1>
+<p style="color:var(--brand-muted);margin-bottom:var(--brand-space-5);">Order fulfillment API for the Poppet Shop. All endpoints require <code>X-Api-Key</code> header.</p>
+<h2>Orders</h2>
+<div class="endpoint-card"><div class="method-bar"><span class="method-badge method-get">GET</span><span class="path">/api/v1/orders</span></div><div class="desc">List all fulfillment orders. Filter by status with <code>?status=</code></div></div>
+<div class="endpoint-card"><div class="method-bar"><span class="method-badge method-get">GET</span><span class="path">/api/v1/orders/{id}</span></div><div class="desc">Get order details by ID.</div></div>
+<div class="endpoint-card"><div class="method-bar"><span class="method-badge method-post">POST</span><span class="path">/api/v1/orders/{id}/pack</span></div><div class="desc">Mark order as packed and ready for shipment.</div></div>
+<div class="endpoint-card"><div class="method-bar"><span class="method-badge method-post">POST</span><span class="path">/api/v1/orders/{id}/ship</span></div><div class="desc">Create shipment with carrier and tracking number.</div></div>
+<h2>Shipments</h2>
+<div class="endpoint-card"><div class="method-bar"><span class="method-badge method-get">GET</span><span class="path">/api/v1/shipments</span></div><div class="desc">List all shipments.</div></div>
+<div class="endpoint-card"><div class="method-bar"><span class="method-badge method-get">GET</span><span class="path">/api/v1/shipments/search?tracking={number}</span></div><div class="desc">Search shipments by tracking number.</div></div>
+<div class="endpoint-card"><div class="method-bar"><span class="method-badge method-get">GET</span><span class="path">/api/v1/shipments/{id}</span></div><div class="desc">Get shipment details.</div></div>
+<div class="endpoint-card"><div class="method-bar"><span class="method-badge method-get">GET</span><span class="path">/api/v1/shipments/{id}/track</span></div><div class="desc">Get tracking information for a shipment.</div></div>
+<h2>Carriers</h2>
+<div class="endpoint-card"><div class="method-bar"><span class="method-badge method-get">GET</span><span class="path">/api/v1/carriers</span></div><div class="desc">List available shipping carriers.</div></div>
+<h2>Stats</h2>
+<div class="endpoint-card"><div class="method-bar"><span class="method-badge method-get">GET</span><span class="path">/api/v1/stats</span></div><div class="desc">Fulfillment statistics and performance metrics.</div></div>
+<h2>Labels</h2>
+<div class="endpoint-card"><div class="method-bar"><span class="method-badge method-post">POST</span><span class="path">/api/v1/labels/{order_id}</span></div><div class="desc">Generate a shipping label for an order.</div></div>
+<h2>Returns</h2>
+<div class="endpoint-card"><div class="method-bar"><span class="method-badge method-get">GET</span><span class="path">/api/v1/returns</span></div><div class="desc">List return requests.</div></div>
+<div class="endpoint-card"><div class="method-bar"><span class="method-badge method-post">POST</span><span class="path">/api/v1/returns</span></div><div class="desc">Create a new return request.</div></div>
+<h2>Authentication</h2><pre class="code-block">curl -H "X-Api-Key: YOUR_KEY" http://dispatch.poppet.local/api/v1/orders</pre>
+</div>{% endblock %}

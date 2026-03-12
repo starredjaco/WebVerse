@@ -1,0 +1,42 @@
+{% extends "base.html" %}{% block title %}Edit Employee - Poppet CRM{% endblock %}
+{% block body %}<div class="crm-layout"><aside class="crm-sidebar">
+  <div class="sb-brand"><img src="/Static/icon.svg" alt=""><span>Poppet CRM</span></div>
+  <nav class="sb-nav">
+    <a href="/dashboard" class="sb-link {% if active=='dash' %}active{% endif %}"><span class="sb-icon">&#9632;</span>Dashboard</a>
+    <div class="sb-section">Relationships</div>
+    <a href="/contacts" class="sb-link {% if active=='contacts' %}active{% endif %}"><span class="sb-icon">&#9679;</span>Contacts</a>
+    <a href="/pipeline" class="sb-link {% if active=='pipeline' %}active{% endif %}"><span class="sb-icon">&#9654;</span>Pipeline{% if deal_counts %}<span class="sb-badge">{{ deal_counts.open }}</span>{% endif %}</a>
+    <div class="sb-section">Operations</div>
+    <a href="/employees" class="sb-link {% if active=='emp' %}active{% endif %}"><span class="sb-icon">&#9673;</span>Employees</a>
+    <a href="/tasks" class="sb-link {% if active=='tasks' %}active{% endif %}"><span class="sb-icon">&#10003;</span>Tasks{% if task_count %}<span class="sb-badge">{{ task_count }}</span>{% endif %}</a>
+    <a href="/cases" class="sb-link {% if active=='cases' %}active{% endif %}"><span class="sb-icon">&#9888;</span>Cases</a>
+    <div class="sb-section">Insights</div>
+    <a href="/activity" class="sb-link {% if active=='activity' %}active{% endif %}"><span class="sb-icon">&#8634;</span>Activity</a>
+    <a href="/reports" class="sb-link {% if active=='reports' %}active{% endif %}"><span class="sb-icon">&#9776;</span>Reports</a>
+    <div class="sb-section">System</div>
+    <a href="/settings" class="sb-link {% if active=='settings' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Settings</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-user-avatar">{{ user.username[0] | upper if user else '?' }}</div>
+    <div class="sb-user-info"><div class="name">{{ user.username if user else 'Unknown' }}</div><div class="role">{{ user.role if user else '' }}</div></div>
+    <a href="/logout" style="color:var(--theme-sidebar-text);font-size:0.75rem;margin-left:auto;">&#x2192;</a>
+  </div>
+</aside><main class="crm-main">
+
+<div class="breadcrumb"><a href="/employees">Employees</a><span>/</span><a href="/employees/{{ employee.id }}">{{ employee.full_name }}</a><span>/</span><span>Edit</span></div>
+<h1>Edit: {{ employee.full_name }}</h1>
+{% if message %}<div class="alert alert-success">{{ message }}</div>{% endif %}
+{% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+<div class="card" style="max-width:640px;">
+  <form method="POST" action="/employees/{{ employee.id }}/edit">
+    <div class="form-row">
+      <div class="form-group"><label>Full Name</label><input type="text" name="full_name" value="{{ employee.full_name }}"></div>
+      <div class="form-group"><label>Department</label><select name="department"><option {% if employee.department=='operations' %}selected{% endif %}>operations</option><option {% if employee.department=='sales' %}selected{% endif %}>sales</option><option {% if employee.department=='support' %}selected{% endif %}>support</option><option {% if employee.department=='engineering' %}selected{% endif %}>engineering</option><option {% if employee.department=='design' %}selected{% endif %}>design</option></select></div>
+    </div>
+    <div class="form-group"><label>Email</label><input type="email" name="email" value="{{ employee.email }}"></div>
+    <div class="form-group"><label>Job Description</label><textarea name="job_description" rows="4" style="resize:vertical;">{{ employee.job_description }}</textarea></div>
+    <div class="form-actions"><button type="submit" class="btn btn-primary">Save Changes</button><a href="/employees/{{ employee.id }}" class="btn btn-secondary">Cancel</a></div>
+  </form>
+</div>
+
+</main></div>{% endblock %}

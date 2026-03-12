@@ -1,0 +1,56 @@
+{% extends "base.html" %}{% block title %}Deal - Poppet CRM{% endblock %}
+{% block body %}<div class="crm-layout"><aside class="crm-sidebar">
+  <div class="sb-brand"><img src="/Static/icon.svg" alt=""><span>Poppet CRM</span></div>
+  <nav class="sb-nav">
+    <a href="/dashboard" class="sb-link {% if active=='dash' %}active{% endif %}"><span class="sb-icon">&#9632;</span>Dashboard</a>
+    <div class="sb-section">Relationships</div>
+    <a href="/contacts" class="sb-link {% if active=='contacts' %}active{% endif %}"><span class="sb-icon">&#9679;</span>Contacts</a>
+    <a href="/pipeline" class="sb-link {% if active=='pipeline' %}active{% endif %}"><span class="sb-icon">&#9654;</span>Pipeline{% if deal_counts %}<span class="sb-badge">{{ deal_counts.open }}</span>{% endif %}</a>
+    <div class="sb-section">Operations</div>
+    <a href="/employees" class="sb-link {% if active=='emp' %}active{% endif %}"><span class="sb-icon">&#9673;</span>Employees</a>
+    <a href="/tasks" class="sb-link {% if active=='tasks' %}active{% endif %}"><span class="sb-icon">&#10003;</span>Tasks{% if task_count %}<span class="sb-badge">{{ task_count }}</span>{% endif %}</a>
+    <a href="/cases" class="sb-link {% if active=='cases' %}active{% endif %}"><span class="sb-icon">&#9888;</span>Cases</a>
+    <div class="sb-section">Insights</div>
+    <a href="/activity" class="sb-link {% if active=='activity' %}active{% endif %}"><span class="sb-icon">&#8634;</span>Activity</a>
+    <a href="/reports" class="sb-link {% if active=='reports' %}active{% endif %}"><span class="sb-icon">&#9776;</span>Reports</a>
+    <div class="sb-section">System</div>
+    <a href="/settings" class="sb-link {% if active=='settings' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Settings</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-user-avatar">{{ user.username[0] | upper if user else '?' }}</div>
+    <div class="sb-user-info"><div class="name">{{ user.username if user else 'Unknown' }}</div><div class="role">{{ user.role if user else '' }}</div></div>
+    <a href="/logout" style="color:var(--theme-sidebar-text);font-size:0.75rem;margin-left:auto;">&#x2192;</a>
+  </div>
+</aside><main class="crm-main">
+
+<div class="breadcrumb"><a href="/pipeline">Pipeline</a><span>/</span><span>{{ deal.title }}</span></div>
+<div class="detail-header">
+  <div class="detail-avatar" style="background:{% if deal.stage=='won' %}var(--brand-success){% elif deal.stage=='lost' %}var(--brand-danger){% else %}var(--theme-accent){% endif %};">$</div>
+  <div class="detail-info"><h1>{{ deal.title }}</h1>
+    <div class="detail-meta"><span class="badge b-{{ deal.stage }}">{{ deal.stage | title }}</span><span class="sep">&middot;</span><span>{{ deal.contact_name }}</span>
+      <span class="sep">&middot;</span><span>Assigned to {{ deal.assigned_name }}</span></div></div>
+  <div style="margin-left:auto;text-align:right;"><div style="font-size:1.8rem;font-weight:700;color:var(--theme-accent);">${{ "%.0f" | format(deal.value) }}</div>
+    <div style="font-size:0.78rem;color:var(--brand-muted);">Expected {{ deal.expected_close.strftime('%b %d, %Y') if deal.expected_close else '—' }}</div></div>
+</div>
+<div class="card-grid">
+  <div class="card"><h3>Deal Information</h3>
+    <div class="info-grid">
+      <div class="info-item"><div class="info-label">Contact</div><div class="info-value"><a href="/contacts/{{ deal.contact_id }}">{{ deal.contact_name }}</a></div></div>
+      <div class="info-item"><div class="info-label">Stage</div><div class="info-value"><span class="badge b-{{ deal.stage }}">{{ deal.stage | title }}</span></div></div>
+      <div class="info-item"><div class="info-label">Value</div><div class="info-value">${{ "%.2f" | format(deal.value) }}</div></div>
+      <div class="info-item"><div class="info-label">Expected Close</div><div class="info-value">{{ deal.expected_close.strftime('%B %d, %Y') if deal.expected_close else '—' }}</div></div>
+      <div class="info-item"><div class="info-label">Created</div><div class="info-value">{{ deal.created_at.strftime('%b %d, %Y') if deal.created_at else '—' }}</div></div>
+      <div class="info-item"><div class="info-label">Assigned To</div><div class="info-value">{{ deal.assigned_name }}</div></div>
+    </div>
+    {% if deal.notes %}<div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--theme-border);"><div class="info-label" style="margin-bottom:4px;">Notes</div><p style="font-size:0.88rem;color:var(--brand-muted);line-height:1.6;">{{ deal.notes }}</p></div>{% endif %}
+  </div>
+  <div class="card"><h3>Related Tasks</h3>
+    {% if tasks %}{% for t in tasks %}
+    <div style="padding:8px 0;border-bottom:1px solid var(--theme-border);">
+      <div style="font-size:0.88rem;font-weight:500;">{{ t.title }}</div>
+      <div style="font-size:0.75rem;color:var(--brand-muted);margin-top:2px;"><span class="badge b-{{ t.status }}">{{ t.status }}</span> &middot; Due {{ t.due_date.strftime('%b %d') if t.due_date else '—' }}</div></div>
+    {% endfor %}{% else %}<div class="empty-state"><p>No tasks for this deal.</p></div>{% endif %}
+  </div>
+</div>
+
+</main></div>{% endblock %}

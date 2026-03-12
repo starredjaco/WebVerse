@@ -1,0 +1,52 @@
+{% extends "base.html" %}{% block title %}Employee - Poppet CRM{% endblock %}
+{% block body %}<div class="crm-layout"><aside class="crm-sidebar">
+  <div class="sb-brand"><img src="/Static/icon.svg" alt=""><span>Poppet CRM</span></div>
+  <nav class="sb-nav">
+    <a href="/dashboard" class="sb-link {% if active=='dash' %}active{% endif %}"><span class="sb-icon">&#9632;</span>Dashboard</a>
+    <div class="sb-section">Relationships</div>
+    <a href="/contacts" class="sb-link {% if active=='contacts' %}active{% endif %}"><span class="sb-icon">&#9679;</span>Contacts</a>
+    <a href="/pipeline" class="sb-link {% if active=='pipeline' %}active{% endif %}"><span class="sb-icon">&#9654;</span>Pipeline{% if deal_counts %}<span class="sb-badge">{{ deal_counts.open }}</span>{% endif %}</a>
+    <div class="sb-section">Operations</div>
+    <a href="/employees" class="sb-link {% if active=='emp' %}active{% endif %}"><span class="sb-icon">&#9673;</span>Employees</a>
+    <a href="/tasks" class="sb-link {% if active=='tasks' %}active{% endif %}"><span class="sb-icon">&#10003;</span>Tasks{% if task_count %}<span class="sb-badge">{{ task_count }}</span>{% endif %}</a>
+    <a href="/cases" class="sb-link {% if active=='cases' %}active{% endif %}"><span class="sb-icon">&#9888;</span>Cases</a>
+    <div class="sb-section">Insights</div>
+    <a href="/activity" class="sb-link {% if active=='activity' %}active{% endif %}"><span class="sb-icon">&#8634;</span>Activity</a>
+    <a href="/reports" class="sb-link {% if active=='reports' %}active{% endif %}"><span class="sb-icon">&#9776;</span>Reports</a>
+    <div class="sb-section">System</div>
+    <a href="/settings" class="sb-link {% if active=='settings' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Settings</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-user-avatar">{{ user.username[0] | upper if user else '?' }}</div>
+    <div class="sb-user-info"><div class="name">{{ user.username if user else 'Unknown' }}</div><div class="role">{{ user.role if user else '' }}</div></div>
+    <a href="/logout" style="color:var(--theme-sidebar-text);font-size:0.75rem;margin-left:auto;">&#x2192;</a>
+  </div>
+</aside><main class="crm-main">
+
+<div class="breadcrumb"><a href="/employees">Employees</a><span>/</span><span>{{ employee.full_name }}</span></div>
+<div class="detail-header">
+  <div class="detail-avatar">{{ employee.full_name[0] }}</div>
+  <div class="detail-info"><h1>{{ employee.full_name }}</h1>
+    <div class="detail-meta"><span class="badge b-{{ employee.department }}">{{ employee.department }}</span><span class="sep">&middot;</span><span>{{ employee.email }}</span></div></div>
+  {% if user.role in ('manager','admin') %}<div style="margin-left:auto;"><a href="/employees/{{ employee.id }}/edit" class="btn btn-secondary">Edit Profile</a></div>{% endif %}
+</div>
+<div class="card-grid">
+  <div class="card"><h3>Employment Information</h3>
+    <div class="info-grid">
+      <div class="info-item"><div class="info-label">Full Name</div><div class="info-value">{{ employee.full_name }}</div></div>
+      <div class="info-item"><div class="info-label">Email</div><div class="info-value">{{ employee.email }}</div></div>
+      <div class="info-item"><div class="info-label">Department</div><div class="info-value">{{ employee.department | title }}</div></div>
+      <div class="info-item"><div class="info-label">Hire Date</div><div class="info-value">{{ employee.hire_date }}</div></div>
+      {% if user.role in ('manager','admin') %}<div class="info-item"><div class="info-label">Salary</div><div class="info-value">${{ "%.2f" | format(employee.salary) }}</div></div>{% endif %}
+    </div>
+  </div>
+  <div class="card"><h3>Role Description</h3>
+    <p style="font-size:0.9rem;line-height:1.6;color:var(--brand-muted);">{{ employee.job_description }}</p>
+  </div>
+</div>
+{% if employee.notes and user.role in ('manager','admin') %}
+<div class="card"><h3>Internal Notes</h3>
+  <p style="font-size:0.9rem;line-height:1.6;color:var(--brand-muted);background:var(--theme-accent-light);padding:12px 16px;border-radius:6px;">{{ employee.notes }}</p>
+</div>{% endif %}
+
+</main></div>{% endblock %}

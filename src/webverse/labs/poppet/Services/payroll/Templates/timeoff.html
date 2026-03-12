@@ -1,0 +1,44 @@
+{% extends "base.html" %}{% block title %}Time Off - Poppet Payroll{% endblock %}
+{% block content %}<div class="pr-layout"><aside class="pr-sidebar">
+  <div class="sb-brand"><img src="/Static/icon.svg" alt=""><span>Poppet Payroll</span></div>
+  <nav class="sb-nav">
+    <a href="/dashboard" class="sb-link {% if active=='dash' %}active{% endif %}"><span class="sb-icon">&#9632;</span>Overview</a>
+    <div class="sb-section">Compensation</div>
+    <a href="/employees" class="sb-link {% if active=='emp' %}active{% endif %}"><span class="sb-icon">&#9673;</span>People</a>
+    <a href="/payruns" class="sb-link {% if active=='payruns' %}active{% endif %}"><span class="sb-icon">&#9654;</span>Pay Runs</a>
+    <a href="/deductions" class="sb-link {% if active=='deductions' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Deductions</a>
+    <div class="sb-section">Leave</div>
+    <a href="/timeoff" class="sb-link {% if active=='timeoff' %}active{% endif %}"><span class="sb-icon">&#9788;</span>Time Off{% if pending_pto %}<span class="sb-badge">{{ pending_pto }}</span>{% endif %}</a>
+    <div class="sb-section">Insights</div>
+    <a href="/reports" class="sb-link {% if active=='reports' %}active{% endif %}"><span class="sb-icon">&#9776;</span>Reports</a>
+    <div class="sb-section">System</div>
+    <a href="/integrations" class="sb-link {% if active=='integrations' %}active{% endif %}"><span class="sb-icon">&#8644;</span>Integrations</a>
+    <a href="/settings" class="sb-link {% if active=='settings' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Settings</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-avatar">{{ session.get('payroll_user','?')[0] | upper }}</div>
+    <div class="sb-user-info"><div class="name">{{ session.get('payroll_user','') }}</div><div class="role">{{ session.get('payroll_role','') }}</div></div>
+    <a href="/logout" style="color:var(--theme-sidebar-text);font-size:0.75rem;margin-left:auto;">&#x2192;</a>
+  </div>
+</aside><main class="pr-main">
+
+<h1>Time Off</h1>
+<p class="page-desc">Leave requests and PTO tracking.</p>
+<div class="toolbar">
+  <div class="filter-pills">
+    <a href="/timeoff" class="filter-pill {% if not status_filter %}active{% endif %}">All</a>
+    <a href="/timeoff?status=pending" class="filter-pill {% if status_filter=='pending' %}active{% endif %}">Pending</a>
+    <a href="/timeoff?status=approved" class="filter-pill {% if status_filter=='approved' %}active{% endif %}">Approved</a>
+  </div>
+</div>
+<table class="pr-table">
+  <thead><tr><th>Employee</th><th>Type</th><th>Dates</th><th>Days</th><th>Status</th><th>Notes</th></tr></thead>
+  <tbody>{% for t in requests %}
+  <tr><td style="font-weight:500;">{{ t.employee_name }}</td><td><span class="badge b-{{ t.type }}">{{ t.type }}</span></td>
+    <td>{{ t.start_date.strftime('%b %d') }}{% if t.days_count > 1 %} - {{ t.end_date.strftime('%b %d') }}{% endif %}</td>
+    <td>{{ t.days_count }}</td><td><span class="badge b-{{ t.status }}">{{ t.status }}</span></td>
+    <td style="color:var(--brand-muted);font-size:0.82rem;">{{ t.notes or '-' }}</td></tr>
+  {% endfor %}</tbody>
+</table>
+
+</main></div>{% endblock %}

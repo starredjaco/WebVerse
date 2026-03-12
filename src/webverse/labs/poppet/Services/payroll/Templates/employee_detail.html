@@ -1,0 +1,63 @@
+{% extends "base.html" %}{% block title %}Employee - Poppet Payroll{% endblock %}
+{% block content %}<div class="pr-layout"><aside class="pr-sidebar">
+  <div class="sb-brand"><img src="/Static/icon.svg" alt=""><span>Poppet Payroll</span></div>
+  <nav class="sb-nav">
+    <a href="/dashboard" class="sb-link {% if active=='dash' %}active{% endif %}"><span class="sb-icon">&#9632;</span>Overview</a>
+    <div class="sb-section">Compensation</div>
+    <a href="/employees" class="sb-link {% if active=='emp' %}active{% endif %}"><span class="sb-icon">&#9673;</span>People</a>
+    <a href="/payruns" class="sb-link {% if active=='payruns' %}active{% endif %}"><span class="sb-icon">&#9654;</span>Pay Runs</a>
+    <a href="/deductions" class="sb-link {% if active=='deductions' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Deductions</a>
+    <div class="sb-section">Leave</div>
+    <a href="/timeoff" class="sb-link {% if active=='timeoff' %}active{% endif %}"><span class="sb-icon">&#9788;</span>Time Off{% if pending_pto %}<span class="sb-badge">{{ pending_pto }}</span>{% endif %}</a>
+    <div class="sb-section">Insights</div>
+    <a href="/reports" class="sb-link {% if active=='reports' %}active{% endif %}"><span class="sb-icon">&#9776;</span>Reports</a>
+    <div class="sb-section">System</div>
+    <a href="/integrations" class="sb-link {% if active=='integrations' %}active{% endif %}"><span class="sb-icon">&#8644;</span>Integrations</a>
+    <a href="/settings" class="sb-link {% if active=='settings' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Settings</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-avatar">{{ session.get('payroll_user','?')[0] | upper }}</div>
+    <div class="sb-user-info"><div class="name">{{ session.get('payroll_user','') }}</div><div class="role">{{ session.get('payroll_role','') }}</div></div>
+    <a href="/logout" style="color:var(--theme-sidebar-text);font-size:0.75rem;margin-left:auto;">&#x2192;</a>
+  </div>
+</aside><main class="pr-main">
+
+<div class="breadcrumb"><a href="/employees">People</a><span>/</span><span>{{ employee.full_name }}</span></div>
+<div class="detail-header">
+  <div class="detail-avatar">{{ employee.full_name[0] }}</div>
+  <div class="detail-info"><h1>{{ employee.full_name }}</h1>
+    <div class="detail-meta"><span class="badge b-{{ employee.department }}">{{ employee.department }}</span><span class="sep">&middot;</span><span>{{ employee.email }}</span></div></div>
+</div>
+<div class="card-grid">
+  <div class="card"><h3>Compensation</h3>
+    <div class="info-grid">
+      <div class="info-item"><div class="info-label">Annual Salary</div><div class="info-value" style="font-size:1.1rem;font-weight:700;color:var(--theme-accent);">${{ "%.2f" | format(employee.salary) }}</div></div>
+      <div class="info-item"><div class="info-label">Monthly Gross</div><div class="info-value">${{ "%.2f" | format(employee.salary / 12) }}</div></div>
+      <div class="info-item"><div class="info-label">Department</div><div class="info-value">{{ employee.department | title }}</div></div>
+      <div class="info-item"><div class="info-label">Hire Date</div><div class="info-value">{{ employee.hire_date }}</div></div>
+    </div>
+  </div>
+  <div class="card"><h3>Position Description</h3>
+    <p style="font-size:0.9rem;line-height:1.7;color:var(--brand-muted);">{{ rendered_job_description }}</p>
+    <div style="margin-top:12px;font-size:0.72rem;color:var(--brand-muted);border-top:1px solid var(--theme-border);padding-top:8px;">Synced from CRM employee records</div>
+  </div>
+</div>
+{% if latest_stub %}
+<div class="card"><h3>Latest Pay Stub ({{ latest_stub.period }})</h3>
+  <div class="stub-section"><h4>Earnings</h4>
+    <div class="stub-line"><span>Gross Pay</span><span class="amount">${{ "%.2f" | format(latest_stub.gross_pay) }}</span></div>
+  </div>
+  <div class="stub-section"><h4>Taxes</h4>
+    <div class="stub-line"><span>Federal Income Tax</span><span class="amount neg">-${{ "%.2f" | format(latest_stub.federal_tax) }}</span></div>
+    <div class="stub-line"><span>NC State Tax</span><span class="amount neg">-${{ "%.2f" | format(latest_stub.state_tax) }}</span></div>
+    <div class="stub-line"><span>Social Security (FICA)</span><span class="amount neg">-${{ "%.2f" | format(latest_stub.social_security) }}</span></div>
+    <div class="stub-line"><span>Medicare</span><span class="amount neg">-${{ "%.2f" | format(latest_stub.medicare) }}</span></div>
+  </div>
+  <div class="stub-section"><h4>Deductions</h4>
+    <div class="stub-line"><span>Health Insurance (PPO)</span><span class="amount neg">-${{ "%.2f" | format(latest_stub.health_insurance) }}</span></div>
+    <div class="stub-line"><span>401(k) Contribution</span><span class="amount neg">-${{ "%.2f" | format(latest_stub.retirement_401k) }}</span></div>
+  </div>
+  <div class="stub-line total"><span>Net Pay</span><span class="amount">${{ "%.2f" | format(latest_stub.net_pay) }}</span></div>
+</div>{% endif %}
+
+</main></div>{% endblock %}

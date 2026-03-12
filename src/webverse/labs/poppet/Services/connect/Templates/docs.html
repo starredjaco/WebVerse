@@ -1,0 +1,286 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Poppet Connect API — API Reference</title>
+<link rel="icon" type="image/svg+xml" href="/Static/icon.svg">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--doc-bg:#f8fafb;--doc-sidebar:#1a1f2e;--doc-card:#fff;--doc-border:#e2e8f0;--doc-text:#334155;--doc-muted:#64748b;--doc-accent:#4a7c6f;--doc-accent-dk:#2d5a4e;--doc-mono:ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,monospace;--doc-sans:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;}
+body{font-family:var(--doc-sans);background:var(--doc-bg);color:var(--doc-text);font-size:14px;line-height:1.5;}
+a{color:var(--doc-accent);text-decoration:none;}
+
+/* Layout */
+.docs-layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh;}
+.docs-sidebar{background:var(--doc-sidebar);color:#c1c9d4;overflow-y:auto;position:sticky;top:0;height:100vh;}
+.docs-main{overflow-y:auto;padding:0;}
+
+/* Sidebar */
+.sb-header{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.sb-header .sb-name{font-size:1rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.sb-header .sb-name img{height:20px;filter:brightness(10);}
+.sb-header .sb-version{font-size:0.7rem;background:rgba(255,255,255,0.1);padding:2px 8px;border-radius:10px;display:inline-block;margin-top:4px;}
+.sb-auth{padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;}
+.sb-auth-badge{font-size:0.72rem;background:rgba(16,185,129,0.15);color:#34d399;padding:3px 10px;border-radius:10px;font-weight:500;}
+.sb-auth a{font-size:0.75rem;color:#64748b;}
+.sb-auth a:hover{color:#94a3b8;}
+.sb-nav{padding:12px 0;}
+.sb-group{padding:16px 20px 4px;font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.25);font-weight:600;}
+.sb-link{display:flex;align-items:center;gap:10px;padding:6px 20px;color:#94a3b8;font-size:0.82rem;cursor:pointer;border-left:2px solid transparent;transition:all 0.1s;}
+.sb-link:hover{background:rgba(255,255,255,0.04);color:#e2e8f0;}
+.sb-link.active{border-left-color:var(--doc-accent);color:#fff;background:rgba(255,255,255,0.06);}
+.sb-method{font-family:var(--doc-mono);font-size:0.65rem;font-weight:700;padding:1px 5px;border-radius:3px;min-width:36px;text-align:center;}
+.m-get{background:rgba(59,130,246,0.15);color:#60a5fa;}
+.m-post{background:rgba(16,185,129,0.15);color:#34d399;}
+.m-put{background:rgba(245,158,11,0.15);color:#fbbf24;}
+.m-delete{background:rgba(239,68,68,0.15);color:#f87171;}
+
+/* Top bar */
+.docs-topbar{padding:24px 32px 20px;border-bottom:1px solid var(--doc-border);background:#fff;}
+.docs-topbar h1{font-size:1.5rem;font-weight:700;margin-bottom:4px;}
+.docs-topbar p{color:var(--doc-muted);font-size:0.9rem;max-width:640px;}
+.docs-topbar .base-url{margin-top:12px;font-family:var(--doc-mono);font-size:0.82rem;background:#f1f5f9;padding:8px 14px;border-radius:6px;display:inline-block;border:1px solid var(--doc-border);}
+
+/* Endpoint cards */
+.docs-content{padding:24px 32px 80px;max-width:960px;}
+.ep-group-title{font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--doc-muted);font-weight:600;margin:32px 0 12px;padding-top:12px;border-top:1px solid var(--doc-border);}
+.ep-group-title:first-child{border-top:none;margin-top:0;}
+.ep-card{background:var(--doc-card);border:1px solid var(--doc-border);border-radius:8px;margin-bottom:10px;overflow:hidden;transition:box-shadow 0.15s;}
+.ep-card:hover{box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.ep-header{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;user-select:none;}
+.ep-header:hover{background:#f8fafb;}
+.ep-method{font-family:var(--doc-mono);font-weight:700;font-size:0.72rem;padding:4px 8px;border-radius:4px;min-width:44px;text-align:center;text-transform:uppercase;}
+.ep-method.get{background:#dbeafe;color:#1d4ed8;}.ep-method.post{background:#d1fae5;color:#047857;}
+.ep-method.put{background:#fef3c7;color:#b45309;}.ep-method.delete{background:#fee2e2;color:#dc2626;}
+.ep-path{font-family:var(--doc-mono);font-size:0.88rem;font-weight:500;flex:1;}
+.ep-summary{color:var(--doc-muted);font-size:0.82rem;margin-left:auto;text-align:right;max-width:280px;}
+.ep-chevron{color:var(--doc-muted);transition:transform 0.2s;font-size:0.7rem;}
+.ep-card.open .ep-chevron{transform:rotate(90deg);}
+.ep-body{display:none;border-top:1px solid var(--doc-border);padding:20px;background:#fafcfd;}
+.ep-card.open .ep-body{display:block;}
+.ep-desc{color:var(--doc-text);font-size:0.88rem;line-height:1.6;margin-bottom:16px;}
+
+/* Params/headers table */
+.ep-table{width:100%;border-collapse:collapse;margin-bottom:16px;}
+.ep-table-title{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--doc-muted);font-weight:600;margin-bottom:8px;}
+.ep-table th{text-align:left;padding:6px 10px;font-size:0.72rem;text-transform:uppercase;letter-spacing:0.3px;color:var(--doc-muted);background:#f1f5f9;border:1px solid var(--doc-border);font-weight:600;}
+.ep-table td{padding:8px 10px;border:1px solid var(--doc-border);font-size:0.85rem;vertical-align:top;}
+.ep-table code{font-family:var(--doc-mono);font-size:0.8rem;background:#f1f5f9;padding:1px 6px;border-radius:3px;}
+.ep-required{color:#dc2626;font-size:0.7rem;font-weight:600;}
+.ep-optional{color:var(--doc-muted);font-size:0.7rem;}
+
+/* Try It */
+.ep-tryit{margin-top:16px;border:1px solid var(--doc-border);border-radius:8px;overflow:hidden;}
+.ep-tryit-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#f1f5f9;border-bottom:1px solid var(--doc-border);}
+.ep-tryit-bar span{font-size:0.78rem;font-weight:600;color:var(--doc-muted);text-transform:uppercase;letter-spacing:0.5px;}
+.ep-tryit-btn{padding:6px 16px;background:var(--doc-accent);color:#fff;border:none;border-radius:6px;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.1s;}
+.ep-tryit-btn:hover{background:var(--doc-accent-dk);transform:translateY(-1px);}
+.ep-tryit-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+.ep-tryit-body{padding:16px;}
+.ep-input-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.ep-input-label{font-size:0.78rem;color:var(--doc-muted);min-width:100px;font-weight:500;}
+.ep-input{flex:1;padding:7px 12px;border:1px solid var(--doc-border);border-radius:5px;font-family:var(--doc-mono);font-size:0.85rem;background:#fff;outline:none;transition:border 0.1s;}
+.ep-input:focus{border-color:var(--doc-accent);}
+.ep-textarea{width:100%;min-height:100px;padding:10px 12px;border:1px solid var(--doc-border);border-radius:5px;font-family:var(--doc-mono);font-size:0.82rem;background:#fff;outline:none;resize:vertical;line-height:1.5;}
+.ep-textarea:focus{border-color:var(--doc-accent);}
+
+/* Response */
+.ep-response{margin-top:16px;border:1px solid var(--doc-border);border-radius:8px;overflow:hidden;display:none;}
+.ep-response.visible{display:block;}
+.ep-resp-bar{display:flex;align-items:center;gap:12px;padding:10px 16px;background:#f1f5f9;border-bottom:1px solid var(--doc-border);}
+.ep-resp-status{font-family:var(--doc-mono);font-weight:700;font-size:0.85rem;padding:2px 10px;border-radius:4px;}
+.ep-resp-status.s2xx{background:#d1fae5;color:#047857;}
+.ep-resp-status.s4xx{background:#fef3c7;color:#b45309;}
+.ep-resp-status.s5xx{background:#fee2e2;color:#dc2626;}
+.ep-resp-time{font-size:0.78rem;color:var(--doc-muted);}
+.ep-resp-body{padding:0;}
+.ep-resp-body pre{margin:0;padding:16px;background:#1e293b;color:#e2e8f0;font-family:var(--doc-mono);font-size:0.82rem;line-height:1.6;overflow-x:auto;max-height:400px;overflow-y:auto;}
+.ep-curl{margin-top:8px;}
+.ep-curl summary{font-size:0.78rem;color:var(--doc-muted);cursor:pointer;padding:8px 16px;}
+.ep-curl pre{margin:0;padding:12px 16px;background:#1e293b;color:#e2e8f0;font-family:var(--doc-mono);font-size:0.78rem;line-height:1.5;overflow-x:auto;}
+
+/* JSON syntax */
+.json-key{color:#7dd3fc;}.json-str{color:#86efac;}.json-num{color:#fbbf24;}.json-bool{color:#c084fc;}.json-null{color:#94a3b8;}
+
+/* Loading spinner */
+.ep-spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:768px){.docs-layout{grid-template-columns:1fr;}.docs-sidebar{display:none;}}
+</style></head><body>
+<div class="docs-layout">
+  <aside class="docs-sidebar">
+    <div class="sb-header">
+      <div class="sb-name"><img src="/Static/icon.svg" alt="">Poppet Connect API</div>
+      <span class="sb-version">v1.4.2</span>
+    </div>
+    <div class="sb-auth">
+      <span class="sb-auth-badge">&#10003; Authorized</span>
+      <a href="/docs/logout">Sign out</a>
+    </div>
+    <nav class="sb-nav" id="sidebar-nav"></nav>
+  </aside>
+  <div class="docs-main">
+    <div class="docs-topbar">
+      <h1>Poppet Connect API</h1>
+      <p>Product catalog API and partner integrations for the Poppet platform.</p>
+      <div class="base-url">http://connect-api.poppet.local/api/v1/</div>
+    </div>
+    <div class="docs-content" id="docs-content"></div>
+  </div>
+</div>
+<script>
+const API_KEY = "{{ api_key }}";
+const BASE = "";
+const ENDPOINTS = [
+  {"group":"Products","endpoints":[
+    {"method":"GET","path":"/api/v1/products","summary":"List all products","description":"Returns the complete product catalog with pricing, stock levels, and category information. No pagination — returns all active products.","params":[],"response":{"products":[{"id":1,"name":"Oak Bear Cub","description":"Hand-carved oak bear...","price":38.00,"category":"figurines","stock":45}],"count":8}},
+    {"method":"GET","path":"/api/v1/products/search","summary":"Search products by name","description":"Full-text search across the product catalog. Matches against product names. Returns matching products with full detail.","params":[{"name":"q","in":"query","type":"string","description":"Search term","required":true,"default":"bear"}],"response":{"products":[{"id":1,"name":"Oak Bear Cub","description":"Hand-carved oak bear...","price":38.00,"category":"figurines","stock":45}]}},
+    {"method":"GET","path":"/api/v1/products/{id}","summary":"Get product by ID","description":"Retrieve a single product by its numeric identifier. Returns full product details including description, pricing, stock level, and category.","params":[{"name":"id","in":"path","type":"integer","description":"Product ID","required":true,"default":"1"}],"response":{"id":1,"name":"Oak Bear Cub","description":"Hand-carved oak bear figurine with beeswax finish.","price":38.00,"category":"figurines","stock":45}}
+  ]}
+];
+
+// ═══ Render ═══
+function renderSidebar(){
+  const nav=document.getElementById('sidebar-nav');
+  let h='';
+  ENDPOINTS.forEach(g=>{
+    h+=`<div class="sb-group">${g.group}</div>`;
+    g.endpoints.forEach((ep,i)=>{
+      const id=`${g.group}-${i}`.replace(/\s/g,'-').toLowerCase();
+      h+=`<div class="sb-link" data-id="${id}" onclick="scrollToEp('${id}')"><span class="sb-method m-${ep.method.toLowerCase()}">${ep.method}</span><span>${ep.path}</span></div>`;
+    });
+  });
+  nav.innerHTML=h;
+}
+
+function renderContent(){
+  const el=document.getElementById('docs-content');
+  let h='';
+  ENDPOINTS.forEach(g=>{
+    h+=`<div class="ep-group-title">${g.group}</div>`;
+    g.endpoints.forEach((ep,i)=>{
+      const id=`${g.group}-${i}`.replace(/\s/g,'-').toLowerCase();
+      h+=renderCard(ep,id);
+    });
+  });
+  el.innerHTML=h;
+}
+
+function renderCard(ep,id){
+  let paramsHtml='',headersHtml='',bodyHtml='',tryInputs='';
+  // Headers table
+  headersHtml=`<div class="ep-table-title">Headers</div><table class="ep-table"><thead><tr><th>Name</th><th>Value</th><th>Required</th></tr></thead><tbody>`;
+  headersHtml+=`<tr><td><code>X-Api-Key</code></td><td style="font-family:var(--doc-mono);font-size:0.8rem;color:var(--doc-muted);">(auto-filled)</td><td><span class="ep-required">Required</span></td></tr>`;
+  if(ep.headers){ep.headers.forEach(h=>{headersHtml+=`<tr><td><code>${h.name}</code></td><td>${h.description||''}</td><td>${h.required?'<span class="ep-required">Required</span>':'<span class="ep-optional">Optional</span>'}</td></tr>`;});}
+  headersHtml+=`</tbody></table>`;
+  // Params table
+  if(ep.params&&ep.params.length){
+    paramsHtml=`<div class="ep-table-title">Parameters</div><table class="ep-table"><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Description</th><th>Required</th></tr></thead><tbody>`;
+    ep.params.forEach(p=>{
+      paramsHtml+=`<tr><td><code>${p.name}</code></td><td>${p.in}</td><td>${p.type||'string'}</td><td>${p.description||''}</td><td>${p.required?'<span class="ep-required">Required</span>':'<span class="ep-optional">Optional</span>'}</td></tr>`;
+    });
+    paramsHtml+=`</tbody></table>`;
+  }
+  // Request body
+  if(ep.body){
+    bodyHtml=`<div class="ep-table-title">Request Body <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.78rem;color:var(--doc-muted);">application/json</span></div>`;
+    bodyHtml+=`<pre style="background:#f1f5f9;padding:12px;border-radius:6px;font-size:0.82rem;border:1px solid var(--doc-border);color:var(--doc-text);margin-bottom:16px;">${JSON.stringify(ep.body,null,2)}</pre>`;
+  }
+  // Example response
+  let respExample='';
+  if(ep.response){
+    respExample=`<div class="ep-table-title">Example Response <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:0.78rem;color:var(--doc-muted);">200 OK</span></div>`;
+    respExample+=`<pre style="background:#1e293b;color:#e2e8f0;padding:14px;border-radius:6px;font-size:0.82rem;line-height:1.5;overflow-x:auto;max-height:240px;overflow-y:auto;margin-bottom:16px;">${syntaxHL(JSON.stringify(ep.response,null,2))}</pre>`;
+  }
+  // Try-it inputs
+  if(ep.params){ep.params.forEach(p=>{
+    tryInputs+=`<div class="ep-input-row"><span class="ep-input-label">${p.name} ${p.required?'*':''}</span><input class="ep-input" data-param="${p.name}" data-in="${p.in}" placeholder="${p.description||p.name}" value="${p.default||''}"></div>`;
+  });}
+  let tryBody='';
+  if(ep.body){tryBody=`<div style="margin-top:8px;"><span class="ep-input-label" style="display:block;margin-bottom:6px;">Request Body</span><textarea class="ep-textarea" data-body="true">${JSON.stringify(ep.body,null,2)}</textarea></div>`;}
+
+  return `<div class="ep-card" id="ep-${id}">
+  <div class="ep-header" onclick="toggleCard('${id}')">
+    <span class="ep-method ${ep.method.toLowerCase()}">${ep.method}</span>
+    <span class="ep-path">${ep.path}</span>
+    <span class="ep-summary">${ep.summary}</span>
+    <span class="ep-chevron">&#9654;</span>
+  </div>
+  <div class="ep-body">
+    <div class="ep-desc">${ep.description||ep.summary}</div>
+    ${headersHtml}${paramsHtml}${bodyHtml}${respExample}
+    <div class="ep-tryit">
+      <div class="ep-tryit-bar"><span>Try it out</span><button class="ep-tryit-btn" onclick="executeEp('${id}',this)" data-ep='${JSON.stringify({method:ep.method,path:ep.path,params:ep.params||[],hasBody:!!ep.body})}'>Execute</button></div>
+      <div class="ep-tryit-body">${tryInputs}${tryBody}</div>
+    </div>
+    <div class="ep-response" id="resp-${id}"></div>
+  </div>
+</div>`;
+}
+
+// ═══ Interactions ═══
+function toggleCard(id){
+  const card=document.getElementById('ep-'+id);
+  card.classList.toggle('open');
+  document.querySelectorAll('.sb-link').forEach(l=>{l.classList.toggle('active',l.dataset.id===id&&card.classList.contains('open'));});
+}
+function scrollToEp(id){
+  const card=document.getElementById('ep-'+id);
+  if(!card.classList.contains('open'))toggleCard(id);
+  card.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+async function executeEp(id,btn){
+  const epData=JSON.parse(btn.dataset.ep);
+  const card=document.getElementById('ep-'+id);
+  const respEl=document.getElementById('resp-'+id);
+  btn.disabled=true;btn.innerHTML='<span class="ep-spinner"></span> Sending...';
+
+  let path=epData.path;
+  let queryParts=[];
+  card.querySelectorAll('.ep-input').forEach(inp=>{
+    const pName=inp.dataset.param,pIn=inp.dataset.in,val=inp.value.trim();
+    if(!val)return;
+    if(pIn==='path')path=path.replace('{'+pName+'}',encodeURIComponent(val));
+    else if(pIn==='query')queryParts.push(pName+'='+encodeURIComponent(val));
+  });
+  let url=BASE+path+(queryParts.length?'?'+queryParts.join('&'):'');
+  let fetchOpts={method:epData.method,headers:{'X-Api-Key':API_KEY}};
+  const bodyArea=card.querySelector('[data-body]');
+  if(bodyArea&&epData.hasBody){
+    fetchOpts.headers['Content-Type']='application/json';
+    fetchOpts.body=bodyArea.value;
+  }
+
+  const t0=performance.now();
+  try{
+    const r=await fetch(url,fetchOpts);
+    const elapsed=Math.round(performance.now()-t0);
+    const text=await r.text();
+    let formatted;
+    try{formatted=syntaxHL(JSON.stringify(JSON.parse(text),null,2));}catch(e){formatted=escHtml(text);}
+    const sc=r.status<300?'s2xx':r.status<500?'s4xx':'s5xx';
+    const curl=makeCurl(epData.method,url,fetchOpts.headers,epData.hasBody?bodyArea?.value:null);
+    respEl.innerHTML=`<div class="ep-resp-bar"><span class="ep-resp-status ${sc}">${r.status} ${r.statusText}</span><span class="ep-resp-time">${elapsed}ms</span></div><div class="ep-resp-body"><pre>${formatted}</pre></div><details class="ep-curl"><summary>cURL</summary><pre>${escHtml(curl)}</pre></details>`;
+    respEl.classList.add('visible');
+  }catch(e){
+    respEl.innerHTML=`<div class="ep-resp-bar"><span class="ep-resp-status s5xx">Error</span></div><div class="ep-resp-body"><pre>${escHtml(e.message)}</pre></div>`;
+    respEl.classList.add('visible');
+  }
+  btn.disabled=false;btn.textContent='Execute';
+}
+
+function makeCurl(method,url,headers,body){
+  let c=`curl -X ${method} '${location.origin}${url}'`;
+  for(const[k,v]of Object.entries(headers))c+=` \\
+  -H '${k}: ${v}'`;
+  if(body)c+=` \\
+  -d '${body}'`;
+  return c;
+}
+
+function syntaxHL(json){
+  return escHtml(json).replace(/"([^"]+)"\s*:/g,'<span class="json-key">"$1"</span>:').replace(/:\s*"([^"]*?)"/g,': <span class="json-str">"$1"</span>').replace(/:\s*(-?\d+\.?\d*)/g,': <span class="json-num">$1</span>').replace(/:\s*(true|false)/g,': <span class="json-bool">$1</span>').replace(/:\s*(null)/g,': <span class="json-null">$1</span>');
+}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+renderSidebar();renderContent();
+</script></body></html>

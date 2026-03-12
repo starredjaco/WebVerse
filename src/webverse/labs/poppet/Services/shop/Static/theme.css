@@ -1,0 +1,6 @@
+:root {
+  --theme-accent: #c84b31; --theme-accent-2: #4a7c6f;
+  --theme-bg: #fdfaf6; --theme-fg: #33261e; --theme-card: #fff; --theme-border: #ece3d8;
+  --theme-radius: var(--brand-radius-md); --theme-shadow: var(--brand-shadow-1);
+}
+body { background: var(--theme-bg); color: var(--theme-fg); }

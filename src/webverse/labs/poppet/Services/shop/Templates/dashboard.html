@@ -1,0 +1,21 @@
+{% extends 'staff_base.html' %}{% block title %}Dashboard - Poppet Shop{% endblock %}
+{% block content %}<h1>Dashboard</h1>
+<div class="stat-row">
+  <div class="stat-card"><div class="number">${{ "%.0f" | format(stats.revenue or 0) }}</div><div class="label">Revenue (All Time)</div></div>
+  <div class="stat-card"><div class="number">{{ stats.orders }}</div><div class="label">Total Orders</div></div>
+  <div class="stat-card"><div class="number">{{ stats.customers }}</div><div class="label">Customers</div></div>
+  <div class="stat-card"><div class="number">{{ stats.products }}</div><div class="label">Products</div></div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--brand-space-5);">
+  <div class="panel"><h3>Recent Orders</h3><table class="data-table" style="margin-top:var(--brand-space-3);">
+    <thead><tr><th>#</th><th>Customer</th><th>Total</th><th>Status</th></tr></thead><tbody>
+    {% for o in recent_orders %}<tr><td>{{ o.id }}</td><td>{{ o.username }}</td><td>${{ "%.2f" | format(o.total) }}</td>
+      <td><span class="badge badge-{{ o.status }}">{{ o.status }}</span></td></tr>{% endfor %}</tbody></table>
+    <div style="margin-top:var(--brand-space-3);"><a href="/orders" class="btn btn-sm btn-secondary">View All Orders</a></div></div>
+  <div class="panel"><h3>Low Stock Alerts</h3><table class="data-table" style="margin-top:var(--brand-space-3);">
+    <thead><tr><th>Product</th><th>Stock</th><th>SKU</th></tr></thead><tbody>
+    {% for p in low_stock %}<tr><td>{{ p.name }}</td><td class="low-stock">{{ p.stock }}</td><td>{{ p.sku }}</td></tr>{% endfor %}</tbody></table></div></div>
+<div class="panel" style="margin-top:var(--brand-space-4);"><h3>Quick Actions</h3>
+  <div style="display:flex;gap:var(--brand-space-3);margin-top:var(--brand-space-3);">
+    <a href="/orders" class="btn btn-secondary">Manage Orders</a>
+    <a href="/inventory" class="btn btn-secondary">Update Inventory</a>
+    {% if session.get('role') in ('staff', 'manager') %}<a href="/settings/integrations" class="btn btn-secondary">Integrations</a>{% endif %}</div></div>{% endblock %}

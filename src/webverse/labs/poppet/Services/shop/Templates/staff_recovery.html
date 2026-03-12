@@ -1,0 +1,82 @@
+{% extends 'staff_base.html' %}{% block title %}Password Recovery - Poppet Shop{% endblock %}
+{% block content %}
+<div class="acct-breadcrumb"><a href="/dashboard">Dashboard</a><span>/</span><a href="/staff/account">My Profile</a><span>/</span><span>Password Recovery</span></div>
+
+<h1>Password Recovery</h1>
+<p style="color:var(--brand-muted);margin-bottom:var(--brand-space-5);max-width:680px;">Assist customers and team members who have been locked out of their accounts. Generate a one-time verification code that is delivered to the user's registered contact method.</p>
+
+{% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+{% if message %}<div class="alert alert-success">{{ message }}</div>{% endif %}
+
+<div class="acct-recovery-layout">
+  <div class="panel">
+    <h3>Lookup Account</h3>
+    <p style="color:var(--brand-muted);font-size:0.85rem;margin-bottom:var(--brand-space-3);">Search by username or email to find the account that needs a password reset.</p>
+    <form method="GET" action="/staff/account/recovery" class="acct-search-row">
+      <input type="text" name="q" value="{{ search_query or '' }}" placeholder="Search by username or email..." style="flex:1;">
+      <button type="submit" class="btn btn-secondary">Search</button>
+    </form>
+
+    {% if search_results is not none %}
+    <table class="data-table" style="margin-top:var(--brand-space-4);">
+      <thead><tr><th style="width:50px;"></th><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th></tr></thead>
+      <tbody>
+        {% if search_results %}
+        {% for u in search_results %}
+        <tr>
+          <td><img src="{{ u.avatar }}" style="width:32px;height:32px;border-radius:50%;"></td>
+          <td><strong>#{{ u.id }}</strong></td>
+          <td>{{ u.username }}</td>
+          <td style="color:var(--brand-muted);">{{ u.email or '—' }}</td>
+          <td><span class="badge {% if u.role in ('staff','manager') %}badge-active{% elif u.role == 'helpdesk' %}badge-processing{% else %}badge-inactive{% endif %}">{{ u.role }}</span></td>
+          <td>{% if u.reset_code %}<span class="badge badge-pending">Code Pending</span>{% else %}<span style="color:var(--brand-muted);font-size:0.85rem;">Normal</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr><td colspan="6" style="text-align:center;color:var(--brand-muted);padding:var(--brand-space-5);">No accounts found matching &ldquo;{{ search_query }}&rdquo;</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <h3>Generate Reset Code</h3>
+    <p style="color:var(--brand-muted);font-size:0.85rem;margin-bottom:var(--brand-space-4);">Enter the numeric account ID of the user who needs a password reset. A 4-digit verification code will be generated and delivered to their registered contact method. Codes are valid for 15 minutes.</p>
+    <form method="POST" action="/staff/account/recovery">
+      <div class="form-group">
+        <label>Account ID</label>
+        <input type="number" name="user_id" placeholder="e.g. 3" required style="max-width:200px;">
+      </div>
+      <button type="submit" class="btn btn-primary">Generate Code</button>
+    </form>
+  </div>
+
+  <div class="acct-recovery-help">
+    <h4>How Password Recovery Works</h4>
+    <div class="acct-recovery-steps">
+      <div class="acct-recovery-step">
+        <div class="acct-step-num">1</div>
+        <div>
+          <strong>Identify the Account</strong>
+          <p>Search for the user by username or email. Verify their identity through order history or security questions before proceeding.</p>
+        </div>
+      </div>
+      <div class="acct-recovery-step">
+        <div class="acct-step-num">2</div>
+        <div>
+          <strong>Generate a Reset Code</strong>
+          <p>Enter their Account ID and generate a one-time 4-digit code. The code is sent to the user's registered email or internal channel.</p>
+        </div>
+      </div>
+      <div class="acct-recovery-step">
+        <div class="acct-step-num">3</div>
+        <div>
+          <strong>Verify &amp; Reset</strong>
+          <p>Ask the user for the code they received. Enter it on the <a href="/staff/account/recovery/verify">verification page</a> along with a temporary password.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

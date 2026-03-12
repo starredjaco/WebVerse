@@ -1,0 +1,13 @@
+.api-topbar { display:flex; align-items:center; padding:var(--brand-space-4) var(--brand-space-6); background:var(--theme-accent-2); color:#fff; }
+.api-topbar .logo { font-weight:700; font-size:1.1rem; display:flex; align-items:center; gap:var(--brand-space-2); }
+.api-topbar .logo img { height:24px; filter:brightness(10); }
+.api-content { max-width:900px; margin:0 auto; padding:var(--brand-space-6); }
+.api-content h1 { font-size:1.8rem; margin-bottom:var(--brand-space-4); }
+.api-content h2 { font-size:1.2rem; margin-top:var(--brand-space-5); margin-bottom:var(--brand-space-3); }
+.endpoint-card { background:var(--theme-card); border:1px solid var(--theme-border); border-radius:var(--brand-radius-md); margin-bottom:var(--brand-space-3); overflow:hidden; }
+.endpoint-card .method-bar { display:flex; align-items:center; padding:var(--brand-space-2) var(--brand-space-4); gap:var(--brand-space-3); border-bottom:1px solid var(--theme-border); }
+.method-badge { padding:2px 10px; border-radius:var(--brand-radius-sm); font-weight:700; font-size:0.8rem; font-family:var(--brand-font-mono); }
+.method-get { background:#dbeafe; color:#1e40af; } .method-post { background:#d1fae5; color:#065f46; }
+.endpoint-card .path { font-family:var(--brand-font-mono); font-size:0.9rem; }
+.endpoint-card .desc { padding:var(--brand-space-2) var(--brand-space-4); color:var(--brand-muted); font-size:0.85rem; }
+pre.code-block { background:#1e293b; color:#e2e8f0; padding:var(--brand-space-4); border-radius:var(--brand-radius-md); font-size:0.85rem; line-height:1.6; overflow-x:auto; }

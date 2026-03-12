@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#f5f0e8" rx="12"/>
+  <!-- Moss tray -->
+  <path d="M60 320 Q60 300 80 295 L320 295 Q340 300 340 320 L340 345 Q340 355 330 355 L70 355 Q60 355 60 345 Z" fill="#8b7355" stroke="#7a6248" stroke-width="1.5"/>
+  <path d="M70 300 L330 300 L335 318 Q335 325 330 325 L70 325 Q65 325 65 318 Z" fill="#5a8a50" opacity="0.7"/>
+  <ellipse cx="100" cy="312" rx="12" ry="5" fill="#4a7a40" opacity="0.5"/>
+  <ellipse cx="200" cy="310" rx="15" ry="6" fill="#4a7a40" opacity="0.4"/>
+  <ellipse cx="280" cy="314" rx="10" ry="4" fill="#4a7a40" opacity="0.5"/>
+  <!-- Mushroom 1 - big red -->
+  <rect x="95" y="230" width="10" height="70" rx="4" fill="#e8dcc8"/>
+  <ellipse cx="100" cy="235" rx="35" ry="25" fill="#c84b31"/>
+  <ellipse cx="100" cy="232" rx="32" ry="22" fill="#d45a3c"/>
+  <circle cx="88" cy="225" r="4" fill="#e8dcc8" opacity="0.6"/>
+  <circle cx="108" cy="220" r="3" fill="#e8dcc8" opacity="0.5"/>
+  <circle cx="95" cy="240" r="2.5" fill="#e8dcc8" opacity="0.4"/>
+  <!-- Mushroom 2 - small orange -->
+  <rect x="155" y="260" width="7" height="42" rx="3" fill="#e8dcc8"/>
+  <ellipse cx="158" cy="262" rx="22" ry="16" fill="#e8884c"/>
+  <ellipse cx="158" cy="260" rx="20" ry="14" fill="#f0a060"/>
+  <circle cx="150" cy="256" r="2" fill="#e8dcc8" opacity="0.5"/>
+  <!-- Mushroom 3 - tall cream -->
+  <rect x="207" y="220" width="8" height="80" rx="3" fill="#f0e8d8"/>
+  <ellipse cx="211" cy="225" rx="20" ry="18" fill="#f0e0c0"/>
+  <ellipse cx="211" cy="222" rx="18" ry="15" fill="#f5ecd8"/>
+  <!-- Mushroom 4 - purple cluster -->
+  <rect x="268" y="255" width="6" height="45" rx="2" fill="#e0d0e8"/>
+  <ellipse cx="271" cy="258" rx="16" ry="14" fill="#9868a8"/>
+  <ellipse cx="271" cy="256" rx="14" ry="12" fill="#a878b8"/>
+  <rect x="282" y="265" width="5" height="35" rx="2" fill="#e0d0e8"/>
+  <ellipse cx="285" cy="268" rx="12" ry="10" fill="#9868a8"/>
+  <ellipse cx="285" cy="266" rx="10" ry="8" fill="#a878b8"/>
+  <!-- Mushroom 5 - tiny yellow -->
+  <rect x="55" y="275" width="5" height="25" rx="2" fill="#f0e8d0"/>
+  <ellipse cx="57" cy="277" rx="12" ry="9" fill="#e8c840"/>
+  <ellipse cx="57" cy="275" rx="10" ry="7" fill="#f0d850"/>
+  <!-- Mushroom 6 - brown -->
+  <rect x="320" y="250" width="8" height="50" rx="3" fill="#e0d0c0"/>
+  <ellipse cx="324" cy="253" rx="22" ry="15" fill="#8b6f4e"/>
+  <ellipse cx="324" cy="251" rx="20" ry="13" fill="#9a7e5c"/>
+  <!-- Mushroom 7 - tiny red -->
+  <rect x="185" y="275" width="5" height="25" rx="2" fill="#e8dcc8"/>
+  <ellipse cx="187" cy="277" rx="11" ry="8" fill="#c84b31"/>
+  <circle cx="183" cy="274" r="1.5" fill="#e8dcc8" opacity="0.5"/>
+  <!-- Mushroom 8 - white with spots -->
+  <rect x="240" y="245" width="7" height="55" rx="3" fill="#f8f4f0"/>
+  <ellipse cx="243" cy="248" rx="18" ry="14" fill="#f0e8e0"/>
+  <ellipse cx="243" cy="246" rx="16" ry="12" fill="#f8f4f0"/>
+  <circle cx="237" cy="242" r="2" fill="#c84b31" opacity="0.4"/>
+  <circle cx="248" cy="240" r="1.5" fill="#c84b31" opacity="0.3"/>
+  <!-- Scattered moss bits -->
+  <circle cx="140" cy="308" r="3" fill="#5a8a50" opacity="0.3"/>
+  <circle cx="250" cy="306" r="4" fill="#5a8a50" opacity="0.3"/>
+</svg>

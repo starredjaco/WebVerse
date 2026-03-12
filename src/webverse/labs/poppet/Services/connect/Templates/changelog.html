@@ -1,0 +1,12 @@
+{% extends 'base.html' %}{% block title %}Changelog - Poppet Connect{% endblock %}
+{% block body %}<div class="api-layout"><aside class="api-sidebar"><h4>Navigation</h4><a href="/">API Reference</a><a href="/changelog" class="active">Changelog</a><a href="/status">Status</a></aside>
+  <main class="api-content"><h1>Changelog</h1>
+    <div class="changelog-entry"><span class="date">2024-12-01</span><h3>v2.4.0 &mdash; CRM Integration Endpoints</h3>
+      <p>Added internal CRM integration routes under <code>/api/v1/crm/</code>. These endpoints require a valid integration key issued through the partner dashboard.</p></div>
+    <div class="changelog-entry"><span class="date">2024-11-15</span><h3>v2.3.1 &mdash; Product Search Improvements</h3>
+      <p>Improved product search performance for the wholesale catalog. Added full-text matching for product descriptions and materials.</p></div>
+    <div class="changelog-entry"><span class="date">2024-10-20</span><h3>v2.3.0 &mdash; Partner Onboarding</h3>
+      <p>New onboarding flow for boutique retail partners. API keys can now be generated from the partner dashboard for automated reordering.</p></div>
+    <div class="changelog-entry"><span class="date">2024-09-05</span><h3>v2.2.0 &mdash; Inventory Sync</h3>
+      <p>Real-time inventory updates for handmade and limited-edition items. Partners see accurate stock counts before placing wholesale orders.</p></div>
+  </main></div>{% endblock %}

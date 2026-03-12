@@ -1,0 +1,44 @@
+{% extends "base.html" %}{% block title %}Design - Poppet Studio{% endblock %}
+{% block content %}<div class="studio-bar">
+  <a href="/dashboard" class="logo"><img src="/Static/icon.svg" alt=""><span>Poppet Studio</span></a>
+  <div class="user-area">
+    <div class="user-pill"><div class="avatar">{{ session.get('user','?')[0] | upper }}</div><span class="uname">{{ session.get('full_name', session.get('user','')) }}</span></div>
+    <a href="/logout" class="signout">Sign Out</a>
+  </div>
+</div>
+<div class="studio-tabs">
+  <a href="/dashboard" {% if active=='dash' %}class="active"{% endif %}>Overview</a>
+  <a href="/designs" {% if active=='designs' %}class="active"{% endif %}>Designs{% if review_count %}<span class="tab-badge">{{ review_count }}</span>{% endif %}</a>
+  <a href="/studio" {% if active=='studio' %}class="active"{% endif %}>Upload</a>
+  <a href="/materials" {% if active=='materials' %}class="active"{% endif %}>Materials</a>
+  <a href="/production" {% if active=='production' %}class="active"{% endif %}>Production</a>
+  <a href="/profile" {% if active=='profile' %}class="active"{% endif %}>Profile</a>
+</div>
+<div class="studio-content">
+
+<div class="breadcrumb"><a href="/designs">All Designs</a><span>/</span><span>{{ design.name }}</span></div>
+<div class="detail-header">
+  <div class="detail-avatar">{{ design.name[0] }}</div>
+  <div class="detail-info"><h1>{{ design.name }}</h1>
+    <div class="detail-meta"><span class="badge b-{{ design.status }}">{{ design.status }}</span><span class="sep">&middot;</span>
+      <span>by {{ design.designer }}</span><span class="sep">&middot;</span>
+      <span>{{ design.created_at.strftime('%B %d, %Y') if design.created_at else '' }}</span></div></div>
+</div>
+<div class="card-grid">
+  <div class="card"><h3>Design Details</h3>
+    <div class="info-grid" style="margin-top:8px;">
+      <div class="info-item"><div class="info-label">Category</div><div class="info-value"><span class="badge b-{{ design.category }}">{{ design.category or '-' }}</span></div></div>
+      <div class="info-item"><div class="info-label">Age Range</div><div class="info-value">{{ design.age_range or '-' }}</div></div>
+      <div class="info-item" style="grid-column:1/-1;"><div class="info-label">Materials</div><div class="info-value">{{ design.materials_used or 'Not specified' }}</div></div>
+      <div class="info-item" style="grid-column:1/-1;"><div class="info-label">Description</div><div class="info-value" style="line-height:1.6;color:var(--brand-muted);">{{ design.description }}</div></div>
+    </div>
+  </div>
+  <div class="card"><h3>Preview</h3>
+    {% if design.image_slug %}<div style="text-align:center;padding:16px;background:var(--theme-bg);border-radius:8px;margin-top:8px;"><img src="/Static/designs/{{ design.image_slug }}.svg" alt="{{ design.name }}" style="max-width:100%;max-height:300px;"></div>
+    {% elif design.image_data %}<div class="preview-result"><pre>{{ design.image_data }}</pre></div>
+    {% else %}<div style="padding:40px;text-align:center;color:var(--brand-muted);background:var(--theme-bg);border-radius:8px;margin-top:8px;">No preview uploaded yet</div>{% endif %}
+    {% if design.reviewer_notes %}<div style="margin-top:12px;padding:12px;background:var(--theme-accent-light);border-radius:6px;font-size:0.85rem;"><strong>Reviewer Notes:</strong> {{ design.reviewer_notes }}</div>{% endif %}
+  </div>
+</div>
+
+</div>{% endblock %}

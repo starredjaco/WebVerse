@@ -1,0 +1,46 @@
+{% extends "base.html" %}{% block title %}Pipeline - Poppet CRM{% endblock %}
+{% block body %}<div class="crm-layout"><aside class="crm-sidebar">
+  <div class="sb-brand"><img src="/Static/icon.svg" alt=""><span>Poppet CRM</span></div>
+  <nav class="sb-nav">
+    <a href="/dashboard" class="sb-link {% if active=='dash' %}active{% endif %}"><span class="sb-icon">&#9632;</span>Dashboard</a>
+    <div class="sb-section">Relationships</div>
+    <a href="/contacts" class="sb-link {% if active=='contacts' %}active{% endif %}"><span class="sb-icon">&#9679;</span>Contacts</a>
+    <a href="/pipeline" class="sb-link {% if active=='pipeline' %}active{% endif %}"><span class="sb-icon">&#9654;</span>Pipeline{% if deal_counts %}<span class="sb-badge">{{ deal_counts.open }}</span>{% endif %}</a>
+    <div class="sb-section">Operations</div>
+    <a href="/employees" class="sb-link {% if active=='emp' %}active{% endif %}"><span class="sb-icon">&#9673;</span>Employees</a>
+    <a href="/tasks" class="sb-link {% if active=='tasks' %}active{% endif %}"><span class="sb-icon">&#10003;</span>Tasks{% if task_count %}<span class="sb-badge">{{ task_count }}</span>{% endif %}</a>
+    <a href="/cases" class="sb-link {% if active=='cases' %}active{% endif %}"><span class="sb-icon">&#9888;</span>Cases</a>
+    <div class="sb-section">Insights</div>
+    <a href="/activity" class="sb-link {% if active=='activity' %}active{% endif %}"><span class="sb-icon">&#8634;</span>Activity</a>
+    <a href="/reports" class="sb-link {% if active=='reports' %}active{% endif %}"><span class="sb-icon">&#9776;</span>Reports</a>
+    <div class="sb-section">System</div>
+    <a href="/settings" class="sb-link {% if active=='settings' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Settings</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-user-avatar">{{ user.username[0] | upper if user else '?' }}</div>
+    <div class="sb-user-info"><div class="name">{{ user.username if user else 'Unknown' }}</div><div class="role">{{ user.role if user else '' }}</div></div>
+    <a href="/logout" style="color:var(--theme-sidebar-text);font-size:0.75rem;margin-left:auto;">&#x2192;</a>
+  </div>
+</aside><main class="crm-main">
+
+<h1>Pipeline</h1>
+<p class="page-desc">Track wholesale opportunities from inquiry to close.</p>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+  <div style="font-size:0.88rem;color:var(--brand-muted);">{{ total_deals }} deals &middot; ${{ "%.0f" | format(total_value) }} total pipeline</div>
+</div>
+<div class="pipeline-board">
+  {% for stage in stages %}
+  <div class="pipeline-col">
+    <div class="pipeline-col-head">{{ stage.label }}<span class="count">{{ stage.deals | length }}</span></div>
+    {% for d in stage.deals %}
+    <a href="/pipeline/{{ d.id }}" class="deal-card" style="display:block;text-decoration:none;color:inherit;">
+      <div class="deal-title">{{ d.title }}</div>
+      <div class="deal-company">{{ d.contact_name }}</div>
+      <div class="deal-value">${{ "%.0f" | format(d.value) }}</div>
+      <div class="deal-meta"><span>{{ d.expected_close.strftime('%b %d') if d.expected_close else '—' }}</span><span>{{ d.assigned_name }}</span></div>
+    </a>{% endfor %}
+    {% if not stage.deals %}<div style="padding:20px;text-align:center;color:var(--brand-muted);font-size:0.82rem;">No deals</div>{% endif %}
+  </div>{% endfor %}
+</div>
+
+</main></div>{% endblock %}

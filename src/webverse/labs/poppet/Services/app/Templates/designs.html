@@ -1,0 +1,40 @@
+{% extends "base.html" %}{% block title %}Designs - Poppet Studio{% endblock %}
+{% block content %}<div class="studio-bar">
+  <a href="/dashboard" class="logo"><img src="/Static/icon.svg" alt=""><span>Poppet Studio</span></a>
+  <div class="user-area">
+    <div class="user-pill"><div class="avatar">{{ session.get('user','?')[0] | upper }}</div><span class="uname">{{ session.get('full_name', session.get('user','')) }}</span></div>
+    <a href="/logout" class="signout">Sign Out</a>
+  </div>
+</div>
+<div class="studio-tabs">
+  <a href="/dashboard" {% if active=='dash' %}class="active"{% endif %}>Overview</a>
+  <a href="/designs" {% if active=='designs' %}class="active"{% endif %}>Designs{% if review_count %}<span class="tab-badge">{{ review_count }}</span>{% endif %}</a>
+  <a href="/studio" {% if active=='studio' %}class="active"{% endif %}>Upload</a>
+  <a href="/materials" {% if active=='materials' %}class="active"{% endif %}>Materials</a>
+  <a href="/production" {% if active=='production' %}class="active"{% endif %}>Production</a>
+  <a href="/profile" {% if active=='profile' %}class="active"{% endif %}>Profile</a>
+</div>
+<div class="studio-content">
+
+<h1>All Designs</h1>
+<p class="page-desc">Every concept in the studio pipeline.</p>
+<div class="toolbar">
+  <div class="filter-pills">
+    <a href="/designs" class="filter-pill {% if not status_filter %}active{% endif %}">All ({{ counts.all }})</a>
+    <a href="/designs?status=approved" class="filter-pill {% if status_filter=='approved' %}active{% endif %}">Approved ({{ counts.approved }})</a>
+    <a href="/designs?status=review" class="filter-pill {% if status_filter=='review' %}active{% endif %}">Review ({{ counts.review }})</a>
+    <a href="/designs?status=draft" class="filter-pill {% if status_filter=='draft' %}active{% endif %}">Draft ({{ counts.draft }})</a>
+  </div>
+</div>
+<table class="app-table">
+  <thead><tr><th>Design</th><th>Designer</th><th>Category</th><th>Age</th><th>Status</th><th>Created</th><th></th></tr></thead>
+  <tbody>{% for d in designs %}
+  <tr><td><a href="/designs/{{ d.id }}">{{ d.name }}</a></td><td style="color:var(--brand-muted);">{{ d.designer }}</td>
+    <td><span class="badge b-{{ d.category }}">{{ d.category or '-' }}</span></td><td>{{ d.age_range or '-' }}</td>
+    <td><span class="badge b-{{ d.status }}">{{ d.status }}</span></td>
+    <td style="color:var(--brand-muted);font-size:0.82rem;">{{ d.created_at.strftime('%b %d, %Y') if d.created_at else '-' }}</td>
+    <td><a href="/designs/{{ d.id }}" class="btn btn-ghost btn-sm">View</a></td></tr>
+  {% endfor %}</tbody>
+</table>
+
+</div>{% endblock %}

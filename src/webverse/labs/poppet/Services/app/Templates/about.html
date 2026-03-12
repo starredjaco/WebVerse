@@ -1,0 +1,26 @@
+{% extends 'base.html' %}{% block title %}About - Poppet{% endblock %}
+{% block content %}
+<div class="topbar"><a href="/" class="logo"><img src="/Static/icon.svg" alt="Poppet"><span>Poppet</span></a>
+  <nav><a href="/">Home</a><a href="/gallery">Gallery</a><a href="/about" class="active">About</a><a href="/contact">Contact</a></nav>
+  <div class="user-menu">{% if session.get('user') %}<a href="/dashboard" class="btn btn-primary btn-sm">Studio</a>{% else %}<a href="/login" class="btn btn-primary btn-sm">Designer Sign In</a>{% endif %}</div>
+</div>
+<div class="container">
+  <div class="about-hero"><h1>Toys Made to Last a Childhood</h1>
+    <p>Poppet was founded in 2019 in a converted tobacco barn on the outskirts of Asheville. What started as a weekend market booth selling hand-carved animals has grown into a small studio of designers, woodworkers, and textile artists — all committed to making toys that don't need batteries.</p>
+    <p style="margin-top:12px;">We believe the best toys are simple, beautiful, and built to survive years of love. Every piece we ship is made from responsibly sourced materials by people whose names we know.</p>
+  </div>
+
+  <div class="section-header"><h2>What We Believe</h2></div>
+  <div class="values-grid">
+    <div class="value-card"><h3>Natural Materials First</h3><p>Appalachian hardwoods, organic cotton, beeswax finishes. We never use plastic, and every material is non-toxic and child-safe.</p></div>
+    <div class="value-card"><h3>Small Batches Only</h3><p>We produce in runs of 12 to 50 pieces. This keeps quality high and lets us iterate designs based on real feedback.</p></div>
+    <div class="value-card"><h3>Designed to be Repaired</h3><p>Loose joints, faded paint, torn seams — we offer free lifetime repairs on everything we make. Toys should outlive trends.</p></div>
+  </div>
+
+  <div class="section-header"><h2>The Team</h2></div>
+  <div class="team-grid">{% for m in team %}
+    <div class="team-card"><div class="team-avatar">{{ m.full_name[0] }}</div><h4>{{ m.full_name }}</h4><div class="title">{{ m.role | title }}</div></div>
+  {% endfor %}</div>
+</div>
+<div class="site-footer">&copy; 2024 Poppet Studio LLC &middot; 45 Craft Lane, Asheville, NC 28801</div>
+{% endblock %}

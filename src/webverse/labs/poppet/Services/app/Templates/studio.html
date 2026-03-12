@@ -1,0 +1,38 @@
+{% extends "base.html" %}{% block title %}Upload - Poppet Studio{% endblock %}
+{% block content %}<div class="studio-bar">
+  <a href="/dashboard" class="logo"><img src="/Static/icon.svg" alt=""><span>Poppet Studio</span></a>
+  <div class="user-area">
+    <div class="user-pill"><div class="avatar">{{ session.get('user','?')[0] | upper }}</div><span class="uname">{{ session.get('full_name', session.get('user','')) }}</span></div>
+    <a href="/logout" class="signout">Sign Out</a>
+  </div>
+</div>
+<div class="studio-tabs">
+  <a href="/dashboard" {% if active=='dash' %}class="active"{% endif %}>Overview</a>
+  <a href="/designs" {% if active=='designs' %}class="active"{% endif %}>Designs{% if review_count %}<span class="tab-badge">{{ review_count }}</span>{% endif %}</a>
+  <a href="/studio" {% if active=='studio' %}class="active"{% endif %}>Upload</a>
+  <a href="/materials" {% if active=='materials' %}class="active"{% endif %}>Materials</a>
+  <a href="/production" {% if active=='production' %}class="active"{% endif %}>Production</a>
+  <a href="/profile" {% if active=='profile' %}class="active"{% endif %}>Profile</a>
+</div>
+<div class="studio-content">
+
+<h1>Design Studio</h1>
+<p class="page-desc">Upload concept sketches and illustrations in SVG format.</p>
+{% if message %}<div class="alert alert-success">{{ message }}</div>{% endif %}
+{% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+<div class="card" style="max-width:640px;">
+  <form method="POST" action="/studio/upload" enctype="multipart/form-data">
+    <div class="form-group"><label>Design Name</label><input type="text" name="design_name" required placeholder="e.g. Rocket Blaster Mk2"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Category</label><select name="category"><option value="figurines">Figurines</option><option value="plush">Plush</option><option value="educational">Educational</option><option value="construction">Construction</option><option value="bath">Bath</option><option value="creative">Creative</option></select></div>
+      <div class="form-group"><label>Age Range</label><select name="age_range"><option>0+</option><option>1+</option><option selected>2+</option><option>3+</option><option>4+</option><option>6+</option><option>8+</option></select></div>
+    </div>
+    <div class="form-group"><label>Description</label><textarea name="description" rows="3" placeholder="Describe your concept..."></textarea></div>
+    <div class="form-group"><label>Materials Used</label><input type="text" name="materials_used" placeholder="e.g. walnut, beeswax, felt"></div>
+    <div class="studio-upload"><p>Drag and drop your SVG concept file or click to browse</p><p style="font-size:0.75rem;color:var(--brand-muted);">SVG is the only accepted format. Files are parsed for preview rendering. Max 5MB.</p><input type="file" name="image" accept=".svg"></div>
+    <button type="submit" class="btn btn-primary">Upload &amp; Preview</button>
+  </form>
+</div>
+{% if preview %}<div class="card" style="max-width:640px;"><h3>Image Preview Data</h3><div class="preview-result"><pre>{{ preview }}</pre></div></div>{% endif %}
+
+</div>{% endblock %}

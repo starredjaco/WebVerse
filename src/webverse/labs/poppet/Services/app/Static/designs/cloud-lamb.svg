@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#f8f5f0" rx="12"/>
+  <!-- Mama lamb -->
+  <g transform="translate(120,200)">
+    <ellipse cx="0" cy="10" rx="55" ry="40" fill="#f0ebe3"/>
+    <!-- Fluffy texture -->
+    <circle cx="-30" cy="-5" r="18" fill="#f5f0e8"/><circle cx="-10" cy="-18" r="20" fill="#f5f0e8"/>
+    <circle cx="15" cy="-15" r="18" fill="#f5f0e8"/><circle cx="35" cy="-5" r="16" fill="#f5f0e8"/>
+    <circle cx="-25" cy="15" r="15" fill="#f5f0e8"/><circle cx="30" cy="15" r="14" fill="#f5f0e8"/>
+    <circle cx="0" cy="-22" r="16" fill="#f5f0e8"/><circle cx="-40" cy="8" r="12" fill="#f5f0e8"/>
+    <circle cx="42" cy="8" r="11" fill="#f5f0e8"/>
+    <!-- Head -->
+    <ellipse cx="-52" cy="-5" rx="18" ry="16" fill="#e8ddd0"/>
+    <!-- Ears -->
+    <ellipse cx="-68" cy="-15" rx="10" ry="5" fill="#e8ddd0" transform="rotate(-20,-68,-15)"/>
+    <ellipse cx="-68" cy="-15" rx="7" ry="3" fill="#e8c8b8" transform="rotate(-20,-68,-15)"/>
+    <ellipse cx="-68" cy="5" rx="10" ry="5" fill="#e8ddd0" transform="rotate(20,-68,5)"/>
+    <!-- Face -->
+    <circle cx="-58" cy="-10" r="2" fill="#3a3030"/><circle cx="-48" cy="-10" r="2" fill="#3a3030"/>
+    <ellipse cx="-53" cy="-2" rx="3" ry="2" fill="#d8b8a8"/>
+    <path d="M-56 0 Q-53 3 -50 0" stroke="#c8a898" stroke-width="0.8" fill="none"/>
+    <!-- Legs -->
+    <rect x="-25" y="42" width="8" height="28" rx="3" fill="#e8ddd0"/>
+    <rect x="-5" y="44" width="8" height="26" rx="3" fill="#e8ddd0"/>
+    <rect x="15" y="42" width="8" height="28" rx="3" fill="#e8ddd0"/>
+    <rect x="32" y="44" width="8" height="26" rx="3" fill="#e8ddd0"/>
+  </g>
+  <!-- Papa lamb (slightly bigger, behind) -->
+  <g transform="translate(270,190)">
+    <ellipse cx="0" cy="10" rx="50" ry="38" fill="#e8e0d8"/>
+    <circle cx="-28" cy="-5" r="17" fill="#ede5dd"/><circle cx="-8" cy="-16" r="18" fill="#ede5dd"/>
+    <circle cx="14" cy="-14" r="17" fill="#ede5dd"/><circle cx="32" cy="-3" r="15" fill="#ede5dd"/>
+    <circle cx="-22" cy="14" r="14" fill="#ede5dd"/><circle cx="28" cy="14" r="13" fill="#ede5dd"/>
+    <circle cx="0" cy="-20" r="15" fill="#ede5dd"/>
+    <ellipse cx="50" cy="-5" rx="17" ry="15" fill="#ddd0c4"/>
+    <ellipse cx="65" cy="-15" rx="9" ry="5" fill="#ddd0c4" transform="rotate(15,65,-15)"/>
+    <circle cx="56" cy="-10" r="2" fill="#3a3030"/><circle cx="46" cy="-10" r="2" fill="#3a3030"/>
+    <ellipse cx="51" cy="-2" rx="3" ry="2" fill="#d8b8a8"/>
+    <rect x="-22" y="42" width="8" height="30" rx="3" fill="#ddd0c4"/>
+    <rect x="-2" y="44" width="8" height="28" rx="3" fill="#ddd0c4"/>
+    <rect x="18" y="42" width="8" height="30" rx="3" fill="#ddd0c4"/>
+    <rect x="35" y="44" width="8" height="28" rx="3" fill="#ddd0c4"/>
+  </g>
+  <!-- Baby lamb (small, front center) -->
+  <g transform="translate(200,280)">
+    <ellipse cx="0" cy="5" rx="28" ry="20" fill="#f8f4f0"/>
+    <circle cx="-14" cy="-5" r="10" fill="#faf6f2"/><circle cx="0" cy="-10" r="11" fill="#faf6f2"/>
+    <circle cx="14" cy="-5" r="10" fill="#faf6f2"/><circle cx="-20" cy="5" r="8" fill="#faf6f2"/>
+    <circle cx="20" cy="5" r="8" fill="#faf6f2"/>
+    <ellipse cx="-26" cy="-2" rx="11" ry="10" fill="#f0e5d8"/>
+    <ellipse cx="-36" cy="-8" rx="6" ry="3" fill="#f0e5d8" transform="rotate(-15,-36,-8)"/>
+    <circle cx="-30" cy="-5" r="1.5" fill="#3a3030"/><circle cx="-24" cy="-5" r="1.5" fill="#3a3030"/>
+    <ellipse cx="-27" cy="0" rx="2" ry="1.5" fill="#d8b8a8"/>
+    <rect x="-12" y="22" width="5" height="16" rx="2" fill="#f0e5d8"/>
+    <rect x="-2" y="23" width="5" height="15" rx="2" fill="#f0e5d8"/>
+    <rect x="8" y="22" width="5" height="16" rx="2" fill="#f0e5d8"/>
+  </g>
+  <!-- Lavender sprigs -->
+  <g opacity="0.3" transform="translate(50,320)">
+    <line x1="0" y1="0" x2="0" y2="-30" stroke="#7a6890" stroke-width="1.5"/>
+    <circle cx="0" cy="-30" r="2" fill="#9878b0"/><circle cx="-2" cy="-26" r="1.5" fill="#9878b0"/><circle cx="2" cy="-22" r="1.5" fill="#9878b0"/>
+  </g>
+  <g opacity="0.3" transform="translate(350,310)">
+    <line x1="0" y1="0" x2="0" y2="-25" stroke="#7a6890" stroke-width="1.5"/>
+    <circle cx="0" cy="-25" r="2" fill="#9878b0"/><circle cx="-2" cy="-21" r="1.5" fill="#9878b0"/>
+  </g>
+</svg>

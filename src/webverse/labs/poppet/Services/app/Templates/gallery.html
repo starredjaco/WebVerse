@@ -1,0 +1,28 @@
+{% extends 'base.html' %}{% block title %}Gallery - Poppet{% endblock %}
+{% block content %}
+<div class="topbar"><a href="/" class="logo"><img src="/Static/icon.svg" alt="Poppet"><span>Poppet</span></a>
+  <nav><a href="/">Home</a><a href="/gallery" class="active">Gallery</a><a href="/about">About</a><a href="/contact">Contact</a></nav>
+  <div class="user-menu">{% if session.get('user') %}<a href="/dashboard" class="btn btn-primary btn-sm">Studio</a>{% else %}<a href="/login" class="btn btn-primary btn-sm">Designer Sign In</a>{% endif %}</div>
+</div>
+<div class="container">
+  <div style="text-align:center;padding:32px 0 24px;"><h1 style="font-size:2rem;">Design Gallery</h1><p style="color:var(--brand-muted);max-width:500px;margin:8px auto 0;">Every concept that makes it through our review process. From sketch to shelf.</p></div>
+  <div class="toolbar" style="justify-content:center;">
+    <div class="filter-pills">
+      <a href="/gallery" class="filter-pill {% if not cat_filter %}active{% endif %}">All</a>
+      <a href="/gallery?cat=figurines" class="filter-pill {% if cat_filter=='figurines' %}active{% endif %}">Figurines</a>
+      <a href="/gallery?cat=plush" class="filter-pill {% if cat_filter=='plush' %}active{% endif %}">Plush</a>
+      <a href="/gallery?cat=educational" class="filter-pill {% if cat_filter=='educational' %}active{% endif %}">Educational</a>
+      <a href="/gallery?cat=construction" class="filter-pill {% if cat_filter=='construction' %}active{% endif %}">Construction</a>
+      <a href="/gallery?cat=creative" class="filter-pill {% if cat_filter=='creative' %}active{% endif %}">Creative</a>
+    </div>
+  </div>
+  <div class="design-grid">{% for d in designs %}
+    <div class="design-card">{% if d.image_slug %}<div class="card-img"><img src="/Static/designs/{{ d.image_slug }}.svg" alt="{{ d.name }}" style="width:100%;height:100%;object-fit:cover;"></div>{% else %}<div class="card-img"><div class="placeholder">&#9733;</div></div>{% endif %}
+      <div class="card-body"><h3>{{ d.name }}</h3><p>{{ d.description[:120] }}{% if d.description|length > 120 %}...{% endif %}</p>
+      <div class="card-meta"><span class="badge b-{{ d.category }}">{{ d.category }}</span><span>Ages {{ d.age_range }}</span></div></div>
+    </div>{% endfor %}
+    {% if not designs %}<div style="text-align:center;padding:40px;color:var(--brand-muted);grid-column:1/-1;">No designs in this category yet.</div>{% endif %}
+  </div>
+</div>
+<div class="site-footer">&copy; 2024 Poppet Studio LLC &middot; 45 Craft Lane, Asheville, NC 28801</div>
+{% endblock %}

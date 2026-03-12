@@ -1,0 +1,41 @@
+{% extends "base.html" %}{% block title %}Materials - Poppet Studio{% endblock %}
+{% block content %}<div class="studio-bar">
+  <a href="/dashboard" class="logo"><img src="/Static/icon.svg" alt=""><span>Poppet Studio</span></a>
+  <div class="user-area">
+    <div class="user-pill"><div class="avatar">{{ session.get('user','?')[0] | upper }}</div><span class="uname">{{ session.get('full_name', session.get('user','')) }}</span></div>
+    <a href="/logout" class="signout">Sign Out</a>
+  </div>
+</div>
+<div class="studio-tabs">
+  <a href="/dashboard" {% if active=='dash' %}class="active"{% endif %}>Overview</a>
+  <a href="/designs" {% if active=='designs' %}class="active"{% endif %}>Designs{% if review_count %}<span class="tab-badge">{{ review_count }}</span>{% endif %}</a>
+  <a href="/studio" {% if active=='studio' %}class="active"{% endif %}>Upload</a>
+  <a href="/materials" {% if active=='materials' %}class="active"{% endif %}>Materials</a>
+  <a href="/production" {% if active=='production' %}class="active"{% endif %}>Production</a>
+  <a href="/profile" {% if active=='profile' %}class="active"{% endif %}>Profile</a>
+</div>
+<div class="studio-content">
+
+<h1>Materials Library</h1>
+<p class="page-desc">Inventory and supplier reference for all studio materials.</p>
+<div class="toolbar">
+  <div class="filter-pills">
+    <a href="/materials" class="filter-pill {% if not cat_filter %}active{% endif %}">All</a>
+    <a href="/materials?cat=wood" class="filter-pill {% if cat_filter=='wood' %}active{% endif %}">Wood</a>
+    <a href="/materials?cat=textile" class="filter-pill {% if cat_filter=='textile' %}active{% endif %}">Textile</a>
+    <a href="/materials?cat=finish" class="filter-pill {% if cat_filter=='finish' %}active{% endif %}">Finish</a>
+    <a href="/materials?cat=hardware" class="filter-pill {% if cat_filter=='hardware' %}active{% endif %}">Hardware</a>
+    <a href="/materials?cat=specialty" class="filter-pill {% if cat_filter=='specialty' %}active{% endif %}">Specialty</a>
+  </div>
+</div>
+<table class="app-table">
+  <thead><tr><th>Material</th><th>Category</th><th>Supplier</th><th>Unit</th><th>In Stock</th><th>Min Qty</th><th>Status</th></tr></thead>
+  <tbody>{% for m in materials %}
+  <tr><td style="font-weight:500;">{{ m.name }}</td><td><span class="badge b-{{ m.category }}">{{ m.category }}</span></td>
+    <td style="color:var(--brand-muted);">{{ m.supplier }}</td><td>{{ m.unit }}</td>
+    <td>{{ m.stock_qty }}</td><td>{{ m.min_qty }}</td>
+    <td>{% if m.stock_qty <= m.min_qty %}<span class="badge b-high">Low Stock</span>{% else %}<span class="badge b-approved">OK</span>{% endif %}</td></tr>
+  {% endfor %}</tbody>
+</table>
+
+</div>{% endblock %}

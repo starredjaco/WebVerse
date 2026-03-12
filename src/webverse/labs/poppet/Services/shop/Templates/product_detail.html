@@ -1,0 +1,9 @@
+{% extends 'base.html' %}{% block title %}{{ product.name }} - Poppet Shop{% endblock %}
+{% block content %}<div style="max-width:700px;"><a href="/">&larr; Back to products</a>
+  <h1 style="margin-top:var(--brand-space-4);">{{ product.name }}</h1>
+  <div style="font-size:0.85rem;color:var(--brand-muted);text-transform:uppercase;">{{ product.category }}</div>
+  <p style="margin:var(--brand-space-4) 0;line-height:1.6;">{{ product.description }}</p>
+  <div style="font-size:1.5rem;font-weight:700;color:var(--theme-accent);">{{ "%.2f" | format(product.price) }} USD</div>
+  <p style="color:var(--brand-success);margin-bottom:var(--brand-space-5);">{{ product.stock }} units available</p>
+  <form method="POST" action="/cart/add"><input type="hidden" name="product_id" value="{{ product.id }}">
+    <button type="submit" class="btn btn-primary">Add to Cart</button></form></div>{% endblock %}

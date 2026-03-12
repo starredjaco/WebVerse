@@ -1,0 +1,34 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>{% block title %}Poppet Shop Admin{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="/Static/icon.svg">
+  <link rel="stylesheet" href="/Static/brand.css"><link rel="stylesheet" href="/Static/theme.css"><link rel="stylesheet" href="/Static/styles.css">
+</head><body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand"><img src="/Static/icon.svg" alt=""><span>Poppet Shop</span></div>
+      <nav>
+        <a href="/dashboard" class="{% if active_tab == 'dashboard' %}active{% endif %}">Dashboard</a>
+        <div class="nav-section">Orders</div>
+        <a href="/orders" class="{% if active_tab == 'orders' %}active{% endif %}">All Orders</a>
+        <div class="nav-section">Catalog</div>
+        <a href="/inventory" class="{% if active_tab == 'inventory' %}active{% endif %}">Products &amp; Inventory</a>
+        <div class="nav-section">Customers</div>
+        <a href="/customers" class="{% if active_tab == 'customers' %}active{% endif %}">Customer List</a>
+        <div class="nav-section">Insights</div>
+        <a href="/analytics" class="{% if active_tab == 'analytics' %}active{% endif %}">Analytics</a>
+        <div class="nav-section">Your Account</div>
+        <a href="/staff/account" class="{% if active_tab == 'account' %}active{% endif %}">My Profile</a>
+        <a href="/staff/account/recovery" class="{% if active_tab == 'recovery' %}active{% endif %}">Password Recovery</a>
+        <div class="nav-section">Configuration</div>
+        <a href="/settings" class="{% if active_tab == 'settings' %}active{% endif %}">General</a>
+        {% if session.get('role') in ('staff', 'manager') %}
+        <a href="/settings/integrations" class="{% if active_tab == 'integrations' %}active{% endif %}">Integrations</a>
+        {% endif %}
+        <a href="/settings/notifications" class="{% if active_tab == 'notifications' %}active{% endif %}">Notifications</a>
+        <div class="nav-section"></div>
+        <a href="/logout">Sign Out</a>
+      </nav>
+    </aside>
+    <main class="admin-main">{% block content %}{% endblock %}</main>
+  </div>
+</body></html>

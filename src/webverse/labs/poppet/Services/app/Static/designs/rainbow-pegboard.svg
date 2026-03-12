@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#f5f0e8" rx="12"/>
+  <!-- Board -->
+  <rect x="80" y="100" width="240" height="240" rx="10" fill="#d4b88a" stroke="#c4a87a" stroke-width="2"/>
+  <rect x="88" y="108" width="224" height="224" rx="6" fill="#dcc498"/>
+  <!-- Peg holes grid 6x6 -->
+  <g fill="#c4a87a">
+    <circle cx="120" cy="140" r="8"/><circle cx="160" cy="140" r="8"/><circle cx="200" cy="140" r="8"/><circle cx="240" cy="140" r="8"/><circle cx="280" cy="140" r="8"/>
+    <circle cx="120" cy="180" r="8"/><circle cx="200" cy="180" r="8"/><circle cx="280" cy="180" r="8"/>
+    <circle cx="120" cy="220" r="8"/><circle cx="200" cy="220" r="8"/><circle cx="240" cy="220" r="8"/>
+    <circle cx="120" cy="260" r="8"/><circle cx="160" cy="260" r="8"/><circle cx="240" cy="260" r="8"/><circle cx="280" cy="260" r="8"/>
+    <circle cx="120" cy="300" r="8"/><circle cx="160" cy="300" r="8"/><circle cx="200" cy="300" r="8"/><circle cx="240" cy="300" r="8"/><circle cx="280" cy="300" r="8"/>
+  </g>
+  <!-- Colored pegs inserted (maple with dye) -->
+  <g>
+    <circle cx="160" cy="178" r="8" fill="#e85454"/><rect x="155" y="170" width="10" height="16" rx="4" fill="#e85454"/><ellipse cx="160" cy="170" rx="8" ry="4" fill="#f06868"/>
+    <circle cx="240" cy="178" r="8" fill="#e8a832"/><rect x="235" y="170" width="10" height="16" rx="4" fill="#e8a832"/><ellipse cx="240" cy="170" rx="8" ry="4" fill="#f0b840"/>
+    <circle cx="160" cy="218" r="8" fill="#48a860"/><rect x="155" y="210" width="10" height="16" rx="4" fill="#48a860"/><ellipse cx="160" cy="210" rx="8" ry="4" fill="#58b870"/>
+    <circle cx="240" cy="138" r="8" fill="#4888d0"/><rect x="235" y="130" width="10" height="16" rx="4" fill="#4888d0"/><ellipse cx="240" cy="130" rx="8" ry="4" fill="#5898e0"/>
+    <circle cx="280" cy="218" r="8" fill="#9858b0"/><rect x="275" y="210" width="10" height="16" rx="4" fill="#9858b0"/><ellipse cx="280" cy="210" rx="8" ry="4" fill="#a868c0"/>
+    <circle cx="200" cy="258" r="8" fill="#e87840"/><rect x="195" y="250" width="10" height="16" rx="4" fill="#e87840"/><ellipse cx="200" cy="250" rx="8" ry="4" fill="#f08850"/>
+    <circle cx="280" cy="178" r="8" fill="#e85480"/><rect x="275" y="170" width="10" height="16" rx="4" fill="#e85480"/><ellipse cx="280" cy="170" rx="8" ry="4" fill="#f06890"/>
+  </g>
+  <!-- Canvas bag hint -->
+  <path d="M310 340 Q340 320 350 350 Q345 370 320 365 Q305 360 310 340 Z" fill="#d4c8a8" stroke="#c4b898" stroke-width="1" opacity="0.5"/>
+  <!-- Loose pegs -->
+  <rect x="325" y="335" width="6" height="14" rx="3" fill="#e85454" transform="rotate(20,328,342)"/>
+  <rect x="340" y="345" width="6" height="14" rx="3" fill="#48a860" transform="rotate(-10,343,352)"/>
+</svg>

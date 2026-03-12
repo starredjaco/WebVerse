@@ -1,0 +1,49 @@
+{% extends "base.html" %}{% block title %}Dashboard - Poppet Studio{% endblock %}
+{% block content %}<div class="studio-bar">
+  <a href="/dashboard" class="logo"><img src="/Static/icon.svg" alt=""><span>Poppet Studio</span></a>
+  <div class="user-area">
+    <div class="user-pill"><div class="avatar">{{ session.get('user','?')[0] | upper }}</div><span class="uname">{{ session.get('full_name', session.get('user','')) }}</span></div>
+    <a href="/logout" class="signout">Sign Out</a>
+  </div>
+</div>
+<div class="studio-tabs">
+  <a href="/dashboard" {% if active=='dash' %}class="active"{% endif %}>Overview</a>
+  <a href="/designs" {% if active=='designs' %}class="active"{% endif %}>Designs{% if review_count %}<span class="tab-badge">{{ review_count }}</span>{% endif %}</a>
+  <a href="/studio" {% if active=='studio' %}class="active"{% endif %}>Upload</a>
+  <a href="/materials" {% if active=='materials' %}class="active"{% endif %}>Materials</a>
+  <a href="/production" {% if active=='production' %}class="active"{% endif %}>Production</a>
+  <a href="/profile" {% if active=='profile' %}class="active"{% endif %}>Profile</a>
+</div>
+<div class="studio-content">
+
+<h1>Welcome back, {{ session.get('full_name', session.get('user','')) }}</h1>
+<p class="page-desc">Your design workspace overview.</p>
+<div class="stats-row">
+  <div class="stat-card"><div class="number">{{ stats.total or 0 }}</div><div class="label">Your Designs</div></div>
+  <div class="stat-card"><div class="number">{{ stats.approved or 0 }}</div><div class="label">Approved</div></div>
+  <div class="stat-card"><div class="number">{{ stats.review or 0 }}</div><div class="label">In Review</div></div>
+  <div class="stat-card"><div class="number">{{ stats.draft or 0 }}</div><div class="label">Drafts</div></div>
+</div>
+<div class="card-grid">
+  <div class="card"><h3>Your Recent Designs</h3>
+    <table class="app-table" style="margin-top:8px;"><thead><tr><th>Name</th><th>Category</th><th>Status</th><th>Created</th></tr></thead><tbody>
+    {% for d in recent %}
+    <tr><td><a href="/designs/{{ d.id }}">{{ d.name }}</a></td><td><span class="badge b-{{ d.category }}">{{ d.category or '-' }}</span></td>
+      <td><span class="badge b-{{ d.status }}">{{ d.status }}</span></td><td style="color:var(--brand-muted);font-size:0.82rem;">{{ d.created_at.strftime('%b %d') if d.created_at else '-' }}</td></tr>
+    {% endfor %}
+    {% if not recent %}<tr><td colspan="4" style="text-align:center;color:var(--brand-muted);padding:24px;">No designs yet. <a href="/studio">Upload your first concept.</a></td></tr>{% endif %}
+    </tbody></table>
+  </div>
+  <div class="card"><h3>Production Queue</h3>
+    {% for p in prod_queue %}
+    <div style="padding:8px 0;border-bottom:1px solid var(--theme-border);display:flex;justify-content:space-between;align-items:center;">
+      <div><div style="font-weight:500;font-size:0.88rem;">{{ p.design_name }}</div>
+        <div style="font-size:0.75rem;color:var(--brand-muted);">{{ p.qty_ordered }} units &middot; Due {{ p.due_date.strftime('%b %d') if p.due_date else 'TBD' }}</div></div>
+      <span class="badge b-{{ p.status }}">{{ p.status }}</span>
+    </div>{% endfor %}
+    {% if not prod_queue %}<div style="padding:24px;text-align:center;color:var(--brand-muted);font-size:0.88rem;">No active production orders</div>{% endif %}
+    <div style="margin-top:12px;"><a href="/production" class="btn btn-ghost btn-sm">View all &rarr;</a></div>
+  </div>
+</div>
+
+</div>{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}{% block title %}Case - Poppet CRM{% endblock %}
+{% block body %}<div class="crm-layout"><aside class="crm-sidebar">
+  <div class="sb-brand"><img src="/Static/icon.svg" alt=""><span>Poppet CRM</span></div>
+  <nav class="sb-nav">
+    <a href="/dashboard" class="sb-link {% if active=='dash' %}active{% endif %}"><span class="sb-icon">&#9632;</span>Dashboard</a>
+    <div class="sb-section">Relationships</div>
+    <a href="/contacts" class="sb-link {% if active=='contacts' %}active{% endif %}"><span class="sb-icon">&#9679;</span>Contacts</a>
+    <a href="/pipeline" class="sb-link {% if active=='pipeline' %}active{% endif %}"><span class="sb-icon">&#9654;</span>Pipeline{% if deal_counts %}<span class="sb-badge">{{ deal_counts.open }}</span>{% endif %}</a>
+    <div class="sb-section">Operations</div>
+    <a href="/employees" class="sb-link {% if active=='emp' %}active{% endif %}"><span class="sb-icon">&#9673;</span>Employees</a>
+    <a href="/tasks" class="sb-link {% if active=='tasks' %}active{% endif %}"><span class="sb-icon">&#10003;</span>Tasks{% if task_count %}<span class="sb-badge">{{ task_count }}</span>{% endif %}</a>
+    <a href="/cases" class="sb-link {% if active=='cases' %}active{% endif %}"><span class="sb-icon">&#9888;</span>Cases</a>
+    <div class="sb-section">Insights</div>
+    <a href="/activity" class="sb-link {% if active=='activity' %}active{% endif %}"><span class="sb-icon">&#8634;</span>Activity</a>
+    <a href="/reports" class="sb-link {% if active=='reports' %}active{% endif %}"><span class="sb-icon">&#9776;</span>Reports</a>
+    <div class="sb-section">System</div>
+    <a href="/settings" class="sb-link {% if active=='settings' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Settings</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-user-avatar">{{ user.username[0] | upper if user else '?' }}</div>
+    <div class="sb-user-info"><div class="name">{{ user.username if user else 'Unknown' }}</div><div class="role">{{ user.role if user else '' }}</div></div>
+    <a href="/logout" style="color:var(--theme-sidebar-text);font-size:0.75rem;margin-left:auto;">&#x2192;</a>
+  </div>
+</aside><main class="crm-main">
+
+<div class="breadcrumb"><a href="/cases">Cases</a><span>/</span><span>#{{ case.id }} — {{ case.subject }}</span></div>
+<div class="detail-header">
+  <div class="detail-avatar" style="background:{% if case.status=='resolved' %}var(--brand-success){% elif case.priority=='high' %}var(--brand-danger){% else %}var(--theme-accent){% endif %};">!</div>
+  <div class="detail-info"><h1>{{ case.subject }}</h1>
+    <div class="detail-meta"><span class="badge b-{{ case.status }}">{{ case.status }}</span><span class="sep">&middot;</span><span class="badge b-{{ case.priority }}">{{ case.priority }}</span>
+      <span class="sep">&middot;</span><span>{{ case.contact_name }}</span><span class="sep">&middot;</span><span>Assigned to {{ case.assigned_name }}</span></div></div>
+</div>
+<div class="card-grid">
+  <div class="card"><h3>Description</h3><p style="font-size:0.9rem;line-height:1.7;color:var(--brand-muted);">{{ case.description }}</p>
+    {% if case.resolution %}<div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--theme-border);"><h3>Resolution</h3><p style="font-size:0.9rem;line-height:1.7;color:var(--brand-muted);margin-top:8px;">{{ case.resolution }}</p></div>{% endif %}
+  </div>
+  <div class="card"><h3>Details</h3>
+    <div class="info-grid" style="grid-template-columns:1fr;">
+      <div class="info-item"><div class="info-label">Contact</div><div class="info-value"><a href="/contacts/{{ case.contact_id }}">{{ case.contact_name }}</a></div></div>
+      <div class="info-item"><div class="info-label">Opened</div><div class="info-value">{{ case.created_at.strftime('%B %d, %Y at %I:%M %p') if case.created_at else '—' }}</div></div>
+      <div class="info-item"><div class="info-label">Last Updated</div><div class="info-value">{{ case.updated_at.strftime('%B %d, %Y at %I:%M %p') if case.updated_at else '—' }}</div></div>
+    </div>
+  </div>
+</div>
+
+</main></div>{% endblock %}

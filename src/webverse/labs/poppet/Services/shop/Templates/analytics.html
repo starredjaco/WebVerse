@@ -1,0 +1,14 @@
+{% extends 'staff_base.html' %}{% block title %}Analytics - Poppet Shop{% endblock %}
+{% block content %}<h1>Analytics</h1>
+<div class="stat-row">
+  <div class="stat-card"><div class="number">${{ "%.0f" | format(stats.revenue or 0) }}</div><div class="label">Total Revenue</div></div>
+  <div class="stat-card"><div class="number">{{ stats.orders }}</div><div class="label">Orders</div></div>
+  <div class="stat-card"><div class="number">${{ "%.2f" | format(stats.avg_order or 0) }}</div><div class="label">Avg Order Value</div></div>
+  <div class="stat-card"><div class="number">{{ stats.customers }}</div><div class="label">Customers</div></div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--brand-space-5);">
+  <div class="panel"><h3>Top Products</h3><table class="data-table" style="margin-top:var(--brand-space-3);">
+    <thead><tr><th>Product</th><th>Units Sold</th><th>Revenue</th></tr></thead><tbody>
+    {% for p in top_products %}<tr><td>{{ p.name }}</td><td>{{ p.units }}</td><td>${{ "%.2f" | format(p.revenue) }}</td></tr>{% endfor %}</tbody></table></div>
+  <div class="panel"><h3>Orders by Status</h3><table class="data-table" style="margin-top:var(--brand-space-3);">
+    <thead><tr><th>Status</th><th>Count</th><th>Total Value</th></tr></thead><tbody>
+    {% for s in status_breakdown %}<tr><td><span class="badge badge-{{ s.status }}">{{ s.status }}</span></td><td>{{ s.count }}</td><td>${{ "%.2f" | format(s.total) }}</td></tr>{% endfor %}</tbody></table></div></div>{% endblock %}

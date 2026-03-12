@@ -1,0 +1,10 @@
+{% extends 'staff_base.html' %}{% block title %}Settings - Poppet Shop{% endblock %}
+{% block content %}<h1>Settings</h1>
+<div class="settings-nav"><a href="/settings" class="active">General</a>{% if session.get('role') in ('staff', 'manager') %}<a href="/settings/integrations">Integrations</a>{% endif %}<a href="/settings/notifications">Notifications</a></div>
+<div class="panel"><h3>Store Information</h3>
+  <div class="detail-grid" style="margin-top:var(--brand-space-3);">
+    <div class="field"><div class="label">Store Name</div><div class="value">Poppet Shop</div></div>
+    <div class="field"><div class="label">Currency</div><div class="value">USD</div></div>
+    <div class="field"><div class="label">Timezone</div><div class="value">America/New_York (EST)</div></div>
+    <div class="field"><div class="label">Region</div><div class="value">Asheville, NC</div></div>
+</div></div>{% endblock %}

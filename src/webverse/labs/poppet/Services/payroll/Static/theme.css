@@ -1,0 +1,9 @@
+:root {
+  --theme-accent: #2d6b4f; --theme-accent-2: #1a8a6a;
+  --theme-accent-light: #edf7f2; --theme-accent-muted: #7ab89e;
+  --theme-bg: #f4f7f5; --theme-fg: #1a2b22; --theme-card: #fff; --theme-border: #d4e5dc;
+  --theme-radius: var(--brand-radius-md); --theme-shadow: var(--brand-shadow-1);
+  --theme-sidebar: #162320; --theme-sidebar-hover: rgba(255,255,255,0.06);
+  --theme-sidebar-active: rgba(45,107,79,0.3); --theme-sidebar-text: #98b5a8;
+}
+body { background: var(--theme-bg); color: var(--theme-fg); }

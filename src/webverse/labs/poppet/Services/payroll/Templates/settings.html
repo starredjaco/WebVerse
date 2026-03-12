@@ -1,0 +1,55 @@
+{% extends "base.html" %}{% block title %}Settings - Poppet Payroll{% endblock %}
+{% block content %}<div class="pr-layout"><aside class="pr-sidebar">
+  <div class="sb-brand"><img src="/Static/icon.svg" alt=""><span>Poppet Payroll</span></div>
+  <nav class="sb-nav">
+    <a href="/dashboard" class="sb-link {% if active=='dash' %}active{% endif %}"><span class="sb-icon">&#9632;</span>Overview</a>
+    <div class="sb-section">Compensation</div>
+    <a href="/employees" class="sb-link {% if active=='emp' %}active{% endif %}"><span class="sb-icon">&#9673;</span>People</a>
+    <a href="/payruns" class="sb-link {% if active=='payruns' %}active{% endif %}"><span class="sb-icon">&#9654;</span>Pay Runs</a>
+    <a href="/deductions" class="sb-link {% if active=='deductions' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Deductions</a>
+    <div class="sb-section">Leave</div>
+    <a href="/timeoff" class="sb-link {% if active=='timeoff' %}active{% endif %}"><span class="sb-icon">&#9788;</span>Time Off{% if pending_pto %}<span class="sb-badge">{{ pending_pto }}</span>{% endif %}</a>
+    <div class="sb-section">Insights</div>
+    <a href="/reports" class="sb-link {% if active=='reports' %}active{% endif %}"><span class="sb-icon">&#9776;</span>Reports</a>
+    <div class="sb-section">System</div>
+    <a href="/integrations" class="sb-link {% if active=='integrations' %}active{% endif %}"><span class="sb-icon">&#8644;</span>Integrations</a>
+    <a href="/settings" class="sb-link {% if active=='settings' %}active{% endif %}"><span class="sb-icon">&#9881;</span>Settings</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-avatar">{{ session.get('payroll_user','?')[0] | upper }}</div>
+    <div class="sb-user-info"><div class="name">{{ session.get('payroll_user','') }}</div><div class="role">{{ session.get('payroll_role','') }}</div></div>
+    <a href="/logout" style="color:var(--theme-sidebar-text);font-size:0.75rem;margin-left:auto;">&#x2192;</a>
+  </div>
+</aside><main class="pr-main">
+
+<h1>Settings</h1>
+<p class="page-desc">Payroll system configuration and account management.</p>
+<div class="card-grid">
+  <div class="card"><h3>Payroll Configuration</h3>
+    <div class="info-grid" style="margin-top:8px;">
+      <div class="info-item"><div class="info-label">Pay Frequency</div><div class="info-value">Monthly</div></div>
+      <div class="info-item"><div class="info-label">Pay Day</div><div class="info-value">Last business day</div></div>
+      <div class="info-item"><div class="info-label">Currency</div><div class="info-value">USD</div></div>
+      <div class="info-item"><div class="info-label">Tax Region</div><div class="info-value">North Carolina, US</div></div>
+      <div class="info-item"><div class="info-label">Fiscal Year</div><div class="info-value">January - December</div></div>
+      <div class="info-item"><div class="info-label">Direct Deposit</div><div class="info-value">Enabled</div></div>
+    </div>
+  </div>
+  <div class="card"><h3>Company Information</h3>
+    <div class="info-grid" style="margin-top:8px;">
+      <div class="info-item"><div class="info-label">Company Name</div><div class="info-value">Poppet Studio LLC</div></div>
+      <div class="info-item"><div class="info-label">EIN</div><div class="info-value">XX-XXXXXXX</div></div>
+      <div class="info-item"><div class="info-label">Address</div><div class="info-value">45 Craft Lane, Asheville, NC 28801</div></div>
+      <div class="info-item"><div class="info-label">Phone</div><div class="info-value">(828) 555-0190</div></div>
+    </div>
+  </div>
+</div>
+<div class="card"><h3>User Accounts</h3>
+  <table class="pr-table" style="margin-top:8px;"><thead><tr><th>Username</th><th>Role</th><th>Employee Link</th></tr></thead><tbody>
+  {% for u in users %}
+  <tr><td>{{ u.username }}</td><td><span class="badge b-{{ u.role }}">{{ u.role }}</span></td>
+    <td>{% if u.employee_id %}<a href="/employees/{{ u.employee_id }}">Employee #{{ u.employee_id }}</a>{% else %}-{% endif %}</td></tr>
+  {% endfor %}</tbody></table>
+</div>
+
+</main></div>{% endblock %}

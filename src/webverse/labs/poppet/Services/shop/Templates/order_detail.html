@@ -1,0 +1,17 @@
+{% extends 'staff_base.html' %}{% block title %}Order #{{ order.id }} - Poppet Shop{% endblock %}
+{% block content %}<a href="/orders">&larr; Back to orders</a><h1 style="margin-top:var(--brand-space-3);">Order #{{ order.id }}</h1>
+<div class="detail-grid" style="margin-top:var(--brand-space-4);">
+  <div class="field"><div class="label">Customer</div><div class="value">{{ order.username }}</div></div>
+  <div class="field"><div class="label">Status</div><div class="value"><span class="badge badge-{{ order.status }}">{{ order.status }}</span></div></div>
+  <div class="field"><div class="label">Product</div><div class="value">{{ order.product_name }}</div></div>
+  <div class="field"><div class="label">Quantity</div><div class="value">{{ order.quantity }}</div></div>
+  <div class="field"><div class="label">Total</div><div class="value">${{ "%.2f" | format(order.total) }}</div></div>
+  <div class="field"><div class="label">Order Date</div><div class="value">{{ order.created_at }}</div></div>
+  <div class="field full-width"><div class="label">Shipping Address</div><div class="value">{{ order.shipping_address or "Not provided" }}</div></div></div>
+{% if shipment %}<div class="panel" style="margin-top:var(--brand-space-5);"><h3>Shipment Details</h3>
+  <div class="detail-grid" style="margin-top:var(--brand-space-3);">
+    <div class="field"><div class="label">Carrier</div><div class="value">{{ shipment.carrier_name }}</div></div>
+    <div class="field"><div class="label">Tracking #</div><div class="value"><code>{{ shipment.tracking_number }}</code></div></div>
+    <div class="field"><div class="label">Status</div><div class="value">{{ shipment.status }}</div></div>
+    <div class="field"><div class="label">Ship Date</div><div class="value">{{ shipment.ship_date or "Pending" }}</div></div>
+  </div></div>{% endif %}{% endblock %}

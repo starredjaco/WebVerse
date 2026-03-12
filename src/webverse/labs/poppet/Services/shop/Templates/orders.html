@@ -1,0 +1,11 @@
+{% extends 'staff_base.html' %}{% block title %}Orders - Poppet Shop{% endblock %}
+{% block content %}<h1>Orders</h1>
+<div class="filter-bar"><a href="/orders" class="{% if not status_filter %}active{% endif %}">All</a>
+  <a href="/orders?status=pending" class="{% if status_filter == 'pending' %}active{% endif %}">Pending</a>
+  <a href="/orders?status=processing" class="{% if status_filter == 'processing' %}active{% endif %}">Processing</a>
+  <a href="/orders?status=shipped" class="{% if status_filter == 'shipped' %}active{% endif %}">Shipped</a>
+  <a href="/orders?status=delivered" class="{% if status_filter == 'delivered' %}active{% endif %}">Delivered</a></div>
+<table class="data-table"><thead><tr><th>Order #</th><th>Customer</th><th>Product</th><th>Qty</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody>
+{% for o in orders %}<tr><td>#{{ o.id }}</td><td>{{ o.username }}</td><td>{{ o.product_name }}</td><td>{{ o.quantity }}</td>
+  <td>${{ "%.2f" | format(o.total) }}</td><td><span class="badge badge-{{ o.status }}">{{ o.status }}</span></td>
+  <td><a href="/orders/{{ o.id }}" class="btn btn-sm btn-secondary">Details</a></td></tr>{% endfor %}</tbody></table>{% endblock %}

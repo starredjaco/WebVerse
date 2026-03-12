@@ -1,0 +1,50 @@
+{% extends "base.html" %}{% block title %}Profile - Poppet Studio{% endblock %}
+{% block content %}<div class="studio-bar">
+  <a href="/dashboard" class="logo"><img src="/Static/icon.svg" alt=""><span>Poppet Studio</span></a>
+  <div class="user-area">
+    <div class="user-pill"><div class="avatar">{{ session.get('user','?')[0] | upper }}</div><span class="uname">{{ session.get('full_name', session.get('user','')) }}</span></div>
+    <a href="/logout" class="signout">Sign Out</a>
+  </div>
+</div>
+<div class="studio-tabs">
+  <a href="/dashboard" {% if active=='dash' %}class="active"{% endif %}>Overview</a>
+  <a href="/designs" {% if active=='designs' %}class="active"{% endif %}>Designs{% if review_count %}<span class="tab-badge">{{ review_count }}</span>{% endif %}</a>
+  <a href="/studio" {% if active=='studio' %}class="active"{% endif %}>Upload</a>
+  <a href="/materials" {% if active=='materials' %}class="active"{% endif %}>Materials</a>
+  <a href="/production" {% if active=='production' %}class="active"{% endif %}>Production</a>
+  <a href="/profile" {% if active=='profile' %}class="active"{% endif %}>Profile</a>
+</div>
+<div class="studio-content">
+
+<h1>Profile Settings</h1>
+<p class="page-desc">Your account details and preferences.</p>
+{% if message %}<div class="alert alert-success">{{ message }}</div>{% endif %}
+<div class="card-grid">
+  <div class="card"><h3>Account Information</h3>
+    <form method="POST" action="/profile" style="margin-top:8px;">
+      <div class="form-group"><label>Username</label><input type="text" value="{{ user.username }}" disabled style="background:var(--theme-bg);"></div>
+      <div class="form-group"><label>Full Name</label><input type="text" name="full_name" value="{{ user.full_name or '' }}"></div>
+      <div class="form-group"><label>Role</label><input type="text" value="{{ user.role }}" disabled style="background:var(--theme-bg);"></div>
+      <div class="form-group"><label>Bio</label><textarea name="bio" rows="3">{{ user.bio or '' }}</textarea></div>
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+  </div>
+  <div class="card"><h3>Design Statistics</h3>
+    <div class="info-grid" style="margin-top:8px;">
+      <div class="info-item"><div class="info-label">Total Designs</div><div class="info-value" style="font-size:1.5rem;font-weight:700;color:var(--theme-accent);">{{ design_count }}</div></div>
+      <div class="info-item"><div class="info-label">Member Since</div><div class="info-value">{{ user.created_at.strftime('%B %Y') if user.created_at else '-' }}</div></div>
+    </div>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--theme-border);">
+      <h3 style="margin-bottom:12px;">Preferences</h3>
+      <form method="POST" action="/profile">
+        <input type="hidden" name="action" value="prefs">
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 0;"><input type="checkbox" name="notify_review" id="nr" {% if prefs.notify_review %}checked{% endif %} style="margin:0;flex-shrink:0;"><label for="nr" style="margin:0;font-weight:400;cursor:pointer;">Email me when designs are reviewed</label></div>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 0;"><input type="checkbox" name="show_gallery" id="sg" {% if prefs.show_gallery %}checked{% endif %} style="margin:0;flex-shrink:0;"><label for="sg" style="margin:0;font-weight:400;cursor:pointer;">Show my name on public gallery</label></div>
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 0;"><input type="checkbox" name="weekly_digest" id="wd" {% if prefs.weekly_digest %}checked{% endif %} style="margin:0;flex-shrink:0;"><label for="wd" style="margin:0;font-weight:400;cursor:pointer;">Weekly studio digest email</label></div>
+        <button type="submit" class="btn btn-secondary btn-sm" style="margin-top:12px;">Save Preferences</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+</div>{% endblock %}
